@@ -2,9 +2,12 @@ var exec = require("child_process").exec,
 	querystring = require("querystring"),
 	fs = require("fs"),
 	path = require("path"),
-	mysql = require("mysql");
-
-
+	mysql = require("mysql"),
+	connection = mysql.createConnection({
+		user: "root",
+		password: "",
+		database: "testdb"
+	});
 function start(response,postData) {
 	console.log('Request handler for start called');
 	/*
@@ -99,11 +102,7 @@ function upload(response,postData) {
 	response.end();
 }
 function addToDatabase(postData){
-	var connection = mysql.createConnection({
-		user: "root",
-		password: "",
-		database: "testdb"
-	});
+	
 	console.log("db add:" + querystring.parse(postData).firstname );
 	 connection.query("INSERT INTO user_info (fname,lname,grieviences) values ('" + querystring.parse(postData).firstname + "','" + querystring.parse(postData).lastname+ "','" + querystring.parse(postData).text+"');");
 	  //connection.query("INSERT INTO table1 (fname) values (" + querystring.parse(postData).firstname+");"

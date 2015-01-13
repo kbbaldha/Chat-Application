@@ -10,7 +10,9 @@ var connection = mysql.createConnection({
 http.createServer(function (request, response) {
 
   //request.on('end', function () {
-
+		
+	   connection.query("INSERT INTO table1 (id,fname) values (8,'kbb');");
+	   console.log('row inserted');
       connection.query('SELECT * FROM table1;', function (error, rows, fields) {
 
         response.writeHead(200, {

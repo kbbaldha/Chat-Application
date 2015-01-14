@@ -7,10 +7,10 @@ var app = http.createServer(function (request, response) {
         response.write(data);
         response.end();
     });
-}).listen(8889,'192.168.9.36');
+}).listen(8889);
  
 var io = require('socket.io').listen(app);
- 
+console.log('inisde main');
 io.sockets.on('connection', function(socket) {
     socket.on('message_to_server', function(data) {
         io.sockets.emit("message_to_client",{ message: data["message"] });

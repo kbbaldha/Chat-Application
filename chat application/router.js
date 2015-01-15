@@ -1,5 +1,6 @@
-function route(handle,pathname,response,postData) {
-	console.log("routing request to::"+pathname)
+function route(handle, pathname, response, postData) {
+    console.log('route called');
+    console.log('handle:' + handle + 'pathname:' + pathname + 'response:' + response + 'postData:' + postData);
 	if (typeof handle[pathname] === 'function') {
 		handle[pathname](response,postData);
 	} else {

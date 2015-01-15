@@ -5,17 +5,17 @@ function start(route,handle) {
 http.createServer(function(request,response) {
 	var pathname = url.parse(request.url).pathname,
 		postData = "";
-	console.log("pathname is" + pathname);
-	console.log('request received');
 
 	request.setEncoding("utf8");
-	request.addListener("data", function(postDataChunck) {
+	request.addListener("data", function (postDataChunck) {
+	    console.log('post data received');
 		postData += postDataChunck;
 	});
-	request.addListener("end", function() {
+	request.addListener("end", function () {
+	    console.log('called from end in server');
 		route(handle,pathname,response,postData);
 	});
-}).listen(8887);
+}).listen(8881);
 
 console.log('Server has started');
 }

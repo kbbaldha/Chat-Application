@@ -10,12 +10,13 @@ http.createServer(function(request,response) {
 
 	request.setEncoding("utf8");
 	request.on("data", function(postDataChunck) {
+	    console.log('post data received');
 		postData += postDataChunck;
 	});
 	request.on("end", function() {
 		route(handle,pathname,response,postData,request);
 	});
-}).listen(8887);
+}).listen(8881);
 
 console.log('Server has started');
 }

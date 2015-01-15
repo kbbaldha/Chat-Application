@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script type="text/javascript">
+    
+        function logIn() {
+            console.log('log in button clicked');
+        }
+    </script>
+    <style type="text/css">
+        .name-text{
+
+        }
+        .user_name {
+        }
+        .chat_button {
+        }
+        .chat_button {
+            border-top: 1px solid #96d1f8;
+            background: #65a9d7;
+            background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#65a9d7));
+            background: -webkit-linear-gradient(top, #3e779d, #65a9d7);
+            background: -moz-linear-gradient(top, #3e779d, #65a9d7);
+            background: -ms-linear-gradient(top, #3e779d, #65a9d7);
+            background: -o-linear-gradient(top, #3e779d, #65a9d7);
+            padding: 5px 10px;
+            -webkit-border-radius: 8px;
+            -moz-border-radius: 8px;
+            border-radius: 8px;
+            -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+            -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+            box-shadow: rgba(0,0,0,1) 0 1px 0;
+            text-shadow: rgba(0,0,0,.4) 0 1px 0;
+            color: white;
+            font-size: 14px;
+            font-family: Georgia, serif;
+            text-decoration: none;
+            vertical-align: middle;
+            display: inline-block;
+        }
+
+            .chat_button:hover {
+                border-top-color: #28597a;
+                background: #28597a;
+                color: #ccc;
+                cursor:pointer;
+            }
+
+            .chat_button:active {
+                border-top-color: #1b435e;
+                background: #1b435e;
+            }
+    </style>
+</head>
+<body>
+   <!-- <div id="user_name">
+        <div class="name-text"> Enter Name:</div>
+        <input type="text" id="user_name" />
+        <div class="password"> Enter Password:</div>
+        <input type="text" id="user_password" />
+        <div id="chat_button" class="chat_button" onclick="logIn()">Log in</div>
+       
+    </div>
+       -->
+    <form action="/login" method="post">
+        user name:<input type="text" id="user_name" name="user_name" />
+        password:<input type="password" id="user_pass" name="user_pass" />
+        <input type="submit" value="Log in" />
+    </form>
+</body>
+</html>

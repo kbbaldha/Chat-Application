@@ -1,7 +1,7 @@
-function route(handle,pathname,response,postData) {
+function route(handle,pathname,response,postData,request) {
 	console.log("routing request to::"+pathname)
 	if (typeof handle[pathname] === 'function') {
-		handle[pathname](response,postData);
+		handle[pathname](response,postData,request);
 	} else {
 		console.log('No such file found');
 		response.writeHead(404,{"Content-type":"text/plain"});

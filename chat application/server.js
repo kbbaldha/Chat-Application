@@ -3,17 +3,17 @@ var http = require("http"),
 
 function start(route,handle) {
 http.createServer(function(request,response) {
-	var pathname = url.parse(request.url).pathname,
+    var pathname = url.parse(request.url).pathname,
 		postData = "";
-	console.log("pathname is" + pathname);
-	console.log('request received');
+	    
+	
 
 	request.setEncoding("utf8");
-	request.addListener("data", function(postDataChunck) {
+	request.on("data", function(postDataChunck) {
 		postData += postDataChunck;
 	});
-	request.addListener("end", function() {
-		route(handle,pathname,response,postData);
+	request.on("end", function() {
+		route(handle,pathname,response,postData,request);
 	});
 }).listen(8887);
 

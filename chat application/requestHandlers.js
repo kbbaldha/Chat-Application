@@ -2,7 +2,7 @@ var exec = require("child_process").exec,
 	querystring = require("querystring"),
 	fs = require("fs"),
 	path = require("path"),
-    http = require('http'),
+   // http = require('http'),
    mysql = require("mysql"),
     connection = mysql.createConnection({
         user: "root",
@@ -40,7 +40,7 @@ function login(response,postData) {
 	response.end();
 	*/
 	if (postData === null || postData === undefined || postData === "") {
-	    var filename = "login.html",
+	    var filename = "login.htm",
             ext = path.extname(filename);
 
 	    var localPath = "./";
@@ -76,7 +76,7 @@ function login(response,postData) {
 	}
 	else {
 	    console.log(postData);
-	    connection.query("SELECT * FROM user_information WHERE user_name = '" + querystring.parse(postData).user_name + "' AND user_pass = '" + querystring.parse(postData).user_name + "';",
+	    connection.query("SELECT * FROM user_information WHERE user_id = '" + querystring.parse(postData).user_name + "' AND user_pass = '" + querystring.parse(postData).user_pass + "';",
             function (error, rows, fields) {
                 
                 /*  response.writeHead(200, {
@@ -85,6 +85,10 @@ function login(response,postData) {
                   });*/
                 if (rows.length > 0) {
                     console.log('allow to chat');
+                    response.statusCode = 302;
+                    response.setHeader("Location", "/chat?user=" + rows[0]['user_id']);
+                    response.end();
+
                 }
             });
 	}
@@ -105,8 +109,27 @@ function getFile(localPath,response,ext) {
 	});
 }
 
-function chat(response, postData) {
+function chat(response, postData,request) {
+    console.log('chat render');
+    fs.readFile("client.html", 'utf-8', function (error, data) {
+        response.writeHead(200, { 'Content-Type': 'text/html' });
+        response.write(data);
+        response.end();
+    });
+    /*
+    var io = require('socket.io').listen(app);
+    console.log('inisde main');
+    io.sockets.on('connection', function (socket) {
+        //console.log('before');
+        //console.log(socket.id);
 
+        //console.log('afteer');
+
+        socket.on('message_to_server', function (data) {
+            io.sockets.emit("message_to_client", { message: data["message"] });
+            //this.emit("message_to_client",{ message: data["message"] });
+        });
+    });*/
 
 }
 

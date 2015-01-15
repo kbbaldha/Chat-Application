@@ -10,7 +10,7 @@ var exec = require("child_process").exec,
         database: "chat_db"
     });
 
-function start(response,postData) {
+function login(response, postData) {
     console.log('Request handler for login called');
     console.log('postdata is' + postData);
 	if (postData === null || postData === undefined || postData === "") {
@@ -91,5 +91,5 @@ function upload(response,postData) {
 	response.end();
 }
 
-exports.start = start;
+exports.login = login;
 exports.chat = chat;

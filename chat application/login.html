@@ -56,7 +56,7 @@
     </style>
 </head>
 <body>
-    <div id="user_name">
+   <!-- <div id="user_name">
         <div class="name-text"> Enter Name:</div>
         <input type="text" id="user_name" />
         <div class="password"> Enter Password:</div>
@@ -64,5 +64,11 @@
         <div id="chat_button" class="chat_button" onclick="logIn()">Log in</div>
        
     </div>
+       -->
+    <form action="/login" method="post">
+        user name:<input type="text" id="user_name" />
+        password:<input type="password" id="user_pass" />
+        <input type="submit" value="Log in" />
+    </form>
 </body>
 </html>

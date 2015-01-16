@@ -14,38 +14,7 @@ function login(response, postData) {
     console.log('Request handler for login called');
     console.log('postdata is' + postData);
 	if (postData === null || postData === undefined || postData === "") {
-	    var filename = "login.htm",
-            ext = path.extname(filename);
-
-	    var localPath = "./";
-	    var validExtensions = {
-	        ".html": "text/html",
-	        ".htm": "text/html",
-	        ".js": "application/javascript",
-	        ".css": "text/css",
-	        ".txt": "text/plain",
-	        ".jpg": "image/jpeg",
-	        ".gif": "image/gif",
-	        ".png": "image/png"
-	    };
-	    var isValidExt = validExtensions[ext];
-
-	    if (isValidExt) {
-	        localPath += filename;
-	        path.exists(localPath, function (exists) {
-	            if (exists) {
-	                console.log("Serving file: " + localPath);
-	                getFile(localPath, response, validExtensions[ext]);
-	            } else {
-	                console.log("File not found: " + localPath);
-	                response.writeHead(404);
-	                response.end();
-	            }
-	        });
-
-	    } else {
-	        console.log("Invalid file extension detected: " + ext)
-	    }
+	    getFile(response, "login.htm");
 	}
 	else {
 	    console.log(postData);
@@ -63,27 +32,69 @@ function login(response, postData) {
                     response.end();
 
                 }
+
+                else {
+                    getFile(response, "invalid_login.html");
+                }
             });
 	}
 	    
 }
+function getContentType(ext) {
+    var validExtensions = {
+        ".html": "text/html",
+        ".htm": "text/html",
+        ".js": "application/javascript",
+        ".css": "text/css",
+        ".txt": "text/plain",
+        ".jpg": "image/jpeg",
+        ".gif": "image/gif",
+        ".png": "image/png"
+    };
+    return validExtensions[ext];
+}
+function getFile(response ,filename) {
+    //var filename = "login.htm",
+     var ext = path.extname(filename);
 
-function getFile(localPath,response,ext) {
-	fs.readFile(localPath, function (err,contents) {
-		if (!err) {
-			response.setHeader("Content-Length",contents.length);
-			response.setHeader("Content-Type",ext);
-			response.statusCode = 200;
-			response.end(contents);
-		} else {
-			response.writeHead(500);
-			response.end();
-		}
-	});
+    var localPath = "./";
+    
+
+    if (getContentType(ext)) {
+        localPath += filename;
+        path.exists(localPath, function (exists) {
+            if (exists) {
+                //console.log("Serving file: " + localPath);
+                // getFile(localPath, response, validExtensions[ext]);
+                fs.readFile(localPath, function (err, contents) {
+                    if (!err) {
+                        response.setHeader("Content-Length", contents.length);
+                        response.setHeader("Content-Type", getContentType(ext));
+                        response.statusCode = 200;
+                        response.end(contents);
+                    } else {
+                        response.writeHead(500);
+                        response.end();
+                    }
+                });
+
+            } else {
+                console.log("File not found: " + localPath);
+                response.writeHead(404);
+                response.end();
+            }
+        });
+
+    } else {
+        console.log("Invalid file extension detected: " + ext)
+    }
+
+	
 }
 
 function chat(response, postData,request) {
-    console.log('chat render');
+    var query = require('url').parse(request.url, true).query;
+    console.log(query.user);
     fs.readFile("client.html", 'utf-8', function (error, data) {
         response.writeHead(200, { 'Content-Type': 'text/html' });
         response.write(data);

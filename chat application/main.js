@@ -8,5 +8,6 @@ handle["/"] = requestHandlers.login;
 handle["/login"] = requestHandlers.login;
 handle["/chat"] = requestHandlers.chat;
 handle["/getUser"] = requestHandlers.getUser;
+handle["/getUsers"] = requestHandlers.getUsers;
 
 server.start(router.route, handle);

@@ -1,15 +1,25 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <style type="text/css">
+            .users_of_app{
+                position:absolute;
+                left:300px;
+
+            }
+        </style>
         <script  src="/socket.io/socket.io.js"></script>
 		
         <script type="text/javascript">
-            var socketio = io.connect("192.168.9.36:8889");
-			socketio.on("message_to_client", function(data) {
-			document.getElementById("chatlog").innerHTML = ("<hr/>" +
-			data['message'] + document.getElementById("chatlog").innerHTML);
-			});
+           
 			
+			function connectToServer(username) {
+			    var socketio = io.connect("localhost:8881", { query: 'loggeduser='+ username });
+			    socketio.on("message_to_client", function (data) {
+			        document.getElementById("chatlog").innerHTML = ("<hr/>" +
+                    data['message'] + document.getElementById("chatlog").innerHTML);
+			    });
+			}
 			function sendMessage() {
 				var name = document.getElementById("name_input").value;
 				var msg = name + " : "+ document.getElementById("message_input").value;
@@ -24,12 +34,34 @@
 			        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 			            var string = xmlhttp.responseText;
 			            console.log('the user is' + string);
+			            connectToServer(string);
 			            setUser(string);
+			            getUsersOfApp();
 			        }
 			    }
 			    xmlhttp.send();
 			}
-
+			function getUsersOfApp() {
+			    var xmlhttp = new XMLHttpRequest();
+			    xmlhttp.open("GET", "http://localhost:8881/getUsers", true);
+			    xmlhttp.onreadystatechange = function () {
+			        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+			            setAppUsers(JSON.parse(xmlhttp.responseText));
+			           
+			            //setAppUsers();
+			        }
+			    }
+			    xmlhttp.send();
+			}
+			function setAppUsers(users) {
+			    var noOfUsers = users.length,
+                    i = 0,
+			        output = '';
+			    for (; i < noOfUsers; i++) {
+			        output += '<hr/>' + users[i]['user_id'];
+			    }
+			    document.getElementById('users_of_app').innerHTML = output;
+			}
 			function setUser(name) {
 			    document.getElementById('user').innerHTML = 'welcome ' + name;
 			}
@@ -40,5 +72,6 @@
         <input type="text" id="message_input"/>
         <button onclick="sendMessage()">send</button>
         <div id="chatlog"></div>
+        <div id="users_of_app" class="users_of_app"></div>
     </body>
 </html>

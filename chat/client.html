@@ -4,7 +4,7 @@
         <script  src="/socket.io/socket.io.js"></script>
 		
         <script type="text/javascript">
-            var socketio = io.connect("192.168.9.36:8889");
+            var socketio = io.connect("192.168.9.36:8881");
 			socketio.on("message_to_client", function(data) {
 			document.getElementById("chatlog").innerHTML = ("<hr/>" +
 			data['message'] + document.getElementById("chatlog").innerHTML);

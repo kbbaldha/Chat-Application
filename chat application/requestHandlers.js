@@ -11,9 +11,8 @@ var exec = require("child_process").exec,
     }),
     userName = "";
 
-function login(response, postData) {
-    console.log('Request handler for login called');
-    console.log('postdata is' + postData);
+function login(response, postData,request) {
+    
 	if (postData === null || postData === undefined || postData === "") {
 	    getFile(response, "login.htm");
 	}
@@ -118,7 +117,11 @@ function chat(response, postData,request) {
     });*/
 
 }
-
+function addSocketInfoToDatabase(user,socketid) {
+    console.log('----------------user' + user);
+    console.log("INSERT INTO user_information (socket_id) values ('" + socketid + "') WHERE user_id = '" + user + "';");
+    connection.query("UPDATE user_information SET socket_id = '" + socketid + "' WHERE user_id = '" + user + "';");
+}
 
 function upload(response,postData) {
 	console.log('Request handler for upload called');
@@ -128,12 +131,26 @@ function upload(response,postData) {
 }
 
 function getUser(response) {
-    console.log('Request handler for getUser called');
+   
     response.writeHead(200, { "Content-type": "text/plain" });
     response.write(userName);
     response.end();
+}
+function getUsers(response) {
+
+    response.writeHead(200, { "Content-type": "text/plain" });
+    connection.query("SELECT user_id FROM user_information;",
+            function (error, rows, fields) {
+
+                response.write(JSON.stringify(rows));
+                response.end();
+               
+            });
+    
 }
 
 exports.login = login;
 exports.chat = chat;
 exports.getUser = getUser;
+exports.getUsers = getUsers;
+exports.addSocketInfoToDatabase = addSocketInfoToDatabase;

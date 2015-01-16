@@ -8,7 +8,8 @@ var exec = require("child_process").exec,
         user: "root",
         password: "",
         database: "chat_db"
-    });
+    }),
+    userName = "";
 
 function login(response, postData) {
     console.log('Request handler for login called');
@@ -27,6 +28,7 @@ function login(response, postData) {
                   });*/
                 if (rows.length > 0) {
                     console.log('allow to chat');
+                    userName = rows[0]['user_id'];
                     response.statusCode = 302;
                     response.setHeader("Location", "/chat?user=" + rows[0]['user_id']);
                     response.end();
@@ -125,5 +127,13 @@ function upload(response,postData) {
 	response.end();
 }
 
+function getUser(response) {
+    console.log('Request handler for getUser called');
+    response.writeHead(200, { "Content-type": "text/plain" });
+    response.write(userName);
+    response.end();
+}
+
 exports.login = login;
 exports.chat = chat;
+exports.getUser = getUser;

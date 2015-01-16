@@ -16,11 +16,27 @@
 				
 				socketio.emit("message_to_server", { message : msg});
 			}
+
+			function getUserName() {
+			    var xmlhttp = new XMLHttpRequest();
+			    xmlhttp.open("GET", "http://localhost:8881/getUser", true);
+			    xmlhttp.onreadystatechange = function () {
+			        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+			            var string = xmlhttp.responseText;
+			            console.log('the user is' + string);
+			            setUser(string);
+			        }
+			    }
+			    xmlhttp.send();
+			}
+
+			function setUser(name) {
+			    document.getElementById('user').innerHTML = 'welcome ' + name;
+			}
         </script>
     </head>
-    <body>
-		Enter Name:<input type="text" id="name_input"/>
-		</br>
+    <body onload="getUserName()">
+		<div id="user"></div> 
         <input type="text" id="message_input"/>
         <button onclick="sendMessage()">send</button>
         <div id="chatlog"></div>

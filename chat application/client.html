@@ -11,17 +11,19 @@
         <script  src="/socket.io/socket.io.js"></script>
 		
         <script type="text/javascript">
-           
+            var loggedUserName = "",
+                 socketio;    //bad idea to keep this as a global var
 			
 			function connectToServer(username) {
-			    var socketio = io.connect("localhost:8881", { query: 'loggeduser='+ username });
+			    socketio = io.connect("localhost:8881", { query: 'loggeduser='+ username });
 			    socketio.on("message_to_client", function (data) {
 			        document.getElementById("chatlog").innerHTML = ("<hr/>" +
                     data['message'] + document.getElementById("chatlog").innerHTML);
 			    });
 			}
 			function sendMessage() {
-				var name = document.getElementById("name_input").value;
+			    //var name = document.getElementById("name_input").value;
+			    var name = loggedUserName;
 				var msg = name + " : "+ document.getElementById("message_input").value;
 				
 				socketio.emit("message_to_server", { message : msg});
@@ -64,6 +66,7 @@
 			}
 			function setUser(name) {
 			    document.getElementById('user').innerHTML = 'welcome ' + name;
+			    loggedUserName = name;
 			}
         </script>
     </head>

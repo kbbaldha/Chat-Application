@@ -18,13 +18,8 @@ function login(response, postData,request) {
 	}
 	else {
 	    console.log(postData);
-	    connection.query("SELECT * FROM user_information WHERE user_id = '" + querystring.parse(postData).user_name + "' AND user_pass = '" + querystring.parse(postData).user_pass + "';",
+	    connection.query("SELECT * FROM user_information WHERE user_id = '" + querystring.parse(postData).user_name + "' AND user_pass = '" +                                       querystring.parse(postData).user_pass + "';",
             function (error, rows, fields) {
-                
-                /*  response.writeHead(200, {
-                      "Content-Type": "text/plain",
-                      'Access-Control-Allow-Origin' : '*'
-                  });*/
                 if (rows.length > 0) {
                     console.log('allow to chat');
                     userName = rows[0]['user_id'];
@@ -96,27 +91,9 @@ function getFile(response ,filename) {
 function chat(response, postData,request) {
     var query = require('url').parse(request.url, true).query;
     console.log(query.user);
-    fs.readFile("client.html", 'utf-8', function (error, data) {
-        response.writeHead(200, { 'Content-Type': 'text/html' });
-        response.write(data);
-        response.end();
-    });
-    /*
-    var io = require('socket.io').listen(app);
-    console.log('inisde main');
-    io.sockets.on('connection', function (socket) {
-        //console.log('before');
-        //console.log(socket.id);
-
-        //console.log('afteer');
-
-        socket.on('message_to_server', function (data) {
-            io.sockets.emit("message_to_client", { message: data["message"] });
-            //this.emit("message_to_client",{ message: data["message"] });
-        });
-    });*/
-
+    getFile(response, "client.html");
 }
+
 function addSocketInfoToDatabase(user,socketid) {
     console.log('----------------user' + user);
     console.log("INSERT INTO user_information (socket_id) values ('" + socketid + "') WHERE user_id = '" + user + "';");

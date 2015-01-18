@@ -119,6 +119,7 @@ function chat(response, postData,request) {
 }
 function addSocketInfoToDatabase(user,socketid,io) {
     connection.query("UPDATE user_information SET socket_id = '" + socketid + "' WHERE user_id = '" + user + "';");
+    connection.query("UPDATE user_information SET online = '" + 0 + "' WHERE user_id = '" + user + "';");
     updateOfflineMessages(user, socketid,io);
 }
 /**

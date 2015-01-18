@@ -53,12 +53,15 @@ io.sockets.on('connection', function (socket) {
 
     // console.log('logged user' + socket.manager.handshaken[socket.id].query.loggeduser);
 
-    requestHandlers.addSocketInfoToDatabase(socket.handshake.query.loggeduser, socket.id,io);
+    requestHandlers.addSocketInfoToDatabase(socket.handshake.query.loggeduser, socket.id, io);
 
     socket.on('message_to_server', function (data) {
-        requestHandlers.sendMessage(data,io);
+        requestHandlers.sendMessage(data, io);
         //io.sockets.emit("message_to_client", { message: data["message"] });
         //this.emit("message_to_client",{ message: data["message"] });
+    });
+    socket.on('disconnect', function (data) {
+        console.log('somebody is disconnected'+this);
     });
 });
 }

@@ -17,7 +17,7 @@ function login(response, postData,request) {
 	    getFile(response, "login.htm");
 	}
 	else {
-	    console.log(postData);
+	    
 	    connection.query("SELECT * FROM user_information WHERE user_id = '" + querystring.parse(postData).user_name + "' AND user_pass = '" + querystring.parse(postData).user_pass + "';",
             function (error, rows, fields) {
                 
@@ -118,8 +118,7 @@ function chat(response, postData,request) {
 
 }
 function addSocketInfoToDatabase(user,socketid) {
-    console.log('----------------user' + user);
-    console.log("INSERT INTO user_information (socket_id) values ('" + socketid + "') WHERE user_id = '" + user + "';");
+    
     connection.query("UPDATE user_information SET socket_id = '" + socketid + "' WHERE user_id = '" + user + "';");
 }
 
@@ -149,8 +148,37 @@ function getUsers(response) {
     
 }
 
+function sendMessage(data, io) {
+    var callback = function (error, rows, fields) {
+
+        /*  response.writeHead(200, {
+        "Content-Type": "text/plain",
+        'Access-Control-Allow-Origin' : '*'
+        });*/
+        if (rows.length > 0) {
+
+            var socketid = rows[0]['socket_id'];
+            io.sockets.connected[socketid].emit("message_to_client", { message: data["message"], clientName: data["clientName"] });
+
+        }
+
+        else {
+            //getFile(response, "invalid_login.html");
+            console.log('no socket');
+        }
+    };
+   // console.log('------------db query --------------');
+    connection.query("SELECT socket_id FROM user_information WHERE user_id = '" + data["friend"] + "';", callback);
+
+
+
+}
+
+
+
 exports.login = login;
 exports.chat = chat;
 exports.getUser = getUser;
 exports.getUsers = getUsers;
 exports.addSocketInfoToDatabase = addSocketInfoToDatabase;
+exports.sendMessage = sendMessage;

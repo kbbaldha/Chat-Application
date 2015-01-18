@@ -95,7 +95,7 @@ function getFile(response ,filename) {
 
 function chat(response, postData,request) {
     var query = require('url').parse(request.url, true).query;
-    console.log(query.user);
+    
     fs.readFile("client.html", 'utf-8', function (error, data) {
         response.writeHead(200, { 'Content-Type': 'text/html' });
         response.write(data);
@@ -158,7 +158,9 @@ function sendMessage(data, io) {
         if (rows.length > 0) {
 
             var socketid = rows[0]['socket_id'];
-            io.sockets.connected[socketid].emit("message_to_client", { message: data["message"], clientName: data["clientName"] });
+            if (io.sockets.connected[socketid]) {
+                io.sockets.connected[socketid].emit("message_to_client", { message: data["message"], clientName: data["clientName"] });
+            }
 
         }
 

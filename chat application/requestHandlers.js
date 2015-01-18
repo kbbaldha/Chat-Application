@@ -29,7 +29,7 @@ function login(response, postData,request) {
                     console.log('allow to chat');
                     userName = rows[0]['user_id'];
                     response.statusCode = 302;
-                    response.setHeader("Location", "/chat?user=" + rows[0]['user_id']);
+                    response.setHeader("Location", "/chat");
                     response.end();
 
                 }

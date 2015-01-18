@@ -53,7 +53,7 @@ io.sockets.on('connection', function (socket) {
 
     // console.log('logged user' + socket.manager.handshaken[socket.id].query.loggeduser);
 
-    requestHandlers.addSocketInfoToDatabase(socket.handshake.query.loggeduser, socket.id);
+    requestHandlers.addSocketInfoToDatabase(socket.handshake.query.loggeduser, socket.id,io);
 
     socket.on('message_to_server', function (data) {
         requestHandlers.sendMessage(data,io);

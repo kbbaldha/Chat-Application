@@ -117,9 +117,30 @@ function chat(response, postData,request) {
     });*/
 
 }
-function addSocketInfoToDatabase(user,socketid) {
-    
+function addSocketInfoToDatabase(user,socketid,io) {
     connection.query("UPDATE user_information SET socket_id = '" + socketid + "' WHERE user_id = '" + user + "';");
+    updateOfflineMessages(user, socketid,io);
+}
+/**
+* Updates the offline messages of the user
+*/
+function updateOfflineMessages(user, socketid,io) {
+    connection.query("SELECT * FROM offline_messages WHERE user_id = '" + user + "';", function (error, rows, fields) {
+        if (rows.length > 0) {
+            for (var i = 0; i < rows.length; i++) {
+                if (io.sockets.connected[socketid]) {
+                    io.sockets.connected[socketid].emit("message_to_client", { message: rows[i]["message"], clientName: rows[i]["friend_id"] });
+                }
+            }
+        }
+    });
+    deleteOfflineMessages(user);
+}
+/**
+* Deletes the previously stored offline messages of the passed user
+*/
+function deleteOfflineMessages(user) {
+    connection.query("DELETE FROM offline_messages WHERE user_id = '" + user + "';");
 }
 
 function upload(response,postData) {
@@ -160,6 +181,24 @@ function sendMessage(data, io) {
             var socketid = rows[0]['socket_id'];
             if (io.sockets.connected[socketid]) {
                 io.sockets.connected[socketid].emit("message_to_client", { message: data["message"], clientName: data["clientName"] });
+            } else {
+                // The user if offline store his messages
+                console.log("client name is :" + data["clientName"]);
+                connection.query("INSERT INTO offline_messages  (user_id,friend_id,message) VALUES ('" + data["friend"] + "','" + data["clientName"] +"','" + data["message"] + "');");
+                /*                                                                                     
+                connection.query("SELECT message FROM offline_messages WHERE user_id = '" + data["friend"] + "';", function (error, rows, fields) {
+                if (rows.length > 0) {
+                console.log('going in the correct place');
+                jsonObj = JSON.parse(rows[0]['message']);
+                message.message = data["message"];
+                message.sentBy = data["clientName"];
+                jsonObj.push(message);
+                //connection.query("UPDATE offline_messages SET message = '" + data["message"] + "' WHERE user_id = '" + data["friend"] + "';");
+                connection.query("UPDATE offline_messages SET message = '" + JSON.stringify(jsonObj) + "' WHERE user_id = '" + data["friend"] +                                         "';");
+                }
+                });
+                */
+
             }
 
         }

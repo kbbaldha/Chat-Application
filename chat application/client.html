@@ -93,14 +93,14 @@
         </style>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script  src="/socket.io/socket.io.js"></script>
-		
+        <script src="/client-scripts/constants.js"></script>
         <script type="text/javascript">
             var socketio,
                 clientName;
 			
 			function connectToServer(username) {
                 clientName = username;
-			    socketio = io.connect("localhost:8881", { query: 'loggeduser='+ username });
+                socketio = io.connect(ChatApplication.SERVER_ADDRESS , { query: 'loggeduser='+ username });
 			    socketio.on("message_to_client", function (data) {
 			        if ($('#friend_chat_' + data['clientName']).length == 0) {
 			            $('.chatlog').append(getChatWindowHTML(data['clientName']));
@@ -117,7 +117,7 @@
 
 			function getUserName() {
 			    var xmlhttp = new XMLHttpRequest();
-			    xmlhttp.open("GET", "http://localhost:8881/getUser", true);
+			    xmlhttp.open("GET", ChatApplication.SERVER_ADDRESS + "/getUser", true);
 			    xmlhttp.onreadystatechange = function () {
 			        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 			            var string = xmlhttp.responseText;
@@ -131,7 +131,7 @@
 			}
 			function getUsersOfApp() {
 			    var xmlhttp = new XMLHttpRequest();
-			    xmlhttp.open("GET", "http://localhost:8881/getUsers", true);
+			    xmlhttp.open("GET", ChatApplication.SERVER_ADDRESS + "/getUsers", true);
 			    xmlhttp.onreadystatechange = function () {
 			        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 			            setAppUsers(JSON.parse(xmlhttp.responseText));

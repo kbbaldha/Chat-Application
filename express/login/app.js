@@ -11,6 +11,8 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
+var server = app.listen(3030);
+var io = require('socket.io').listen(server);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -32,47 +34,25 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
-/*
-var sess;
-app.use(session({ secret: 'ssshhhhh' }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/', function (req, res, next) {
-    //res.render('index', { title: 'Express' });
 
-    var html_dir = './public/';
-    res.sendfile(html_dir + 'login.htm');
+io.sockets.on('connection', function (socket) {
+
+    //console.log('logged user' + socket.manager.handshaken[socket.id].query.loggeduser);
+    console.log('logged'+socket.handshake.query.loggeduser);
+    routes.addSocketInfoToDatabase(socket.handshake.query.loggeduser, socket.id, io);
+
+    socket.on('message_to_server', function (data) {
+        routes.sendMessage(data, io);
+        //io.sockets.emit("message_to_client", { message: data["message"] });
+        //this.emit("message_to_client",{ message: data["message"] });
+    });
+    socket.on('disconnect', function (data) {
+        console.log('somebody is disconnected' + this);
+    });
 });
 
-app.post('/login', function (req, res, next) {
-    //res.render('index', { title: 'Express' });
 
-    if (req.body.user_name == 'keyur') {
-        sess = req.session;        
-        sess.user_name = req.body.user_name;
-        res.redirect('/chat');
-
-    }
-    var html_dir = './public/';
-    //res.sendfile(html_dir + 'login.htm');
-});
-app.get('/chat', function (req, res, next) {
-    //res.render('index', { title: 'Express' });
-    sess = req.session;
-
-    console.log('chat-----------' + sess.user_name);
-    if (sess.user_name) {
-        res.end();
-    }
-    else {
-        res.redirect('/');
-    }
-    var html_dir = './public/';
-
-    //res.sendfile(html_dir + 'login.htm');
-});
-*/
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');

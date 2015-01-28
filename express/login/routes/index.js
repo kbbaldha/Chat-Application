@@ -36,7 +36,7 @@ router.use(session({ secret: 'ssshhhhh' }));
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
-router.get('/login', function (req, res, next) {
+router.get(['/','/login'], function (req, res, next) {
     //res.render('index', { title: 'Express' });
 
     var html_dir = './public/';

@@ -56,7 +56,6 @@ router.post('/login', function (req, res, next) {
                 });*/
                 if (rows.length > 0) {
                     console.log('allow to chat');
-                    userName = rows[0]['user_id'];
                     sess = req.session;
                     sess.user_name = req.body.user_name;
                     res.redirect('/chat');
@@ -196,5 +195,5 @@ function sendMessage(data, io) {
 
 
 module.exports = router;
-exports.addSocketInfoToDatabase = addSocketInfoToDatabase;
-exports.sendMessage = sendMessage;
+router.addSocketInfoToDatabase = addSocketInfoToDatabase;
+router.sendMessage = sendMessage;

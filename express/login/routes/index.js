@@ -74,15 +74,18 @@ router.get('/chat', function (req, res, next) {
 });
 
 router.get('/getUser', function (req, res, next) {
-
-    console.log('chat----++++-------' + req.session.user_name);
      res.send(req.session.user_name); 
 });
 
-
+router.get('/logout', function (req, res, next) {
+    console.log('logout');
+    req.session.destroy();
+    res.send('logout');   
+   
+});
 
  function addSocketInfoToDatabase(user, socketid, io) {
-     console.log('adds socket');
+    
     connection.query("UPDATE user_information SET socket_id = '" + socketid + "' WHERE user_id = '" + user + "';");
     connection.query("UPDATE user_information SET online = '" + 1 + "' WHERE user_id = '" + user + "';");
     updateOfflineMessages(user, socketid, io);

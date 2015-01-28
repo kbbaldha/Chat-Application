@@ -26,29 +26,22 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-/*app.use(function (req, res, next) {
-    req.db = db;
-    next();
-});*/
-
-
 app.use('/', routes);
 app.use('/users', users);
 
 
 io.sockets.on('connection', function (socket) {
 
-    //console.log('logged user' + socket.manager.handshaken[socket.id].query.loggeduser);
+    
     console.log('logged'+socket.handshake.query.loggeduser);
     routes.addSocketInfoToDatabase(socket.handshake.query.loggeduser, socket.id, io);
 
     socket.on('message_to_server', function (data) {
         routes.sendMessage(data, io);
-        //io.sockets.emit("message_to_client", { message: data["message"] });
-        //this.emit("message_to_client",{ message: data["message"] });
     });
     socket.on('disconnect', function (data) {
-        console.log('somebody is disconnected' + this);
+        //console.log('somebody is disconnected' + this);
+        routes.disconnectUser(this);
     });
 });
 

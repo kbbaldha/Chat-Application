@@ -32,11 +32,11 @@ router.post('/login', function (req, res, next) {
 });
 */
 var sess;
-router.use(session({ secret: 'ssshhhhh' }));
+router.use(session({ cookie: { path: '/', httpOnly: true, maxAge: null }, secret: 'ssshhhhh' }));
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
-router.get(['/','/login'], function (req, res, next) {
+router.get(['/login','/'], function (req, res, next) {
     //res.render('index', { title: 'Express' });
 
     var html_dir = './public/';
@@ -77,7 +77,6 @@ router.get('/getUsers', function (req, res, next) {
     });
 });
 router.get('/chat', function (req, res, next) {
-    
     sess = req.session;
 
 
@@ -188,7 +187,24 @@ function sendMessage(data, io) {
 
 }
 
+/**
+* Whenever the user is disconnected from the socket this function is called from app.js
+* Id is stored inside the passed object as obj.id
+*/
+function disconnectUser(data) {
+    connection.query("SELECT user_id FROM user_information WHERE socket_id='" + data.id + "';", function (error, rows, fields) {
+        if (rows.length > 0) {
+            var user = rows[0]['user_id'];
+            console.log(user + "disconnected");
+            
+        } else {
+            console.log("unknown user disconnected");
+        }
+    });
+}
+
 
 module.exports = router;
 router.addSocketInfoToDatabase = addSocketInfoToDatabase;
 router.sendMessage = sendMessage;
+router.disconnectUser = disconnectUser;

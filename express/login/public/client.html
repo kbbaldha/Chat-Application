@@ -90,6 +90,13 @@
                 width:70%;
                 border-radius: 5px;
              }
+            .logout {
+                float: right;
+                background-color: #444455;
+                color: #ffffff;
+                padding: 10px;
+                border-radius: 10px;
+            }
         </style>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script  src="/socket.io/socket.io.js"></script>
@@ -125,6 +132,20 @@
 			            connectToServer(string);
 			            setUser(string);
 			            getUsersOfApp();
+			        }
+			    }
+			    xmlhttp.send();
+			}
+			function logout() {
+			    var xmlhttp = new XMLHttpRequest();
+			    xmlhttp.open("GET", ChatApplication.SERVER_ADDRESS + "/logout", true);
+			    xmlhttp.onreadystatechange = function () {
+			        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+			            if (xmlhttp.responseText == 'logout') {
+			                window.location = ChatApplication.SERVER_ADDRESS + "/login";
+			            }
+			            console.log('loogged out');
+			            //setAppUsers();
 			        }
 			    }
 			    xmlhttp.send();
@@ -167,7 +188,7 @@
 			function setUser(name) {
 			    document.getElementById('user').innerHTML = 'welcome ' + name;
 			}
-
+			
 			function getChatWindowHTML(username) {
 			    var html = '<div id="friend_chat_'+username +'" class="friend_chat">' +
                  '<div id="friend_name" class="friend_name">' + username + '</div>' +
@@ -181,9 +202,9 @@
     </head>
     <body onload="getUserName()">
 		<div id="user"></div> 
-        
+        <div id="logout" class="logout" onclick="logout()">Logout</div>
         <div id="users_of_app" class="users_of_app"></div>
-        <div id="chatlog" class="chatlog">
+        <div id="chatlog" class="chatlog" >
             
         </div>
         

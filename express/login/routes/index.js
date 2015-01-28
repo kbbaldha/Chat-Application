@@ -71,7 +71,10 @@ router.post('/login', function (req, res, next) {
         });
 
 router.get('/getUsers', function (req, res, next) {
-    
+    connection.query("SELECT user_id FROM user_information;",
+            function (error, rows, fields) {
+                res.send(JSON.stringify(rows));
+    });
 });
 router.get('/chat', function (req, res, next) {
     

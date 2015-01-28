@@ -15,29 +15,13 @@ var bodyParser = require('body-parser'),
     });
 
 /* GET home page. */
-/*
-router.get('/login', function(req, res, next) {
-    //res.render('index', { title: 'Express' });
- 
-    var html_dir = './public/';
-    res.sendfile(html_dir + 'login.htm');
-});
 
-router.post('/login', function (req, res, next) {
-    //res.render('index', { title: 'Express' });
-
-    console.log(req.body.user_name);
-    var html_dir = './public/';
-    //res.sendfile(html_dir + 'login.htm');
-});
-*/
 var sess;
 router.use(session({ cookie: { path: '/', httpOnly: true, maxAge: null }, secret: 'ssshhhhh' }));
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
 router.get(['/login','/'], function (req, res, next) {
-    //res.render('index', { title: 'Express' });
 
     var html_dir = './public/';
     res.sendfile(html_dir + 'login.htm');
@@ -50,10 +34,7 @@ router.post('/login', function (req, res, next) {
     connection.query("SELECT * FROM user_information WHERE user_id = '" + req.body.user_name + "' AND user_pass = '" + req.body.user_pass + "';",
             function (error, rows, fields) {
 
-                /*  response.writeHead(200, {
-                "Content-Type": "text/plain",
-                'Access-Control-Allow-Origin' : '*'
-                });*/
+                
                 if (rows.length > 0) {
                     console.log('allow to chat');
                     sess = req.session;
@@ -71,7 +52,7 @@ router.post('/login', function (req, res, next) {
         });
 
 router.get('/getUsers', function (req, res, next) {
-    connection.query("SELECT user_id FROM user_information;",
+    connection.query("SELECT user_id,online FROM user_information;",
             function (error, rows, fields) {
                 res.send(JSON.stringify(rows));
     });
@@ -103,7 +84,7 @@ router.get('/getUser', function (req, res, next) {
  function addSocketInfoToDatabase(user, socketid, io) {
      console.log('adds socket');
     connection.query("UPDATE user_information SET socket_id = '" + socketid + "' WHERE user_id = '" + user + "';");
-    connection.query("UPDATE user_information SET online = '" + 0 + "' WHERE user_id = '" + user + "';");
+    connection.query("UPDATE user_information SET online = '" + 1 + "' WHERE user_id = '" + user + "';");
     updateOfflineMessages(user, socketid, io);
 }
 /**
@@ -136,26 +117,12 @@ function upload(response, postData) {
 }
 
 
-function getUsers(response) {
 
-    response.writeHead(200, { "Content-type": "text/plain" });
-    connection.query("SELECT user_id FROM user_information;",
-            function (error, rows, fields) {
-
-                response.write(JSON.stringify(rows));
-                response.end();
-
-            });
-
-}
 
 function sendMessage(data, io) {
     var callback = function (error, rows, fields) {
 
-        /*  response.writeHead(200, {
-        "Content-Type": "text/plain",
-        'Access-Control-Allow-Origin' : '*'
-        });*/
+        
         if (rows.length > 0) {
 
             var socketid = rows[0]['socket_id'];
@@ -165,26 +132,12 @@ function sendMessage(data, io) {
                 // The user if offline store his messages
                 console.log("client name is :" + data["clientName"]);
                 connection.query("INSERT INTO offline_messages  (user_id,friend_id,message) VALUES ('" + data["friend"] + "','" + data["clientName"] + "','" + data["message"] + "');");
-                /*                                                                                     
-                connection.query("SELECT message FROM offline_messages WHERE user_id = '" + data["friend"] + "';", function (error, rows, fields) {
-                if (rows.length > 0) {
-                console.log('going in the correct place');
-                jsonObj = JSON.parse(rows[0]['message']);
-                message.message = data["message"];
-                message.sentBy = data["clientName"];
-                jsonObj.push(message);
-                //connection.query("UPDATE offline_messages SET message = '" + data["message"] + "' WHERE user_id = '" + data["friend"] + "';");
-                connection.query("UPDATE offline_messages SET message = '" + JSON.stringify(jsonObj) + "' WHERE user_id = '" + data["friend"] +                                         "';");
-                }
-                });
-                */
 
             }
 
         }
 
         else {
-            //getFile(response, "invalid_login.html");
             console.log('no socket');
         }
     };
@@ -199,12 +152,13 @@ function sendMessage(data, io) {
 * Whenever the user is disconnected from the socket this function is called from app.js
 * Id is stored inside the passed object as obj.id
 */
-function disconnectUser(data) {
+function disconnectUser(data,io) {
     connection.query("SELECT user_id FROM user_information WHERE socket_id='" + data.id + "';", function (error, rows, fields) {
         if (rows.length > 0) {
             var user = rows[0]['user_id'];
             console.log(user + "disconnected");
-            
+            connection.query("UPDATE user_information SET online = '" + 0 + "' WHERE user_id = '" + user + "';");
+            io.sockets.emit("user_offline", { user_id: user });
         } else {
             console.log("unknown user disconnected");
         }

@@ -50,13 +50,19 @@
              }
              .user_list_name
              {
-                 position: relative;
+                float: left;
+             }
+             .user-status {
+                 float: right;
+             }
+            .user-list-name-container {
+                position: relative;
                 height: 20px;
                 padding: 5px;
                 border-bottom: 2px solid #444455;
                 line-height: 20px;
                 cursor: pointer;
-             }
+            }
              .user_list_heading
              {
                  position: relative;
@@ -107,6 +113,12 @@
 			        }
 			        $('#friend_chat_' + data['clientName']).find('.friend_chat_log').append('<div class="friend_chat_msg">' + data["message"] + '</div>');
 			    });
+			    socketio.on("user_offline", function (data) {
+			        $('#user_' + data.user_id + '-status').html('offline');
+			    });
+			    socketio.on("user_online", function (data) {
+			        $('#user_' + data.user_id + '-status').html('online');
+			    });
 			}
 			function sendMessage(element) {
 			    var friendname = element.id,
@@ -145,10 +157,13 @@
 			    var noOfUsers = users.length,
                     i = 0,
 			        output = '<div class="user_list_heading">List of users</div>',
-                    username;
+                    username, status;
 			    for (; i < noOfUsers; i++) {
 			        username = users[i]['user_id'];
-			        output += '<div id="user_' + username+ '" class="user_list_name" >' + username + "</div>";
+			        status = (users[i]['online'] == 0) ? "offline" : "online";
+			        output += '<div id="user_' + username + '-container" class="user-list-name-container" >';
+			        output += '<div id="user_' + username + '" class="user_list_name" >' + username + "</div>";
+			        output += '<div id="user_' + username + '-status" class="user-status" >'+status+'</div></div>';
 			    }
 			    document.getElementById('users_of_app').innerHTML = output;
 

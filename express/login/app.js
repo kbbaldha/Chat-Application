@@ -35,14 +35,15 @@ io.sockets.on('connection', function (socket) {
     
     console.log('logged'+socket.handshake.query.loggeduser);
     routes.addSocketInfoToDatabase(socket.handshake.query.loggeduser, socket.id, io);
-
+    io.sockets.emit("user_online", { user_id: socket.handshake.query.loggeduser });
     socket.on('message_to_server', function (data) {
         routes.sendMessage(data, io);
     });
     socket.on('disconnect', function (data) {
         //console.log('somebody is disconnected' + this);
-        routes.disconnectUser(this);
+        routes.disconnectUser(this,io);
     });
+    
 });
 
 

@@ -29,7 +29,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 
-
+io.use(function (socket, next) {
+    routes.sessionMiddleWare(socket, next);
+});
 io.sockets.on('connection', function (socket) {
 
     
@@ -37,6 +39,7 @@ io.sockets.on('connection', function (socket) {
     routes.addSocketInfoToDatabase(socket.handshake.query.loggeduser, socket.id, io);
     io.sockets.emit("user_online", { user_id: socket.handshake.query.loggeduser });
     socket.on('message_to_server', function (data) {
+        console.log(data.session);
         routes.sendMessage(data, io);
     });
     socket.on('disconnect', function (data) {

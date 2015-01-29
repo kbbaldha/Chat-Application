@@ -104,13 +104,16 @@
                 border-radius: 10px;
             }
         </style>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="/scripts/jquery-2.1.3.min.js"></script>
         <script  src="/socket.io/socket.io.js"></script>
         <script src="/scripts/constants.js"></script>
         <script type="text/javascript">
             var socketio,
                 clientName;
-			
+            window.onbeforeunload = tabClosefunction;
+            function tabClosefunction() {
+                logout();
+            }
 			function connectToServer(username) {
                 clientName = username;
                 socketio = io.connect(ChatApplication.SERVER_ADDRESS , { query: 'loggeduser='+ username });
@@ -126,6 +129,10 @@
 			    socketio.on("user_online", function (data) {
 			        $('#user_' + data.user_id + '-status').html('online');
 			    });
+			    socketio.on("logout_client", function (data) {
+			        window.location = ChatApplication.SERVER_ADDRESS + "/login";
+			    });
+			    
 			}
 			function sendMessage(element) {
 			    var friendname = element.id,

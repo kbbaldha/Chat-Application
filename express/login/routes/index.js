@@ -22,9 +22,14 @@ router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
 router.get(['/login','/'], function (req, res, next) {
-
-    var html_dir = './public/';
-    res.sendfile(html_dir + 'login.htm');
+   
+    if (req.session.user_name) {
+        res.redirect('/chat');
+    }
+    else {
+        var html_dir = './public/';
+        res.sendfile(html_dir + 'login.htm');
+    }
 });
 
 router.post('/login', function (req, res, next) {
@@ -85,7 +90,17 @@ router.get('/logout', function (req, res, next) {
 });
 
  function addSocketInfoToDatabase(user, socketid, io) {
-    
+     connection.query("SELECT * FROM user_information WHERE user_id = '" + user + "' AND online = '" + 1 + "';", function (error, rows, fields) {
+         if (rows.length > 0) {
+             var socketid;
+             for (var i = 0; i < rows.length; i++) {
+                 socketid = rows[i]["socket_id"];
+                 if (io.sockets.connected[socketid]) {
+                     io.sockets.connected[socketid].emit("logout_client", { message: "connected elsewhere" });
+                 }
+             }
+         }
+     });
     connection.query("UPDATE user_information SET socket_id = '" + socketid + "' WHERE user_id = '" + user + "';");
     connection.query("UPDATE user_information SET online = '" + 1 + "' WHERE user_id = '" + user + "';");
     updateOfflineMessages(user, socketid, io);

@@ -22,9 +22,13 @@ router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
 router.get(['/login','/'], function (req, res, next) {
-
-    var html_dir = './public/';
-    res.sendfile(html_dir + 'login.htm');
+    if (req.session.user_name) {
+        res.redirect('/chat');
+    }
+    else {
+        var html_dir = './public/';
+        res.sendfile(html_dir + 'login.htm');
+    }
 });
 
 router.post('/login', function (req, res, next) {

@@ -60,7 +60,10 @@ router.get('/signedOff', function (req, res, next) {
 });
 
 router.get('/getUsers', function (req, res, next) {
-    connection.query("SELECT user_id,online FROM user_information;",
+    var userid = req.session.user_name;
+
+         connection.query("SELECT user_id,user_fname,online FROM user_information WHERE user_id IN (SELECT friend_id from friend_list WHERE user_id = '" + userid + "');",
+   
             function (error, rows, fields) {
                 res.send(JSON.stringify(rows));
             });
@@ -82,7 +85,13 @@ router.get('/chat', function (req, res, next) {
 });
 
 router.get('/getUser', function (req, res, next) {
-    res.send(req.session.user_name);
+    var userName;
+    connection.query("SELECT user_id,user_fname FROM user_information WHERE user_id = '" + req.session.user_name + "';", function (error, rows, fields) {
+        if (rows.length > 0) {
+            res.send(JSON.stringify(rows));
+        }
+    });
+    
 });
 
 router.get('/logout', function (req, res, next) {
@@ -147,9 +156,10 @@ function sendMessage(data, io) {
 
         if (rows.length > 0) {
 
-            var socketid = rows[0]['socket_id'];
+            var socketid = rows[0]['socket_id'],
+                clientId = rows[0]['user_id'];
             if (io.sockets.connected[socketid]) {
-                io.sockets.connected[socketid].emit("message_to_client", { message: data["message"], clientName: data["clientName"] });
+                io.sockets.connected[socketid].emit("message_to_client", { message: data["message"], clientName: data["clientName"], clientId: clientId });
             } else {
                 // The user if offline store his messages
                 console.log("client name is :" + data["clientName"]);
@@ -166,7 +176,7 @@ function sendMessage(data, io) {
         }
     };
     // console.log('------------db query --------------');
-    connection.query("SELECT socket_id FROM user_information WHERE user_id = '" + data["friend"] + "';", callback);
+    connection.query("SELECT socket_id,user_id FROM user_information WHERE user_id = '" + data["friend"] + "';", callback);
 
 
 

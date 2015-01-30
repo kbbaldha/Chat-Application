@@ -9,119 +9,8 @@
         <script src="/scripts/jquery-2.1.3.min.js"></script>
         <script  src="/socket.io/socket.io.js"></script>
         <script src="/scripts/constants.js"></script>
-        <script type="text/javascript">
-            var socketio,
-                clientName;
-			
-			function connectToServer(username) {
-                clientName = username;
-                socketio = io.connect(ChatApplication.SERVER_ADDRESS , { query: 'loggeduser='+ username });
-			    socketio.on("message_to_client", function (data) {
-			        if ($('#friend_chat_' + data['clientName']).length == 0) {
-			            $('.chatlog').append(getChatWindowHTML(data['clientName']));
-			        }
-			        $('#friend_chat_' + data['clientName']).find('.friend_chat_log').append('<div class="friend_chat_msg">' + data["message"] + '</div>');
 			       
-			    });
-			    socketio.on("user_offline", function (data) {
-			        $('#user_' + data.user_id + '-status').html('offline');
-			    });
-			    socketio.on("user_online", function (data) {
-			        $('#user_' + data.user_id + '-status').html('online');
-			    });
-			    socketio.on("logout_client", function (data) {
-			        window.location = ChatApplication.SERVER_ADDRESS + "/signedOff";
-			    });
-			}
-			function sendMessage(element) {
-			    var friendname = element.id,
-                   inputbox = $('#friend_chat_' + element.id).find('input'),
-                   msg = inputbox.val();
-			        inputbox.val("");
-			    $('#friend_chat_' + element.id).find('.friend_chat_log').append('<div class="me_chat">' + msg + '</div>');
-			    socketio.emit("message_to_server", { message: msg, friend: friendname, clientName: clientName });
-			}
-
-			function getUserName() {
-			    var xmlhttp = new XMLHttpRequest();
-			    xmlhttp.open("GET", ChatApplication.SERVER_ADDRESS + "/getUser", true);
-			    xmlhttp.onreadystatechange = function () {
-			        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-			            var string = xmlhttp.responseText;
-			            console.log('the user is' + string);
-			            connectToServer(string);
-			            setUser(string);
-			            getUsersOfApp();
-			        }
-			    }
-			    xmlhttp.send();
-			}
-			function logout() {
-			    var xmlhttp = new XMLHttpRequest();
-			    xmlhttp.open("GET", ChatApplication.SERVER_ADDRESS + "/logout", true);
-			    xmlhttp.onreadystatechange = function () {
-			        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-			            if (xmlhttp.responseText == 'logout') {
-			                window.location = ChatApplication.SERVER_ADDRESS + "/login";
-			            }
-			            console.log('loogged out');
-			            //setAppUsers();
-			        }
-			    }
-			    xmlhttp.send();
-			}
-			function getUsersOfApp() {
-			    var xmlhttp = new XMLHttpRequest();
-			    xmlhttp.open("GET", ChatApplication.SERVER_ADDRESS + "/getUsers", true);
-			    xmlhttp.onreadystatechange = function () {
-			        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-			            setAppUsers(JSON.parse(xmlhttp.responseText));
-			           
-			            //setAppUsers();
-			        }
-			    }
-			    xmlhttp.send();
-			}
-			function setAppUsers(users) {
-			    var noOfUsers = users.length,
-                    i = 0,
-			        output = '<div class="user_list_heading">List of users</div>',
-                    username, status;
-			    for (; i < noOfUsers; i++) {
-			        username = users[i]['user_id'];
-			        status = (users[i]['online'] == 0) ? "offline" : "online";
-			        output += '<div id="user_' + username + '-container" class="user-list-name-container" >';
-			        output += '<div id="user_' + username + '" class="user_list_name" >' + username + "</div>";
-			        output += '<div id="user_' + username + '-status" class="user-status" >'+status+'</div></div>';
-			    }
-			    document.getElementById('users_of_app').innerHTML = output;
-
-			    $('.user_list_name').on('click', userClicked);
-
-			}
-			function userClicked(event) {
-			    var userName = event.target.getAttribute("id").replace("user_", "");
-			    if ($('#friend_chat_' + userName).length > 0) {
-			        return;
-			    }
-			    $('.chatlog').append(getChatWindowHTML(userName));
-
-
-			}
-			function setUser(name) {
-			    document.getElementById('user').innerHTML = 'welcome ' + name;
-			}
-			
-			function getChatWindowHTML(username) {
-			    var html = '<div id="friend_chat_'+username +'" class="friend_chat">' +
-                 '<div id="friend_name" class="friend_name">' + username + '</div>' +
-                '<input type="text" id="message_input"/>' + 
-                '<button id = "'+ username +'"onclick="sendMessage(this)">send</button>' +
-                '<div id="friend_chat_log" class="friend_chat_log"></div>' +
-            '</div>'
-			    return html;
-            }
-        </script>
+        
     </head>
     <body onload="getUserName()">
 		<div id="user"></div> 
@@ -131,8 +20,15 @@
         </div>
         <div id="notifications-container" class="notifications-container">
             <div class="notifications-heading">Notification</div>
-            <div class="notifications-holder"></div>
-            <div class="notification">keyur wants to be your friend</div>
+            <div class="notifications-holder">
+                <div class="notification">
+                    <div class="friend-req-sender">keyur wants to be your friend</div>
+                    <div class="add-button button-class">Add</div>
+                    <div class="cancel-button button-class">Cancel</div>
+                </div>
+            </div>
         </div> 
     </body>
+<script type="text/javascript" src="/scripts/mainscript.js">
+</script>
 </html>

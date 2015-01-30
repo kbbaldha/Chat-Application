@@ -6,11 +6,50 @@
 function bindEvents() {
 
     $('.add-button').on("click", friendRequestAccepted);
+   
 }
 
+
+function sendFriendRequest(event) {
+    console.log(' fsendFriendRequest  pted');
+    var friendId = $(event.target.parentElement).find('.friend-found-id').html();
+
+    $.post(ChatApplication.SERVER_ADDRESS + "/sendFriendRequest", { clientId: clientId, friendId: friendId }, function (result) {
+        console.log('result---------' + result);
+
+    });
+    
+}
+
+function searchUserByName(event) {
+    var searchName = $('#search_input').val();       
+
+    $.post(ChatApplication.SERVER_ADDRESS + "/searchFriend", {  searchName: searchName }, function (result) {
+        console.log(result);
+        result = JSON.parse(result);
+        var length = result.length,
+            i = 0,
+            htmlStr = '',
+            current,
+            $container = $('#search-result-container');
+        $container.html('');
+        for (; i < length; i++) {
+            current = result[i];
+            htmlStr = '<div class="friend-found"> \
+                    <div class="friend-found-name">' + current.user_fname + '</div> \
+                    <div class="friend-found-id">' + current.user_id + '</div> \
+                    <div class="send-request-button button-class">send friend request</div> \
+                </div>';
+            $container.append(htmlStr);
+        }
+       
+        $('.send-request-button').off("click", sendFriendRequest).on("click", sendFriendRequest);
+    });
+}
 function friendRequestAccepted(event) {
-
+    console.log(' friend request accepted');
 }
+
 function connectToServer() {
    
     socketio = io.connect(ChatApplication.SERVER_ADDRESS, { query: 'loggeduser=' + clientId });

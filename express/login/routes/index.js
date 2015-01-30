@@ -100,6 +100,40 @@ router.get('/logout', function (req, res, next) {
     res.send('logout');   
    
 });
+router.post('/searchFriend', function (req, res, next) {
+   
+    connection.query("SELECT user_id,user_fname FROM user_information WHERE user_fname LIKE '%" + req.body.searchName + "%';", function (error, rows, fields) {
+        if (rows.length > 0) {
+          
+            res.send(JSON.stringify(rows));
+        }
+        else {
+            res.send('No user found');
+        }
+    });
+
+  
+});
+router.post('/sendFriendRequest', function (req, res, next) {
+    var io = req.io;
+
+    connection.query("SELECT socket_id FROM user_information WHERE user_id = '" + req.body.friendId + "';", function (error, rows, fields) {
+        if (rows.length > 0) {
+            
+           // res.send(JSON.stringify(rows));
+            var socketid = rows[0]['socket_id'];
+            
+            io.sockets.connected[socketid].emit("friend_request", rows[0]['socket_id']);
+        }
+        else {
+            res.send('No user found');
+        }
+    });
+    
+
+    
+
+});
 
  function addSocketInfoToDatabase(user, socketid, io) {
     

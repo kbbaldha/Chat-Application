@@ -54,6 +54,10 @@ router.post('/login', function (req, res, next) {
             });
 
         });
+router.get('/signedOff',function (req, res, next) {
+    var html_dir = './public/';
+    res.sendfile(html_dir + 'signed_off.html');
+});
 
 router.get('/getUsers', function (req, res, next) {
     connection.query("SELECT user_id,online FROM user_information;",
@@ -90,9 +94,20 @@ router.get('/logout', function (req, res, next) {
 
  function addSocketInfoToDatabase(user, socketid, io) {
     
-    connection.query("UPDATE user_information SET socket_id = '" + socketid + "' WHERE user_id = '" + user + "';");
-    connection.query("UPDATE user_information SET online = '" + 1 + "' WHERE user_id = '" + user + "';");
-    updateOfflineMessages(user, socketid, io);
+     connection.query("SELECT * FROM user_information WHERE user_id = '" + user + "' AND online = '" + 1 + "';", function (error, rows, fields) {
+         if (rows.length > 0) {
+             var socid;
+             for (var i = 0; i < rows.length; i++) {
+                 socid = rows[i]["socket_id"];
+                 if (io.sockets.connected[socid]) {
+                     io.sockets.connected[socid].emit("logout_client", { message: "connected elsewhere" });
+                 }
+             }
+         }
+     });
+     connection.query("UPDATE user_information SET socket_id = '" + socketid + "' WHERE user_id = '" + user + "';");
+     connection.query("UPDATE user_information SET online = '" + 1 + "' WHERE user_id = '" + user + "';");
+     updateOfflineMessages(user, socketid, io);
 }
 /**
 * Updates the offline messages of the user

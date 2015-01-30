@@ -1,108 +1,10 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="stylesheet" type="text/css" href="/stylesheets/clientStyle.css">
         <style type="text/css">
-            .users_of_app{
-                
-                position: absolute;
-/* left: 300px; */
-                width: 150px;
-                height: 450px;
-                overflow: auto;
-                border-radius: 5px;
-                border: 2px solid #444455;
-            }
             
-                
-            .chatlog
-            {
-                position:relative;
-                margin-top:140px;
-                left: 200px;
-            }
-             .friend_chat
-             {
-                margin-right: 10px;
-                width: 200px;
-                height: 400px;
-                float: left;
-                margin-bottom: 10px;
-                position: relative;
-                display: inline-block;
-                border-radius: 6px;
-                border: 2px solid #0F2958;
-             } 
-             .friend_name
-             {
-                 position: relative;
-                 height: 34px;
-                background-color: #0F2958;
-                text-align: center;
-                color: #ffffff;
-                font-weight: bold;
-                font-size: 20px;
-             } 
-             .friend_chat_log
-             {
-                 position: relative;
-                overflow-y: scroll;
-                height: 322px;
-             }
-             .user_list_name
-             {
-                float: left;
-             }
-             .user-status {
-                 float: right;
-             }
-            .user-list-name-container {
-                position: relative;
-                height: 20px;
-                padding: 5px;
-                border-bottom: 2px solid #444455;
-                line-height: 20px;
-                cursor: pointer;
-            }
-             .user_list_heading
-             {
-                 position: relative;
-                height: 40px;
-                background-color: #444455;
-                text-align: center;
-                color: #ffffff;
-                font-weight: bold;
-                font-size: 20px;
-                line-height: 40px;
-             }
-             .me_chat
-             {
-                 position: relative;
-                text-align: right;
-                padding-right: 10px;
-                border-top: 2px solid #ffffff;
-                background-color: #365184;
-                color: #ffffff;
-                width:70%;
-                margin-left:24%;
-                border-radius: 5px;
-             }   
-             .friend_chat_msg
-             {
-                position:relative;
-                background-color: #57709E;
-                padding-left: 10px;
-                border-top: 2px solid #ffffff;
-                color: #ffffff;
-                width:70%;
-                border-radius: 5px;
-             }
-            .logout {
-                float: right;
-                background-color: #444455;
-                color: #ffffff;
-                padding: 10px;
-                border-radius: 10px;
-            }
+           
         </style>
         <script src="/scripts/jquery-2.1.3.min.js"></script>
         <script  src="/socket.io/socket.io.js"></script>
@@ -125,6 +27,9 @@
 			    });
 			    socketio.on("user_online", function (data) {
 			        $('#user_' + data.user_id + '-status').html('online');
+			    });
+			    socketio.on("logout_client", function (data) {
+			        window.location = ChatApplication.SERVER_ADDRESS + "/signedOff";
 			    });
 			}
 			function sendMessage(element) {
@@ -222,8 +127,11 @@
         <div id="logout" class="logout" onclick="logout()">Logout</div>
         <div id="users_of_app" class="users_of_app"></div>
         <div id="chatlog" class="chatlog" >
-            
         </div>
-        
+        <div id="notifications-container" class="notifications-container">
+            <div class="notifications-heading">Notification</div>
+            <div class="notifications-holder"></div>
+            <div class="notification">keyur wants to be your friend</div>
+        </div> 
     </body>
 </html>

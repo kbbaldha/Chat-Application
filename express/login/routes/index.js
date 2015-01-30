@@ -21,7 +21,7 @@ router.use(session({ cookie: { path: '/', httpOnly: true, maxAge: null }, secret
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
-router.get(['/login','/'], function (req, res, next) {
+router.get(['/login', '/'], function (req, res, next) {
     if (req.session.user_name) {
         res.redirect('/chat');
     }
@@ -32,13 +32,13 @@ router.get(['/login','/'], function (req, res, next) {
 });
 
 router.post('/login', function (req, res, next) {
-   
-   
+
+
 
     connection.query("SELECT * FROM user_information WHERE user_id = '" + req.body.user_name + "' AND user_pass = '" + req.body.user_pass + "';",
             function (error, rows, fields) {
 
-                
+
                 if (rows.length > 0) {
                     console.log('allow to chat');
                     sess = req.session;
@@ -53,8 +53,8 @@ router.post('/login', function (req, res, next) {
                 }
             });
 
-        });
-router.get('/signedOff',function (req, res, next) {
+});
+router.get('/signedOff', function (req, res, next) {
     var html_dir = './public/';
     res.sendfile(html_dir + 'signed_off.html');
 });
@@ -66,7 +66,7 @@ router.get('/getUsers', function (req, res, next) {
    
             function (error, rows, fields) {
                 res.send(JSON.stringify(rows));
-    });
+            });
 });
 router.get('/chat', function (req, res, next) {
     sess = req.session;
@@ -79,7 +79,7 @@ router.get('/chat', function (req, res, next) {
     else {
         res.redirect('/login');
     }
-   
+
 
     //res.sendfile(html_dir + 'login.htm');
 });
@@ -97,8 +97,8 @@ router.get('/getUser', function (req, res, next) {
 router.get('/logout', function (req, res, next) {
     console.log('logout');
     req.session.destroy();
-    res.send('logout');   
-   
+    res.send('logout');
+
 });
 router.post('/searchFriend', function (req, res, next) {
    
@@ -135,22 +135,22 @@ router.post('/sendFriendRequest', function (req, res, next) {
 
 });
 
- function addSocketInfoToDatabase(user, socketid, io) {
-    
-     connection.query("SELECT * FROM user_information WHERE user_id = '" + user + "' AND online = '" + 1 + "';", function (error, rows, fields) {
-         if (rows.length > 0) {
-             var socid;
-             for (var i = 0; i < rows.length; i++) {
-                 socid = rows[i]["socket_id"];
-                 if (io.sockets.connected[socid]) {
-                     io.sockets.connected[socid].emit("logout_client", { message: "connected elsewhere" });
-                 }
-             }
-         }
-     });
-     connection.query("UPDATE user_information SET socket_id = '" + socketid + "' WHERE user_id = '" + user + "';");
-     connection.query("UPDATE user_information SET online = '" + 1 + "' WHERE user_id = '" + user + "';");
-     updateOfflineMessages(user, socketid, io);
+function addSocketInfoToDatabase(user, socketid, io) {
+
+    connection.query("SELECT * FROM user_information WHERE user_id = '" + user + "' AND online = '" + 1 + "';", function (error, rows, fields) {
+        if (rows.length > 0) {
+            var socid;
+            for (var i = 0; i < rows.length; i++) {
+                socid = rows[i]["socket_id"];
+                if (io.sockets.connected[socid]) {
+                    io.sockets.connected[socid].emit("logout_client", { message: "connected elsewhere" });
+                }
+            }
+        }
+    });
+    connection.query("UPDATE user_information SET socket_id = '" + socketid + "' WHERE user_id = '" + user + "';");
+    connection.query("UPDATE user_information SET online = '" + 1 + "' WHERE user_id = '" + user + "';");
+    updateOfflineMessages(user, socketid, io);
 }
 /**
 * Updates the offline messages of the user
@@ -187,7 +187,7 @@ function upload(response, postData) {
 function sendMessage(data, io) {
     var callback = function (error, rows, fields) {
 
-        
+
         if (rows.length > 0) {
 
             var socketid = rows[0]['socket_id'],
@@ -198,8 +198,10 @@ function sendMessage(data, io) {
                 // The user if offline store his messages
                 console.log("client name is :" + data["clientName"]);
                 connection.query("INSERT INTO offline_messages  (user_id,friend_id,message) VALUES ('" + data["friend"] + "','" + data["clientName"] + "','" + data["message"] + "');");
-
             }
+
+            // Store the message in the conversation history
+            addMessageToConversationHistor(data["clientName"], data["friend"], data["message"]);
 
         }
 
@@ -214,11 +216,74 @@ function sendMessage(data, io) {
 
 }
 
+function addMessageToConversationHistor(sender, receiver, message) {
+    connection.query("SELECT conversation_id FROM friend_list WHERE user_id='" + sender + "' AND friend_id = '" + receiver + "';",
+        function (error, rows, fields) {
+            if (rows.length > 0) {
+                var conId = rows[0]['conversation_id'],
+                    users = conId.split('#'),
+                    date = getTodaysDate(),
+                    myData, filename = './conversation-history/' + conId + '/' + date + '.json';
+
+                console.log("filename is ::::::" + filename);
+                if (users[0] === sender) {
+                    myData = { "1": message };
+                } else {
+                    myData = { "2": message };
+                }
+                // Check to see if the folder is there else create
+                fs.mkdir('./conversation-history/' + conId, function (err) {
+                    if (err) {
+                        if (err.code == 'EEXIST') {
+
+                        } else {
+                            console.log("Folder creation error");
+                        }
+                    }
+                });
+                // Check if there is a date with the current date
+                fs.exists(filename, function (exists) {
+                    if (exists) {
+                        // Modify the file
+                        fs.appendFile(filename, ',' + JSON.stringify(myData, null, 4), function (err) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                console.log("JSON appended to " + filename);
+                            }
+                        });
+                    } else {
+                        // Add row to table and and 
+                        connection.query("INSERT INTO conversation_history (conversation_id,date) VALUES ('" + conId + "','" + date + "');");
+                        // create a file & add the message
+                        fs.writeFile(filename, JSON.stringify(myData, null, 4), function (err) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                console.log("JSON saved to " + filename);
+                            }
+                        });
+
+                    }
+                });
+            }
+        });
+}
+
+function getTodaysDate() {
+    var str = "";
+    var date = new Date();
+    str += date.getDate() + "-";
+    str += (date.getMonth() + 1) + "-";
+    str += date.getFullYear();
+
+    return str;
+}
 /**
 * Whenever the user is disconnected from the socket this function is called from app.js
 * Id is stored inside the passed object as obj.id
 */
-function disconnectUser(data,io) {
+function disconnectUser(data, io) {
     connection.query("SELECT user_id FROM user_information WHERE socket_id='" + data.id + "';", function (error, rows, fields) {
         if (rows.length > 0) {
             var user = rows[0]['user_id'];

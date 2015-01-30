@@ -11,7 +11,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
-var server = app.listen(3030,'192.168.9.45');
+var server = app.listen(3030,'192.168.1.118');
 var io = require('socket.io').listen(server);
 
 // view engine setup

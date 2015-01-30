@@ -100,10 +100,10 @@
                 border-radius: 10px;
             }
             .notifications-container {
-                background-color: green;
-                width: 190px;
+                width: 240px;
                 height: 500px;
                 float: right;
+                border: 2px solid #444455;
                 border-radius: 10px;
             }
             .notifications-heading {
@@ -118,6 +118,30 @@
                 line-height: 40px;
             }
             .notifications-holder {
+                padding:5px;
             }
             .notification {
+                position:relative;
+
             } 
+            .friend-req-sender{
+              position: relative;
+                text-align: center;
+                padding: 2px;
+            }
+            .add-button{
+                display: inline-block;
+                position: relative;
+                margin-left: 5px;
+            } 
+            .cancel-button{
+                display: inline-block;
+                position: relative;
+                float:right;
+                margin-right: 5px;
+            }
+            .button-class{
+                background-color: #788763;
+                padding: 5px;
+                border-radius: 4px;
+            }

@@ -21,6 +21,7 @@
 			            $('.chatlog').append(getChatWindowHTML(data['clientName']));
 			        }
 			        $('#friend_chat_' + data['clientName']).find('.friend_chat_log').append('<div class="friend_chat_msg">' + data["message"] + '</div>');
+			       
 			    });
 			    socketio.on("user_offline", function (data) {
 			        $('#user_' + data.user_id + '-status').html('offline');

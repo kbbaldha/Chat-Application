@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/sendFriendRequest', function (req, res, next) {
+app.use(['/sendFriendRequest','/friendRequestAccepted'], function (req, res, next) {
     req.io = io;
     next();
 });

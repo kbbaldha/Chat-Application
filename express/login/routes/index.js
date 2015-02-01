@@ -101,8 +101,8 @@ router.get('/logout', function (req, res, next) {
 
 });
 router.post('/searchFriend', function (req, res, next) {
-   
-    connection.query("SELECT user_id,user_fname FROM user_information WHERE user_fname LIKE '%" + req.body.searchName + "%';", function (error, rows, fields) {
+
+    connection.query("SELECT user_id,user_fname FROM user_information WHERE user_fname LIKE '%" + req.body.searchName + "%' AND user_id NOT IN ( select friend_id from friend_list WHERE user_id='" + req.session.user_name + "');", function (error, rows, fields) {
         if (rows.length > 0) {
           
             res.send(JSON.stringify(rows));
@@ -112,26 +112,89 @@ router.post('/searchFriend', function (req, res, next) {
         }
     });
 
-  
+
 });
+router.post('/friendRequestAccepted', function (req, res, next) {
+
+    var clId = req.body.clientId,
+         frId = req.body.friendId,
+         io = req.io;
+
+    connection.query("INSERT INTO friend_list (user_id,friend_id) VALUES ('" + clId + "','" + frId + "');");
+    connection.query("INSERT INTO friend_list (user_id,friend_id) VALUES ('" + frId + "','" + clId + "');");
+    connection.query("SELECT socket_id FROM user_information WHERE user_id = '" + frId + "';", function (error, rows, fields) {
+        if (rows.length > 0) {
+
+            // res.send(JSON.stringify(rows));
+            var socketid = rows[0]['socket_id'],
+                 socket = io.sockets.connected[socketid];
+            if (socket) {
+
+                connection.query("SELECT user_fname FROM user_information WHERE user_id = '" + clId + "';",
+                 function (error, rows, fields) {
+                     if (rows.length > 0) {
+
+                         socket.emit("friend_request_accepted", { friend_name: rows[0]["user_fname"] });
+                         
+                     }
+
+                 });
+
+            }
+            else {
+                connection.query("INSERT INTO friend_list (user_id,friend_id) VALUES ('" + req.body.clientId + "','" + req.body.friendId + "');");
+
+
+                res.send('friendReqAddedToDb');
+            }
+        }
+        else {
+            res.send('no friend  found');
+        }
+    });
+
+
+    res.send('friendAdded');
+
+
+});
+
 router.post('/sendFriendRequest', function (req, res, next) {
     var io = req.io;
 
     connection.query("SELECT socket_id FROM user_information WHERE user_id = '" + req.body.friendId + "';", function (error, rows, fields) {
         if (rows.length > 0) {
-            
-           // res.send(JSON.stringify(rows));
-            var socketid = rows[0]['socket_id'];
-            
-            io.sockets.connected[socketid].emit("friend_request", rows[0]['socket_id']);
+
+            // res.send(JSON.stringify(rows));
+            var socketid = rows[0]['socket_id'],
+                 socket = io.sockets.connected[socketid];
+            if (socket) {
+
+                connection.query("SELECT user_fname FROM user_information WHERE user_id = '" + req.body.clientId + "';",
+                 function (error, rows, fields) {
+                     if (rows.length > 0) {
+
+                         socket.emit("friend_request", { friend_name: rows[0]["user_fname"], friend_id: req.body.clientId });
+                         res.send('friendReqSent');
+                     }
+
+                 });
+
+            }
+            else {
+                connection.query("INSERT INTO friend_list (user_id,friend_id) VALUES ('" + req.body.clientId + "','" + req.body.friendId + "');");
+
+
+                res.send('friendReqAddedToDb');
+            }
         }
         else {
-            res.send('No user found');
+            res.send('no friend  found');
         }
     });
-    
 
-    
+
+
 
 });
 

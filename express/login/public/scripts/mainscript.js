@@ -5,20 +5,21 @@
 
 function bindEvents() {
 
-    $('.add-button').on("click", friendRequestAccepted);
+   // $('.add-button').on("click", friendRequestAccepted);
    
 }
 
 
 function sendFriendRequest(event) {
     console.log(' fsendFriendRequest  pted');
-    var friendId = $(event.target.parentElement).find('.friend-found-id').html();
+    var containerElement = $(event.target.parentElement),
+        friendId = containerElement.find('.friend-found-id').html();
 
     $.post(ChatApplication.SERVER_ADDRESS + "/sendFriendRequest", { clientId: clientId, friendId: friendId }, function (result) {
-        console.log('result---------' + result);
-
+        if (result == 'friendReqSent') {
+            $('.friend-found').find('.' + friendId).parent().html('Friend Request Sent').fadeOut(1000, function () { $(this).remove(); });
+        }
     });
-    
 }
 
 function searchUserByName(event) {
@@ -37,7 +38,7 @@ function searchUserByName(event) {
             current = result[i];
             htmlStr = '<div class="friend-found"> \
                     <div class="friend-found-name">' + current.user_fname + '</div> \
-                    <div class="friend-found-id">' + current.user_id + '</div> \
+                    <div class="friend-found-id '+ current.user_id + '">' + current.user_id + '</div> \
                     <div class="send-request-button button-class">send friend request</div> \
                 </div>';
             $container.append(htmlStr);
@@ -46,8 +47,15 @@ function searchUserByName(event) {
         $('.send-request-button').off("click", sendFriendRequest).on("click", sendFriendRequest);
     });
 }
-function friendRequestAccepted(event) {
-    console.log(' friend request accepted');
+function friendRequestAddClicked(event) {
+    var friendId = event.target.classList[2];
+    $.post(ChatApplication.SERVER_ADDRESS + "/friendRequestAccepted", { clientId: clientId, friendId: friendId }, function (result) {
+        console.log('result---------' + result);
+        if (result == 'friendAdded') {
+            getUsersOfApp();
+            $('.notification').find('.' + friendId).parent().html('Friend Added').fadeOut(1000, function () { $(this).remove(); });
+        }
+    });
 }
 
 function connectToServer() {
@@ -68,6 +76,30 @@ function connectToServer() {
     socketio.on("logout_client", function (data) {
         window.location = ChatApplication.SERVER_ADDRESS + "/signedOff";
     });
+    socketio.on("friend_request", function (data) {
+        friendRequestReceived(data);
+    });
+    socketio.on("friend_request_accepted", function (data) {
+        friendRequestAccepted(data);
+    });
+}
+function friendRequestAccepted(data) {
+    var htmlStr = '<div  class="friend-request-accepted-notification">' + data.friend_name + ' accepted your friend request.</div>'
+    $('#notification-holder').prepend(htmlStr);
+    getUsersOfApp();
+}
+function friendRequestReceived(data) {
+
+    
+
+    var htmlStr = '<div class="notification">' +
+                    '<div class="friend-req-sender">' + data.friend_name + ' wants to be your friend</div>' +
+                    '<div class="add-button button-class ' + data.friend_id + '">Add</div>' +
+                    '<div class="cancel-button button-class">Cancel</div>' +
+                '</div>';
+
+    $('#notification-holder').append(htmlStr);
+    $('.add-button').off("click", friendRequestAddClicked).on("click", friendRequestAddClicked);
 }
 function sendMessage(element) {
     var friendname = element.id,

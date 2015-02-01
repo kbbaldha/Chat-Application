@@ -172,3 +172,9 @@
             .send-request-button{
                 display: inline-block;
             }
+            .friend-request-accepted-notification
+            {
+                background-color: antiquewhite;
+                padding: 5px;
+                text-align: center;
+            }

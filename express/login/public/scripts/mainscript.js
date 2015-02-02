@@ -88,6 +88,7 @@ function friendRequestAccepted(data) {
     $('#notification-holder').prepend(htmlStr);
     getUsersOfApp();
 }
+
 function friendRequestReceived(data) {
 
     
@@ -100,6 +101,19 @@ function friendRequestReceived(data) {
 
     $('#notification-holder').append(htmlStr);
     $('.add-button').off("click", friendRequestAddClicked).on("click", friendRequestAddClicked);
+}
+function getNotifications() {
+    $.post(ChatApplication.SERVER_ADDRESS + "/getNotification", {  }, function (result) {
+        var data = JSON.parse(result),
+            noOfRequests = data.length,
+            i=0,
+            currentData;
+        for (; i < noOfRequests; i++) {
+            currentData = data[i];
+            friendRequestReceived({ friend_name: currentData.user_fname, friend_id: currentData.user_id });
+        }
+        
+    });
 }
 function sendMessage(element) {
     var friendname = element.id,
@@ -121,6 +135,7 @@ function getUserName() {
             connectToServer();
             setUser(clientName);
             getUsersOfApp();
+            getNotifications();
         }
     }
     xmlhttp.send();

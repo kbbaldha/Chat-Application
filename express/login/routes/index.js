@@ -142,11 +142,11 @@ router.post('/friendRequestAccepted', function (req, res, next) {
 
             }
             else {
-                connection.query("INSERT INTO friend_list (user_id,friend_id) VALUES ('" + req.body.clientId + "','" + req.body.friendId + "');");
+                console.log('add notification to db');
+                res.send('accepted friend notification');
 
-
-                res.send('friendReqAddedToDb');
             }
+          
         }
         else {
             res.send('no friend  found');
@@ -182,8 +182,8 @@ router.post('/sendFriendRequest', function (req, res, next) {
 
             }
             else {
-                connection.query("INSERT INTO friend_list (user_id,friend_id) VALUES ('" + req.body.clientId + "','" + req.body.friendId + "');");
-
+                
+                connection.query("INSERT INTO pending_friend_request (user_id,friend_id) VALUES ('" +  req.body.clientId  + "','" + req.body.friendId + "');");
 
                 res.send('friendReqAddedToDb');
             }
@@ -194,6 +194,20 @@ router.post('/sendFriendRequest', function (req, res, next) {
     });
 
 
+
+
+});
+router.post('/getNotification', function (req, res, next) {
+
+    connection.query("SELECT user_id,user_fname FROM user_information WHERE user_id IN ( SELECT user_id from pending_friend_request WHERE friend_id = '" + req.session.user_name + "');", function (error, rows, fields) {
+        if (rows.length > 0) {
+
+            res.send(JSON.stringify(rows));
+        }
+        else {
+            res.send('No Pending Requests');
+        }
+    });
 
 
 });

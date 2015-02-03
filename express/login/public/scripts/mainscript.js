@@ -49,9 +49,12 @@ function searchUserByName(event) {
 }
 function friendRequestAddClicked(event) {
     var friendId = event.target.classList[2];
+
+    /* TODO :- disable add button*/
     $.post(ChatApplication.SERVER_ADDRESS + "/friendRequestAccepted", { clientId: clientId, friendId: friendId }, function (result) {
         console.log('result---------' + result);
-        if (result == 'friendAdded') {
+        if (result == 'accepted-friend-notification') {
+           
             getUsersOfApp();
             $('.notification').find('.' + friendId).parent().html('Friend Added').fadeOut(1000, function () { $(this).remove(); });
         }
@@ -84,11 +87,13 @@ function connectToServer() {
     });
 }
 function friendRequestAccepted(data) {
-    var htmlStr = '<div  class="friend-request-accepted-notification">' + data.friend_name + ' accepted your friend request.</div>'
-    $('#notification-holder').prepend(htmlStr);
+    generateFriendRequestAcceptedNotification(data.friend_name);
     getUsersOfApp();
 }
-
+function generateFriendRequestAcceptedNotification(friendName){
+    var htmlStr = '<div  class="friend-request-accepted-notification">' + friendName + ' accepted your friend request.</div>'
+    $('#notification-holder').prepend(htmlStr);
+}
 function friendRequestReceived(data) {
 
     
@@ -110,7 +115,12 @@ function getNotifications() {
             currentData;
         for (; i < noOfRequests; i++) {
             currentData = data[i];
-            friendRequestReceived({ friend_name: currentData.user_fname, friend_id: currentData.user_id });
+            if (currentData.type == 0) {
+                friendRequestReceived({ friend_name: currentData.user_fname, friend_id: currentData.user_id });
+            }
+            else {
+                generateFriendRequestAcceptedNotification(currentData.user_fname);
+            }
         }
         
     });

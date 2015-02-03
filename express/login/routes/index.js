@@ -142,8 +142,14 @@ router.post('/friendRequestAccepted', function (req, res, next) {
 
             }
             else {
-                console.log('add notification to db');
-                res.send('accepted friend notification');
+                console.log("INSERT INTO pending_friend_request (user_id,friend_id,type) VALUES ('" + clId + "','" + frId + "',1);");
+                connection.query("INSERT INTO pending_friend_request (user_id,friend_id,type) VALUES ('" + clId + "','" + frId + "',1);", function (err, rows, fields) {
+                    if (err) {
+                        console.log('-------------------------err-----------' + err);
+                        throw err;
+                    }
+                });
+                res.send('accepted-friend-notification');
 
             }
           
@@ -152,9 +158,6 @@ router.post('/friendRequestAccepted', function (req, res, next) {
             res.send('no friend  found');
         }
     });
-
-
-    res.send('friendAdded');
 
 
 });
@@ -183,9 +186,9 @@ router.post('/sendFriendRequest', function (req, res, next) {
             }
             else {
                 
-                connection.query("INSERT INTO pending_friend_request (user_id,friend_id) VALUES ('" +  req.body.clientId  + "','" + req.body.friendId + "');");
-
-                res.send('friendReqAddedToDb');
+                  connection.query("INSERT INTO pending_friend_request (user_id,friend_id,type) VALUES ('" +  req.body.clientId  + "','" + req.body.friendId + "',0);");
+                    /* Request added to database*/
+                  res.send('friendReqSent');
             }
         }
         else {
@@ -199,10 +202,12 @@ router.post('/sendFriendRequest', function (req, res, next) {
 });
 router.post('/getNotification', function (req, res, next) {
 
-    connection.query("SELECT user_id,user_fname FROM user_information WHERE user_id IN ( SELECT user_id from pending_friend_request WHERE friend_id = '" + req.session.user_name + "');", function (error, rows, fields) {
+    connection.query("SELECT user_id,user_fname,type FROM user_information NATURAL JOIN pending_friend_request  WHERE friend_id= '" + req.session.user_name + "';", function (error, rows, fields) {
         if (rows.length > 0) {
-
-            res.send(JSON.stringify(rows));
+            var rowJson = JSON.stringify(rows);
+            console.log("DELETE FROM pending_friend_request WHERE friend_id= '" + req.session.user_name + "';");
+            connection.query("DELETE FROM pending_friend_request WHERE friend_id= '" + req.session.user_name + "';");
+            res.send(rowJson);
         }
         else {
             res.send('No Pending Requests');

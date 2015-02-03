@@ -58,7 +58,17 @@ router.get('/signedOff', function (req, res, next) {
     var html_dir = './public/';
     res.sendfile(html_dir + 'signed_off.html');
 });
+router.post('/books', function (req, res, next) {
+    console.log(req.body);
+    res.json({ "foo": "bar" });
+    //res.send('added');
+});
 
+router.put('/books', function (req, res, next) {
+    console.log('put req ------ ' + req.body);
+    res.json({ "foo": "bar" });
+    //res.send('added');
+});
 router.get('/getUsers', function (req, res, next) {
     var userid = req.session.user_name;
 

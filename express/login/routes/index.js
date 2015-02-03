@@ -357,6 +357,72 @@ function getTodaysDate() {
     return str;
 }
 /**
+* Returns the closest date to the current date from the folder
+*/
+function getClosestDate(folderStructure, curDate, res) {
+    var splitDate = curDate.split('-'),
+        date = splitDate[0],
+        month = splitDate[1], parsedDate, closestVal=0, diffDays,closestDiffDays,
+        year = splitDate[2], i = 0, j, k, curFile, splitFile;
+
+    fs.readdir(folderStructure + '/', function (err, files) {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        console.log(files);
+        for (; i < files.length; i++) {
+            curFile = files[i];
+            curFile = curFile.replace('.json', '');
+            console.log(' Current File is:' + curFile);
+            splitFile = curFile.split('-');
+            parsedDate = new Date(parseInt(splitFile[2]), parseInt(splitFile[1]) - 1, parseInt(splitFile[0]));
+            var timeDiff = Math.abs(parsedDate.getTime() - new Date().getTime());
+            diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            if (i === 0) {
+                closestDiffDays = diffDays;
+            }
+            if (diffDays < closestDiffDays) {
+                closestVal = i;
+            }
+        }
+        returnLastFileData(folderStructure + '/' + files[closestVal],res);
+    });
+}
+
+function returnLastFileData(filename, res) {
+    fs.readFile(filename, { encoding: 'utf-8' }, function (err, data) {
+        if (!err) {
+            res.json('['+data+']');
+        }
+    });
+}
+
+router.post('/getLastDayConversation', function (req, res, next) {
+    var userid = req.session.user_name;
+    console.log('inside getLastDayConversation in server');
+    connection.query("SELECT conversation_id FROM friend_list WHERE user_id='" + userid + "' AND friend_id = '" + req.body.friendId + "';",
+        function (error, rows, fields) {
+            if (rows.length > 0) {
+                var conId = rows[0]['conversation_id'],
+                    users = conId.split('#'),
+                    date = getTodaysDate(), lastFileName,
+                    myData, folderStructure = './conversation-history/' + conId,
+                    filename = folderStructure + '/' + date + '.json';
+
+                // Check if there is a conversation history for these users
+                fs.exists(folderStructure, function (exists) {
+                    if (exists) {
+                        getClosestDate(folderStructure, date, res);
+                    } else {
+                        // There is no conversation history
+                    }
+                });
+            }
+        });
+});
+
+/**
 * Whenever the user is disconnected from the socket this function is called from app.js
 * Id is stored inside the passed object as obj.id
 */

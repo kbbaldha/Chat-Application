@@ -121,7 +121,7 @@ function sendMessage(element) {
        msg = inputbox.val();
     inputbox.val("");
     $('#friend_chat_' + element.id).find('.friend_chat_log').append('<div class="me_chat">' + msg + '</div>');
-    socketio.emit("message_to_server", { message: msg, friend: friendname, clientName: clientName });
+    socketio.emit("message_to_server", { message: msg, friend: friendname, clientName: clientId });
 }
 
 function getUserName() {
@@ -190,8 +190,7 @@ function userClicked(event) {
         return;
     }
     $('.chatlog').append(getChatWindowHTML(event.target.textContent, userId));
-
-
+    displayLastDayConversation(userId);
 }
 function setUser(name) {
     document.getElementById('user').innerHTML = 'welcome ' + name;
@@ -205,6 +204,24 @@ function getChatWindowHTML(username,userid) {
     '<div id="friend_chat_log" class="friend_chat_log"></div>' +
 '</div>'
     return html;
+}
+/**
+* Displays the Last Day conversation of the user
+* userId The id of the friend
+*/
+function displayLastDayConversation(userId) {
+    console.log('inside display last date in mainscript');
+    $.post(ChatApplication.SERVER_ADDRESS + "/getLastDayConversation", { friendId: userId }, function (result) {
+        console.log('result is :' + result);
+        parseAndDisplayConversation(result);
+    });
+}
+
+function parseAndDisplayConversation(result) {
+    var i = 0;
+    for (; i < result.length; i++) {
+        
+    }
 }
 
 bindEvents();

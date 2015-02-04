@@ -286,7 +286,7 @@ function sendMessage(data, io) {
             }
 
             // Store the message in the conversation history
-            addMessageToConversationHistor(data["clientName"], data["friend"], data["message"]);
+            addMessageToConversationHistor(data["clientId"], data["friend"], data["message"]);
 
         }
 

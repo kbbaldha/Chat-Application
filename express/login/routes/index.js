@@ -128,6 +128,7 @@ router.post('/friendRequestAccepted', function (req, res, next) {
             // res.send(JSON.stringify(rows));
             var socketid = rows[0]['socket_id'],
                  socket = io.sockets.connected[socketid];
+                 // when friend is online send notification immidiately
             if (socket) {
 
                 connection.query("SELECT user_fname FROM user_information WHERE user_id = '" + clId + "';",
@@ -135,12 +136,13 @@ router.post('/friendRequestAccepted', function (req, res, next) {
                      if (rows.length > 0) {
 
                          socket.emit("friend_request_accepted", { friend_name: rows[0]["user_fname"] });
-                         
+                         res.send('accepted-friend-notification');
                      }
 
                  });
 
-            }
+             }
+            //store notifiction in db where type - 1 is notification of accepted friend request
             else {
                 console.log("INSERT INTO pending_friend_request (user_id,friend_id,type) VALUES ('" + clId + "','" + frId + "',1);");
                 connection.query("INSERT INTO pending_friend_request (user_id,friend_id,type) VALUES ('" + clId + "','" + frId + "',1);", function (err, rows, fields) {

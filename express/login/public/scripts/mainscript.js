@@ -47,6 +47,9 @@ function searchUserByName(event) {
         $('.send-request-button').off("click", sendFriendRequest).on("click", sendFriendRequest);
     });
 }
+function friendRequestCancelClicked(event) {
+    $(event.target).parent().html('Cancelled').fadeOut(1000, function () { $(this).remove(); });
+}
 function friendRequestAddClicked(event) {
     var friendId = event.target.classList[2];
 
@@ -90,6 +93,7 @@ function friendRequestAccepted(data) {
     generateFriendRequestAcceptedNotification(data.friend_name);
     getUsersOfApp();
 }
+ 
 function generateFriendRequestAcceptedNotification(friendName){
     var htmlStr = '<div  class="friend-request-accepted-notification">' + friendName + ' accepted your friend request.</div>'
     $('#notification-holder').prepend(htmlStr);
@@ -106,6 +110,7 @@ function friendRequestReceived(data) {
 
     $('#notification-holder').append(htmlStr);
     $('.add-button').off("click", friendRequestAddClicked).on("click", friendRequestAddClicked);
+    $('.cancel-button').off("click", friendRequestCancelClicked).on("click", friendRequestCancelClicked);
 }
 function getNotifications() {
     $.post(ChatApplication.SERVER_ADDRESS + "/getNotification", {  }, function (result) {

@@ -338,7 +338,7 @@ function addMessageToConversationHistor(sender, receiver, message) {
                         });
                     } else {
                         // Add row to table and and 
-                        connection.query("INSERT INTO conversation_history (conversation_id,date) VALUES ('" + conId + "','" + date + "');");
+                        connection.query("INSERT INTO conversation_history (conversation_id,date) VALUES ('" + conId + "','" + getDateForSQL() + "');");
                         // create a file & add the message
                         fs.writeFile(filename, JSON.stringify(myData, null, 4), function (err) {
                             if (err) {
@@ -360,8 +360,63 @@ function getTodaysDate() {
     str += date.getDate() + "-";
     str += (date.getMonth() + 1) + "-";
     str += date.getFullYear();
-
+    
     return str;
+}
+
+function getDateForSQL() {
+    var str = "";
+    var date = new Date();
+    str += date.getFullYear() + "-";
+    str += (date.getMonth() + 1) + "-";
+    str += date.getDate();
+    
+    console.log('INSERTING IN DB:' + str);
+    return str;
+}
+
+function getMonth(no) {
+    var month;
+    switch (no) {
+        case 1:
+            month = "Jan"
+            break;
+        case 2:
+            month = "Feb"
+            break;
+        case 3:
+            month = "Mar"
+            break;
+        case 4:
+            month = "Apr"
+            break;
+        case 5:
+            month = "May"
+            break;
+        case 6:
+            month = "Jun"
+            break;
+        case 7:
+            month = "Jul"
+            break;
+        case 8:
+            month = "Aug"
+            break;
+        case 9:
+            month = "Sep"
+            break;
+        case 10:
+            month = "Oct"
+            break;
+        case 11:
+            month = "Nov";
+            break;
+        case 12:
+            month = "Dec";
+            break;
+    }
+
+    return month;
 }
 /**
 * Returns the closest date to the current date from the folder

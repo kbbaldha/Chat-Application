@@ -68,7 +68,8 @@ function connectToServer() {
         if ($('#friend_chat_' + data['clientId']).length == 0) {
             $('.chatlog').append(getChatWindowHTML(data['clientName'],data['clientId']));
         }
-        $('#friend_chat_' + data['clientId']).find('.friend_chat_log').append('<div class="friend_chat_msg">' + data["message"] + '</div>');
+        //$('#friend_chat_' + data['clientId']).find('.friend_chat_log').append('<div class="friend_chat_msg">' + data["message"] + '</div>');
+        displayFriendMessage(data['clientId'], data["message"]);
     });
     socketio.on("user_offline", function (data) {
         $('#user_' + data.user_id + '-status').html('offline');
@@ -130,7 +131,8 @@ function sendMessage(element) {
        inputbox = $('#friend_chat_' + element.id).find('input'),
        msg = inputbox.val();
     inputbox.val("");
-    $('#friend_chat_' + element.id).find('.friend_chat_log').append('<div class="me_chat">' + msg + '</div>');
+    //$('#friend_chat_' + element.id).find('.friend_chat_log').append('<div class="me_chat">' + msg + '</div>');
+    displayMyMessage(element.id, msg);
     socketio.emit("message_to_server", { message: msg, friend: friendname, clientName: clientId });
 }
 
@@ -228,10 +230,32 @@ function displayLastDayConversation(userId) {
 }
 
 function parseAndDisplayConversation(result) {
-    var i = 0;
+    var i = 1, currentMsg,
+        result = JSON.parse(result),
+        userIdentity = result[0]['userIdentity'],
+        friendId = result[0]['friendId'],
+        friendIdentity = (userIdentity === "1") ? "2" : "1";
     for (; i < result.length; i++) {
-        
+        currentMsg = result[i];
+        if (currentMsg[userIdentity] !== null && currentMsg[userIdentity] !== undefined) {
+            // I sent it
+            displayMyMessage(friendId, currentMsg[userIdentity]);
+        } else {
+            // My friend sent it
+            displayFriendMessage(friendId, currentMsg[friendIdentity]);
+        }
     }
 }
-
+/**
+* Displays The message I sent to my friend
+*/
+function displayMyMessage(myID, msg) {
+    $('#friend_chat_' + myID).find('.friend_chat_log').append('<div class="me_chat">' + msg + '</div>');
+}
+/**
+* Displays The message my friend sent to me
+*/
+function displayFriendMessage(myID, msg) {
+    $('#friend_chat_' + myID).find('.friend_chat_log').append('<div class="friend_chat_msg">' + msg + '</div>');
+}
 bindEvents();

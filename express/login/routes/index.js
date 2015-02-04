@@ -364,7 +364,7 @@ function getTodaysDate() {
 /**
 * Returns the closest date to the current date from the folder
 */
-function getClosestDate(folderStructure, curDate, res) {
+function getClosestDate(folderStructure, curDate, res, userIdentity, friendId) {
     var splitDate = curDate.split('-'),
         date = splitDate[0],
         month = splitDate[1], parsedDate, closestVal=0, diffDays,closestDiffDays,
@@ -391,14 +391,14 @@ function getClosestDate(folderStructure, curDate, res) {
                 closestVal = i;
             }
         }
-        returnLastFileData(folderStructure + '/' + files[closestVal],res);
+        returnLastFileData(folderStructure + '/' + files[closestVal], res, userIdentity, friendId);
     });
 }
 
-function returnLastFileData(filename, res) {
+function returnLastFileData(filename, res, userIdentity, friendId) {
     fs.readFile(filename, { encoding: 'utf-8' }, function (err, data) {
         if (!err) {
-            res.json('['+data+']');
+            res.json('[{"userIdentity":' + userIdentity + ',"friendId":"' + friendId + '"},' + data + ']');
         }
     });
 }
@@ -413,12 +413,21 @@ router.post('/getLastDayConversation', function (req, res, next) {
                     users = conId.split('#'),
                     date = getTodaysDate(), lastFileName,
                     myData, folderStructure = './conversation-history/' + conId,
-                    filename = folderStructure + '/' + date + '.json';
+                    filename = folderStructure + '/' + date + '.json',
+                    userIdentity;
+
+                // Checking if the user is 1 or 2
+                if (userid === users[0]) {
+                    userIdentity = "1";
+                } else {
+                    userIdentity = "2";
+                }
+
 
                 // Check if there is a conversation history for these users
                 fs.exists(folderStructure, function (exists) {
                     if (exists) {
-                        getClosestDate(folderStructure, date, res);
+                        getClosestDate(folderStructure, date, res, userIdentity, req.body.friendId);
                     } else {
                         // There is no conversation history
                     }

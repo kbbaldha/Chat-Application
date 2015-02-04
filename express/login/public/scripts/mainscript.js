@@ -239,7 +239,7 @@ function parseAndDisplayConversation(result) {
         result = JSON.parse(result),
         userIdentity = result[0]['userIdentity'],
         friendId = result[0]['friendId'],
-        friendIdentity = (userIdentity === "1") ? "2" : "1";
+        friendIdentity = (userIdentity === 1) ? 2 : 1;
     for (; i < result.length; i++) {
         currentMsg = result[i];
         if (currentMsg[userIdentity] !== null && currentMsg[userIdentity] !== undefined) {

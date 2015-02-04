@@ -137,8 +137,7 @@ function sendMessage(element) {
        msg = inputbox.val();
     inputbox.val("");
     //$('#friend_chat_' + element.id).find('.friend_chat_log').append('<div class="me_chat">' + msg + '</div>');
-    displayMyMessage(element.id, msg);
-    socketio.emit("message_to_server", { message: msg, friend: friendname, clientName: clientId });
+    socketio.emit("message_to_server", { message: msg, friend: friendname, clientName: clientName ,clientId :clientId});
 }
 
 function getUserName() {

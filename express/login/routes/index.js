@@ -118,10 +118,11 @@ router.post('/friendRequestAccepted', function (req, res, next) {
 
     var clId = req.body.clientId,
          frId = req.body.friendId,
-         io = req.io;
+         io = req.io,
+         conversationId = clId + '#' + frId;
 
-    connection.query("INSERT INTO friend_list (user_id,friend_id) VALUES ('" + clId + "','" + frId + "');");
-    connection.query("INSERT INTO friend_list (user_id,friend_id) VALUES ('" + frId + "','" + clId + "');");
+    connection.query("INSERT INTO friend_list (user_id,friend_id,conversation_id) VALUES ('" + clId + "','" + frId + "','" + conversationId  + "');");
+    connection.query("INSERT INTO friend_list (user_id,friend_id,conversation_id) VALUES ('" + frId + "','" + clId + "','" + conversationId + "');");
     connection.query("SELECT socket_id FROM user_information WHERE user_id = '" + frId + "';", function (error, rows, fields) {
         if (rows.length > 0) {
 
@@ -277,7 +278,7 @@ function sendMessage(data, io) {
             var socketid = rows[0]['socket_id'],
                 clientId = rows[0]['user_id'];
             if (io.sockets.connected[socketid]) {
-                io.sockets.connected[socketid].emit("message_to_client", { message: data["message"], clientName: data["clientName"], clientId: clientId });
+                io.sockets.connected[socketid].emit("message_to_client", { message: data["message"], clientName: data["clientName"], clientId: data["clientId"] });
             } else {
                 // The user if offline store his messages
                 console.log("client name is :" + data["clientName"]);

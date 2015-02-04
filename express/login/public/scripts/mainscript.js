@@ -172,6 +172,7 @@ function logout() {
     xmlhttp.send();
 }
 function getUsersOfApp() {
+    return;
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", ChatApplication.SERVER_ADDRESS + "/getUsers", true);
     xmlhttp.onreadystatechange = function () {

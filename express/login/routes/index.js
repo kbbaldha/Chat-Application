@@ -241,16 +241,21 @@ function addSocketInfoToDatabase(user, socketid, io) {
 * Updates the offline messages of the user
 */
 function updateOfflineMessages(user, socketid, io) {
-    connection.query("SELECT * FROM offline_messages WHERE user_id = '" + user + "';", function (error, rows, fields) {
+    
+    connection.query("SELECT user_fname,message,friend_id FROM user_information INNER JOIN offline_messages ON user_information.user_id = offline_messages.friend_id WHERE offline_messages.user_id = '" + user + "';", function (error, rows, fields) {
         if (rows.length > 0) {
             for (var i = 0; i < rows.length; i++) {
                 if (io.sockets.connected[socketid]) {
-                    io.sockets.connected[socketid].emit("message_to_client", { message: rows[i]["message"], clientName: rows[i]["friend_id"] });
+                    io.sockets.connected[socketid].emit("message_to_client", {
+                        message: rows[i]["message"], clientName: rows[i]["user_fname"],
+                        clientId: rows[i]["friend_id"]
+                    });
                 }
             }
+            deleteOfflineMessages(user);
         }
     });
-    deleteOfflineMessages(user);
+    
 }
 /**
 * Deletes the previously stored offline messages of the passed user
@@ -282,7 +287,7 @@ function sendMessage(data, io) {
             } else {
                 // The user if offline store his messages
                 console.log("client name is :" + data["clientName"]);
-                connection.query("INSERT INTO offline_messages  (user_id,friend_id,message) VALUES ('" + data["friend"] + "','" + data["clientName"] + "','" + data["message"] + "');");
+                connection.query("INSERT INTO offline_messages  (user_id,friend_id,message) VALUES ('" + data["friend"] + "','" + data["clientId"] + "','" + data["message"] + "');");
             }
 
             // Store the message in the conversation history

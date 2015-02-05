@@ -65,15 +65,15 @@ function friendRequestAddClicked(event) {
 }
 
 function connectToServer() {
-   
-    socketio = io.connect(ChatApplication.SERVER_ADDRESS, { query: 'loggeduser=' + clientId });
-    socketio.on("message_to_client", function (data) {
+
+    socketio = io.connect(ChatApplication.SERVER_ADDRESS, { query: 'loggeduser=' + app.clientInfo.user_id });
+   /* socketio.on("message_to_client", function (data) {
         if ($('#friend_chat_' + data['clientId']).length == 0) {
             $('.chatlog').append(getChatWindowHTML(data['clientName'],data['clientId']));
         }
         //$('#friend_chat_' + data['clientId']).find('.friend_chat_log').append('<div class="friend_chat_msg">' + data["message"] + '</div>');
         displayFriendMessage(data['clientId'], data["message"]);
-    });
+    });*/
     socketio.on("user_offline", function (data) {
         $('#user_' + data.user_id + '-status').html('offline');
     });

@@ -62,8 +62,7 @@ router.get('/signedOff', function (req, res, next) {
 router.get('/getUsers', function (req, res, next) {
     var userid = req.session.user_name;
 
-         connection.query("SELECT user_id,user_fname,online FROM user_information WHERE user_id IN (SELECT friend_id from friend_list WHERE user_id = '" + userid + "');",
-   
+         connection.query("SELECT user_fname,online,conversation_id,friend_id as user_id FROM user_information NATURAL JOIN friend_list WHERE user_id = '" + userid + "';",  
             function (error, rows, fields) {
                 res.send(JSON.stringify(rows));
             });

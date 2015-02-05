@@ -17,24 +17,31 @@
 <body onload="getUserName()" ng-app="myChatApp">
     <div id="user"></div>
     <div id="logout" class="logout" onclick="logout()">Logout</div>
+    <div id="chat-control" ng-controller="friendListCtrl">
+        <div id="users_of_app" class="users_of_app">
+            <div class="user_list_heading">List of users</div>
+            <div class="user-list-name-container" ng-repeat="x in friends">
 
-    <div id="users_of_app" class="users_of_app"  ng-controller="friendListCtrl">
-        <div class="user_list_heading">List of users</div>
-        <div class="user-list-name-container" ng-repeat="x in friends">
+                <div class="user_list_name" ng-click="getUserId()">{{x.user_fname}}</div>
+                <div class="user-status">{{x.online}}</div>
+            </div>
 
-            <div class="user_list_name" ng-click="getUserId()">{{x.user_fname}}</div>
-            <div class="user-status">{{x.online}}</div>
-        </div>
-        
-    </div>
-
-    <div id="chatlog" class="chatlog">
-        <div id="friend_chat_kbbaldha" class="friend_chat">
-            <div id="friend_name" class="friend_name">keyur</div>
-            <input type="text" id="message_input" /><button id="kbbaldha" onclick="sendMessage(this)">send</button>
-            <div id="friend_chat_log" class="friend_chat_log"></div>
         </div>
 
+        <div id="chatlog" class="chatlog">
+            <div id="friend_chat_kbbaldha" class="friend_chat">
+                <div id="friend_name" class="friend_name" >{{currentFriendObj.user_fname}}</div>
+                <input type="text" id="message_input" ng-model="msgInputBoxValue" /><button id="kbbaldha"  ng-click ="sendMessage()">send</button>
+                <div id="friend_chat_log" class="friend_chat_log" > 
+                    <div class="msg-container" ng-repeat="msg in currentFriendObj.messages">
+                        <div ng-if="(msg['1'] != undefined && msg['1'] != null)" class="me_chat"> {{msg["1"]}} </div>
+                        <div ng-if="(msg['2'] != undefined && msg['2'] != null)" class="friend_chat_msg"> {{msg["2"]}} </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
     </div>
     <div id="notifications-container" class="notifications-container">
         <div class="notifications-heading">Notification</div>

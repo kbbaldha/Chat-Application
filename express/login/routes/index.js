@@ -73,7 +73,7 @@ router.get('/getUsers', function (req, res, next) {
                         WHERE U.user_id = F.user_id\
                         AND U.user_id =  '"+userid+"'\
                         )\
-                        AND U1.user_id = F1.friend_id;",  
+                        AND U1.user_id = F1.friend_id AND F1.user_id = '" + userid + "';",
             function (error, rows, fields) {
                 res.send(JSON.stringify(rows));
             });

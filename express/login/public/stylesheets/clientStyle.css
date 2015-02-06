@@ -47,6 +47,7 @@
              .user_list_name
              {
                 float: left;
+                margin-left: 20px;
              }
              .user-status {
                  float: right;
@@ -178,4 +179,10 @@
                 padding: 5px;
                 text-align: center;
                 margin-bottom: 5px;
+            }
+            .unread-messages{
+                position:absolute;
+            }
+            .selected {
+                background-color: antiquewhite;
             }

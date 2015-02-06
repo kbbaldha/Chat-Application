@@ -20,9 +20,11 @@
     <div id="chat-control" ng-controller="friendListCtrl">
         <div id="users_of_app" class="users_of_app">
             <div class="user_list_heading">List of users</div>
-            <div class="user-list-name-container" ng-repeat="x in friends">
+            <input ng-model="query">
+            <div class="user-list-name-container" ng-repeat="x in friends | filter:query | orderBy:totalMessages:true" ng-click="getUserId($event)">
 
-                <div class="user_list_name" ng-click="getUserId()">{{x.user_fname}}</div>
+                <div class="user_list_name">{{x.user_fname}}</div>
+                <div ng-hide="x.noOfUnreadMessages == 0" class="unread-messages">{{x.noOfUnreadMessages}}</div>
                 <div class="user-status">{{x.online}}</div>
             </div>
 
@@ -34,8 +36,9 @@
                 <input type="text" id="message_input" ng-model="msgInputBoxValue" /><button id="kbbaldha"  ng-click ="sendMessage()">send</button>
                 <div id="friend_chat_log" class="friend_chat_log" > 
                     <div class="msg-container" ng-repeat="msg in currentFriendObj.messages">
-                        <div ng-if="(msg['1'] != undefined && msg['1'] != null)" class="me_chat"> {{msg["1"]}} </div>
-                        <div ng-if="(msg['2'] != undefined && msg['2'] != null)" class="friend_chat_msg"> {{msg["2"]}} </div>
+                        <div ng-if="(msg[currentFriendObj.type] != undefined && msg[currentFriendObj.type] != null)" class="friend_chat_msg"> {{msg[currentFriendObj.type]}} </div>
+                        <div ng-if="(msg[currentFriendObj.clientType] != undefined && msg[currentFriendObj.clientType] != null)" class="me_chat"> {{msg[currentFriendObj.clientType]}} </div>
+                        
                     </div>
 
                 </div>

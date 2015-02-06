@@ -1,10 +1,11 @@
 ﻿app.controller("friendListCtrl", function ($scope, $http) {
     var site = ChatApplication.SERVER_ADDRESS;
     var page = "/getUsers";
+    app.totalMessages = 0;
     $scope.currentFriendName = '';
     $scope.currentFriendId = '';
     $scope.msgInputBoxValue = '';
-
+    
     $scope.currentFriendObj;
 
     $http.get(site + page)
@@ -12,22 +13,43 @@
         $scope.friends = response;
         var i = 0,
             friends = $scope.friends,
-            noOfFriends = friends.length;
+            noOfFriends = friends.length,
+            currentFriend,
+            conversationIdArray;
         for (; i < noOfFriends; i++) {
-            friends[i].messages = [];
+            currentFriend = friends[i];
+            currentFriend.messages = [];
+            currentFriend.noOfUnreadMessages = 0;
+            currentFriend.totalMessages = 0;
+            conversationIdArray = currentFriend.conversation_id.split("#");
+            if (conversationIdArray[0] == currentFriend.user_id) {
+                currentFriend.type = "1";
+                currentFriend.clientType = "2";
+            }
+            else {
+                currentFriend.type = "2";
+                currentFriend.clientType = "1";
+            }
         }
     });
     getUserName();
-    $scope.getUserId = function () {
-        console.log();
+    $scope.getUserId = function ($event) {
+        $scope.query = '';
         var friendObj;
         friendObj = getFriendObject(this.x.user_id);
+        friendObj.noOfUnreadMessages = 0;
         $scope.currentFriendObj = friendObj;
-
+        $('.selected').removeClass('selected');
+        $($event.currentTarget).addClass('selected');
     };
 
     $scope.sendMessage = function () {
-        $scope.currentFriendObj.messages.push({ "1": $scope.msgInputBoxValue });
+        if ($scope.currentFriendObj.type == "1") {
+            $scope.currentFriendObj.messages.push({ "2": $scope.msgInputBoxValue });
+        }
+        else {
+            $scope.currentFriendObj.messages.push({ "1": $scope.msgInputBoxValue });
+        }
         socketio.emit("message_to_server", { message: $scope.msgInputBoxValue, friend: $scope.currentFriendObj.user_id, clientName: app.clientInfo.user_fname, clientId: app.clientInfo.user_id });
         $scope.msgInputBoxValue = '';
     };
@@ -51,7 +73,7 @@
             //clientName = clientInfo[0].user_fname;
             connectToServer();
             bindSocketEvents();
-            //setUser(clientName);
+            setUser(app.clientInfo.user_fname);
             //getUsersOfApp();
             //getNotifications();
         });
@@ -60,11 +82,20 @@
     function bindSocketEvents() {
         socketio.on("message_to_client", function (data) {
             console.log(data['clientName'] + "::::" + data["message"]);
-            /*if ($('#friend_chat_' + data['clientId']).length == 0) {
-            $('.chatlog').append(getChatWindowHTML(data['clientName'], data['clientId']));
+            var friend = getFriendObject(data.clientId);
+            if (!(data.clientId == $scope.currentFriendObj.user_id)) {
+                friend.noOfUnreadMessages = friend.noOfUnreadMessages + 1;
+                app.totalMessages += 1;
+                friend.totalMessages = app.totalMessages;
             }
-            //$('#friend_chat_' + data['clientId']).find('.friend_chat_log').append('<div class="friend_chat_msg">' + data["message"] + '</div>');
-            displayFriendMessage(data['clientId'], data["message"]);*/
+            
+            if (friend.type == "1") {
+                friend.messages.push({ "1": data.message });
+            }
+            else {
+                friend.messages.push({ "2": data.message });
+            }
+            $scope.$apply();
         });
     }
 });

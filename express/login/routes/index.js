@@ -464,10 +464,15 @@ function getClosestDate(folderStructure, curDate, res, userIdentity, friendId) {
                 }
                 if (diffDays < closestDiffDays) {
                     closestVal = i;
+                    closestDiffDays = diffDays;
                 }
             }
         }
-        returnLastFileData(folderStructure + '/' + files[closestVal], res, userIdentity, friendId, files[closestVal]);
+        if (closestDiffDays !== null && closestDiffDays !== undefined) {
+            returnLastFileData(folderStructure + '/' + files[closestVal], res, userIdentity, friendId, files[closestVal]);
+        } else {
+            res.send('{"last":"y","friendId":"'+friendId+'"}');
+        }
     });
 }
 
@@ -505,6 +510,7 @@ router.post('/getLastDayConversation', function (req, res, next) {
                         getClosestDate(folderStructure, date, res, userIdentity, req.body.friendId);
                     } else {
                         // There is no conversation history
+                        res.send(true);
                     }
                 });
             }
@@ -543,6 +549,7 @@ router.post('/getMore', function (req, res, next) {
                         getClosestDate(folderStructure, getDateInString(parsedDate), res, userIdentity, req.body.friendId);
                     } else {
                         // There is no conversation history
+                        res.send(true);
                     }
                 });
             }

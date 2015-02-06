@@ -6,8 +6,8 @@
 
 function bindEvents() {
 
-   // $('.add-button').on("click", friendRequestAccepted);
-   
+    // $('.add-button').on("click", friendRequestAccepted);
+
 }
 
 
@@ -24,9 +24,9 @@ function sendFriendRequest(event) {
 }
 
 function searchUserByName(event) {
-    var searchName = $('#search_input').val();       
+    var searchName = $('#search_input').val();
 
-    $.post(ChatApplication.SERVER_ADDRESS + "/searchFriend", {  searchName: searchName }, function (result) {
+    $.post(ChatApplication.SERVER_ADDRESS + "/searchFriend", { searchName: searchName }, function (result) {
         console.log(result);
         result = JSON.parse(result);
         var length = result.length,
@@ -44,7 +44,7 @@ function searchUserByName(event) {
                 </div>';
             $container.append(htmlStr);
         }
-       
+
         $('.send-request-button').off("click", sendFriendRequest).on("click", sendFriendRequest);
     });
 }
@@ -58,7 +58,7 @@ function friendRequestAddClicked(event) {
     $.post(ChatApplication.SERVER_ADDRESS + "/friendRequestAccepted", { clientId: clientId, friendId: friendId }, function (result) {
         console.log('result---------' + result);
         if (result == 'accepted-friend-notification') {
-           
+
             getUsersOfApp();
             $('.notification').find('.' + friendId).parent().html('Friend Added').fadeOut(1000, function () { $(this).remove(); });
         }
@@ -66,11 +66,11 @@ function friendRequestAddClicked(event) {
 }
 
 function connectToServer() {
-   
+
     socketio = io.connect(ChatApplication.SERVER_ADDRESS, { query: 'loggeduser=' + clientId });
     socketio.on("message_to_client", function (data) {
         if ($('#friend_chat_' + data['clientId']).length == 0) {
-            $('.chatlog').append(getChatWindowHTML(data['clientName'],data['clientId']));
+            $('.chatlog').append(getChatWindowHTML(data['clientName'], data['clientId']));
         }
         //$('#friend_chat_' + data['clientId']).find('.friend_chat_log').append('<div class="friend_chat_msg">' + data["message"] + '</div>');
         displayFriendMessage(data['clientId'], data["message"]);
@@ -95,14 +95,14 @@ function friendRequestAccepted(data) {
     generateFriendRequestAcceptedNotification(data.friend_name);
     getUsersOfApp();
 }
- 
-function generateFriendRequestAcceptedNotification(friendName){
+
+function generateFriendRequestAcceptedNotification(friendName) {
     var htmlStr = '<div  class="friend-request-accepted-notification">' + friendName + ' accepted your friend request.</div>'
     $('#notification-holder').prepend(htmlStr);
 }
 function friendRequestReceived(data) {
 
-    
+
 
     var htmlStr = '<div class="notification">' +
                     '<div class="friend-req-sender">' + data.friend_name + ' wants to be your friend</div>' +
@@ -115,10 +115,10 @@ function friendRequestReceived(data) {
     $('.cancel-button').off("click", friendRequestCancelClicked).on("click", friendRequestCancelClicked);
 }
 function getNotifications() {
-    $.post(ChatApplication.SERVER_ADDRESS + "/getNotification", {  }, function (result) {
+    $.post(ChatApplication.SERVER_ADDRESS + "/getNotification", {}, function (result) {
         var data = JSON.parse(result),
             noOfRequests = data.length,
-            i=0,
+            i = 0,
             currentData;
         for (; i < noOfRequests; i++) {
             currentData = data[i];
@@ -129,7 +129,7 @@ function getNotifications() {
                 generateFriendRequestAcceptedNotification(currentData.user_fname);
             }
         }
-        
+
     });
 }
 function sendMessage(element) {
@@ -138,8 +138,8 @@ function sendMessage(element) {
        msg = inputbox.val();
     inputbox.val("");
     //$('#friend_chat_' + element.id).find('.friend_chat_log').append('<div class="me_chat">' + msg + '</div>');
-    displayMyMessage(element.id,msg);
-    socketio.emit("message_to_server", { message: msg, friend: friendname, clientName: clientName ,clientId :clientId});
+    displayMyMessage(element.id, msg);
+    socketio.emit("message_to_server", { message: msg, friend: friendname, clientName: clientName, clientId: clientId });
 }
 
 function getUserName() {
@@ -214,7 +214,7 @@ function setUser(name) {
     document.getElementById('user').innerHTML = 'welcome ' + name;
 }
 
-function getChatWindowHTML(username,userid) {
+function getChatWindowHTML(username, userid) {
     var html = '<div id="friend_chat_' + userid + '" class="friend_chat">' +
      '<div id="friend_name" class="friend_name">' + username + '</div>' +
     '<input type="text" id="message_input"/>' +
@@ -236,26 +236,31 @@ function displayLastDayConversation(userId) {
 }
 
 function parseAndDisplayConversation(result) {
-    var i = 1, currentMsg,
-        result = JSON.parse(result),
-        userIdentity = result[0]['userIdentity'],
-        friendId = result[0]['friendId'],
-        friendIdentity = (userIdentity === 1) ? 2 : 1;
+    result = JSON.parse(result);
+    if (result.last === "y") { // No more conversations to load
+        displayNoMoreMessages(result.friendId);
+    } else {
+        var i = 1, currentMsg,
+            
+            userIdentity = result[0]['userIdentity'],
+            friendId = result[0]['friendId'],
+            friendIdentity = (userIdentity === 1) ? 2 : 1;
 
-    currentFile = result[0]['currentFile']; // global var
+        currentFile = result[0]['currentFile']; // global var
 
-    for (; i < result.length; i++) {
-        currentMsg = result[i];
-        if (currentMsg[userIdentity] !== null && currentMsg[userIdentity] !== undefined) {
-            // I sent it
-            displayMyMessage(friendId, currentMsg[userIdentity]);
-        } else {
-            // My friend sent it
-            displayFriendMessage(friendId, currentMsg[friendIdentity]);
+        for (; i < result.length; i++) {
+            currentMsg = result[i];
+            if (currentMsg[userIdentity] !== null && currentMsg[userIdentity] !== undefined) {
+                // I sent it
+                displayMyMessage(friendId, currentMsg[userIdentity]);
+            } else {
+                // My friend sent it
+                displayFriendMessage(friendId, currentMsg[friendIdentity]);
+            }
         }
+        // Display Load More button
+        addLoadMoreBtn(friendId);
     }
-    // Display Load More button
-    addLoadMoreBtn(friendId);
 }
 /**
 * Displays The message I sent to my friend
@@ -286,6 +291,10 @@ function onLoadMoreBtnClicked(event) {
         console.log('result is :' + result);
         parseAndDisplayConversation(result);
     });
+}
+
+function displayNoMoreMessages(myID) {
+    $('#friend_chat_' + myID).find('.friend_chat_log').append('<div class="load-more-btn">No More Messages</div>');
 }
 
 bindEvents();

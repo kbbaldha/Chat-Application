@@ -62,11 +62,11 @@ router.get('/signedOff', function (req, res, next) {
 router.get('/getUsers', function (req, res, next) {
     var userid = req.session.user_name;
 
-         connection.query("SELECT user_id,user_fname,online FROM user_information WHERE user_id IN (SELECT friend_id from friend_list WHERE user_id = '" + userid + "');",
-   
-            function (error, rows, fields) {
-                res.send(JSON.stringify(rows));
-            });
+    connection.query("SELECT user_id,user_fname,online FROM user_information WHERE user_id IN (SELECT friend_id from friend_list WHERE user_id = '" + userid + "');",
+
+       function (error, rows, fields) {
+           res.send(JSON.stringify(rows));
+       });
 });
 router.get('/chat', function (req, res, next) {
     sess = req.session;
@@ -91,7 +91,7 @@ router.get('/getUser', function (req, res, next) {
             res.send(JSON.stringify(rows));
         }
     });
-    
+
 });
 
 router.get('/logout', function (req, res, next) {
@@ -104,7 +104,7 @@ router.post('/searchFriend', function (req, res, next) {
 
     connection.query("SELECT user_id,user_fname FROM user_information WHERE user_fname LIKE '%" + req.body.searchName + "%' AND user_id NOT IN ( select friend_id from friend_list WHERE user_id='" + req.session.user_name + "');", function (error, rows, fields) {
         if (rows.length > 0) {
-          
+
             res.send(JSON.stringify(rows));
         }
         else {
@@ -121,7 +121,7 @@ router.post('/friendRequestAccepted', function (req, res, next) {
          io = req.io,
          conversationId = clId + '#' + frId;
 
-    connection.query("INSERT INTO friend_list (user_id,friend_id,conversation_id) VALUES ('" + clId + "','" + frId + "','" + conversationId  + "');");
+    connection.query("INSERT INTO friend_list (user_id,friend_id,conversation_id) VALUES ('" + clId + "','" + frId + "','" + conversationId + "');");
     connection.query("INSERT INTO friend_list (user_id,friend_id,conversation_id) VALUES ('" + frId + "','" + clId + "','" + conversationId + "');");
     connection.query("SELECT socket_id FROM user_information WHERE user_id = '" + frId + "';", function (error, rows, fields) {
         if (rows.length > 0) {
@@ -129,7 +129,7 @@ router.post('/friendRequestAccepted', function (req, res, next) {
             // res.send(JSON.stringify(rows));
             var socketid = rows[0]['socket_id'],
                  socket = io.sockets.connected[socketid];
-                 // when friend is online send notification immidiately
+            // when friend is online send notification immidiately
             if (socket) {
 
                 connection.query("SELECT user_fname FROM user_information WHERE user_id = '" + clId + "';",
@@ -142,8 +142,8 @@ router.post('/friendRequestAccepted', function (req, res, next) {
 
                  });
 
-             }
-            //store notifiction in db where type - 1 is notification of accepted friend request
+            }
+                //store notifiction in db where type - 1 is notification of accepted friend request
             else {
                 console.log("INSERT INTO pending_friend_request (user_id,friend_id,type) VALUES ('" + clId + "','" + frId + "',1);");
                 connection.query("INSERT INTO pending_friend_request (user_id,friend_id,type) VALUES ('" + clId + "','" + frId + "',1);", function (err, rows, fields) {
@@ -155,7 +155,7 @@ router.post('/friendRequestAccepted', function (req, res, next) {
                 res.send('accepted-friend-notification');
 
             }
-          
+
         }
         else {
             res.send('no friend  found');
@@ -188,10 +188,10 @@ router.post('/sendFriendRequest', function (req, res, next) {
 
             }
             else {
-                
-                  connection.query("INSERT INTO pending_friend_request (user_id,friend_id,type) VALUES ('" +  req.body.clientId  + "','" + req.body.friendId + "',0);");
-                    /* Request added to database*/
-                  res.send('friendReqSent');
+
+                connection.query("INSERT INTO pending_friend_request (user_id,friend_id,type) VALUES ('" + req.body.clientId + "','" + req.body.friendId + "',0);");
+                /* Request added to database*/
+                res.send('friendReqSent');
             }
         }
         else {
@@ -241,7 +241,7 @@ function addSocketInfoToDatabase(user, socketid, io) {
 * Updates the offline messages of the user
 */
 function updateOfflineMessages(user, socketid, io) {
-    
+
     connection.query("SELECT user_fname,message,friend_id FROM user_information INNER JOIN offline_messages ON user_information.user_id = offline_messages.friend_id WHERE offline_messages.user_id = '" + user + "';", function (error, rows, fields) {
         if (rows.length > 0) {
             for (var i = 0; i < rows.length; i++) {
@@ -255,7 +255,7 @@ function updateOfflineMessages(user, socketid, io) {
             deleteOfflineMessages(user);
         }
     });
-    
+
 }
 /**
 * Deletes the previously stored offline messages of the passed user
@@ -366,7 +366,17 @@ function getTodaysDate() {
     str += date.getDate() + "-";
     str += (date.getMonth() + 1) + "-";
     str += date.getFullYear();
-    
+
+    return str;
+}
+
+function getDateInString(date) {
+    var str = "";
+
+    str += date.getDate() + "-";
+    str += (date.getMonth() + 1) + "-";
+    str += date.getFullYear();
+
     return str;
 }
 
@@ -376,7 +386,7 @@ function getDateForSQL() {
     str += date.getFullYear() + "-";
     str += (date.getMonth() + 1) + "-";
     str += date.getDate();
-    
+
     console.log('INSERTING IN DB:' + str);
     return str;
 }
@@ -430,7 +440,7 @@ function getMonth(no) {
 function getClosestDate(folderStructure, curDate, res, userIdentity, friendId) {
     var splitDate = curDate.split('-'),
         date = splitDate[0],
-        month = splitDate[1], parsedDate, closestVal=0, diffDays,closestDiffDays,
+        month = splitDate[1], parsedDate, closestVal = 0, diffDays, closestDiffDays,
         year = splitDate[2], i = 0, j, k, curFile, splitFile;
 
     fs.readdir(folderStructure + '/', function (err, files) {
@@ -445,23 +455,26 @@ function getClosestDate(folderStructure, curDate, res, userIdentity, friendId) {
             console.log(' Current File is:' + curFile);
             splitFile = curFile.split('-');
             parsedDate = new Date(parseInt(splitFile[2]), parseInt(splitFile[1]) - 1, parseInt(splitFile[0]));
-            var timeDiff = Math.abs(parsedDate.getTime() - new Date().getTime());
-            diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            if (i === 0) {
-                closestDiffDays = diffDays;
-            }
-            if (diffDays < closestDiffDays) {
-                closestVal = i;
+            var timeDiff = new Date(parseInt(year), parseInt(month) - 1, parseInt(date)).getTime() - parsedDate.getTime();
+            if (timeDiff > 0) {
+                diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                if (closestDiffDays === null || closestDiffDays === undefined) {
+                    closestDiffDays = diffDays;
+                    closestVal = i;
+                }
+                if (diffDays < closestDiffDays) {
+                    closestVal = i;
+                }
             }
         }
-        returnLastFileData(folderStructure + '/' + files[closestVal], res, userIdentity, friendId);
+        returnLastFileData(folderStructure + '/' + files[closestVal], res, userIdentity, friendId, files[closestVal]);
     });
 }
 
-function returnLastFileData(filename, res, userIdentity, friendId) {
+function returnLastFileData(filename, res, userIdentity, friendId, currentFile) {
     fs.readFile(filename, { encoding: 'utf-8' }, function (err, data) {
         if (!err) {
-            res.json('[{"userIdentity":' + userIdentity + ',"friendId":"' + friendId + '"},' + data + ']');
+            res.json('[{"userIdentity":' + userIdentity + ',"friendId":"' + friendId + '","currentFile":"' + currentFile + '"},' + data + ']');
         }
     });
 }
@@ -474,9 +487,8 @@ router.post('/getLastDayConversation', function (req, res, next) {
             if (rows.length > 0) {
                 var conId = rows[0]['conversation_id'],
                     users = conId.split('#'),
-                    date = getTodaysDate(), lastFileName,
-                    myData, folderStructure = './conversation-history/' + conId,
-                    filename = folderStructure + '/' + date + '.json',
+                    date = getTodaysDate(),
+                    folderStructure = './conversation-history/' + conId,
                     userIdentity;
 
                 // Checking if the user is 1 or 2
@@ -491,6 +503,44 @@ router.post('/getLastDayConversation', function (req, res, next) {
                 fs.exists(folderStructure, function (exists) {
                     if (exists) {
                         getClosestDate(folderStructure, date, res, userIdentity, req.body.friendId);
+                    } else {
+                        // There is no conversation history
+                    }
+                });
+            }
+        });
+});
+
+
+router.post('/getMore', function (req, res, next) {
+    var userid = req.session.user_name;
+    console.log('inside getMore in server');
+    connection.query("SELECT conversation_id FROM friend_list WHERE user_id='" + userid + "' AND friend_id = '" + req.body.friendId + "';",
+        function (error, rows, fields) {
+            if (rows.length > 0) {
+                var conId = rows[0]['conversation_id'],
+                    users = conId.split('#'),
+                    filename = req.body.currentFile,
+                    date = filename.replace('.json', ''),
+                    splitFile = date.split('-'),
+                    parsedDate = new Date(parseInt(splitFile[2]), parseInt(splitFile[1]) - 1, parseInt(splitFile[0])),
+                    folderStructure = './conversation-history/' + conId,
+                    userIdentity;
+
+                parsedDate.setDate(parsedDate.getDate() - 1);
+
+                // Checking if the user is 1 or 2
+                if (userid === users[0]) {
+                    userIdentity = "1";
+                } else {
+                    userIdentity = "2";
+                }
+
+
+                // Check if there is a conversation history for these users
+                fs.exists(folderStructure, function (exists) {
+                    if (exists) {
+                        getClosestDate(folderStructure, getDateInString(parsedDate), res, userIdentity, req.body.friendId);
                     } else {
                         // There is no conversation history
                     }

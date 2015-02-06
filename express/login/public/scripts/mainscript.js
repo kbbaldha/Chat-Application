@@ -1,6 +1,7 @@
 ﻿var socketio,
     clientName,
-    clientId;
+    clientId,
+    currentFile; // Needed because after the user requests for old info then more old
 
 
 function bindEvents() {
@@ -240,6 +241,9 @@ function parseAndDisplayConversation(result) {
         userIdentity = result[0]['userIdentity'],
         friendId = result[0]['friendId'],
         friendIdentity = (userIdentity === 1) ? 2 : 1;
+
+    currentFile = result[0]['currentFile']; // global var
+
     for (; i < result.length; i++) {
         currentMsg = result[i];
         if (currentMsg[userIdentity] !== null && currentMsg[userIdentity] !== undefined) {
@@ -250,6 +254,8 @@ function parseAndDisplayConversation(result) {
             displayFriendMessage(friendId, currentMsg[friendIdentity]);
         }
     }
+    // Display Load More button
+    addLoadMoreBtn(friendId);
 }
 /**
 * Displays The message I sent to my friend
@@ -263,4 +269,23 @@ function displayMyMessage(myID, msg) {
 function displayFriendMessage(myID, msg) {
     $('#friend_chat_' + myID).find('.friend_chat_log').append('<div class="friend_chat_msg">' + msg + '</div>');
 }
+
+function addLoadMoreBtn(myID) {
+    $('#friend_chat_' + myID).find('.friend_chat_log').append('<div class="load-more-btn">Load More</div>');
+    attachEventsOnLoadMoreBtn();
+}
+
+function attachEventsOnLoadMoreBtn() {
+    $('.load-more-btn').off('click').on('click', onLoadMoreBtnClicked);
+}
+
+function onLoadMoreBtnClicked(event) {
+    console.log('inside load more btn clicked in mainscript');
+    var userId = $(event.currentTarget).parents('.friend_chat').attr('id').replace('friend_chat_', '');
+    $.post(ChatApplication.SERVER_ADDRESS + "/getMore", { friendId: userId, currentFile: currentFile }, function (result) {
+        console.log('result is :' + result);
+        parseAndDisplayConversation(result);
+    });
+}
+
 bindEvents();

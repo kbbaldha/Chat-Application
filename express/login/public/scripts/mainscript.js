@@ -241,12 +241,12 @@ function parseAndDisplayConversation(result) {
         displayNoMoreMessages(result.friendId);
     } else {
         var i = 1, currentMsg,
-            
             userIdentity = result[0]['userIdentity'],
             friendId = result[0]['friendId'],
             friendIdentity = (userIdentity === 1) ? 2 : 1;
+            currentFile = result[0]['currentFile']; // global var
 
-        currentFile = result[0]['currentFile']; // global var
+            displayDateInsteadOfNoMore(friendId,currentFile.replace(".json", ""));
 
         for (; i < result.length; i++) {
             currentMsg = result[i];
@@ -294,7 +294,13 @@ function onLoadMoreBtnClicked(event) {
 }
 
 function displayNoMoreMessages(myID) {
+    $('#friend_chat_' + myID).find('.load-more-btn').remove();
     $('#friend_chat_' + myID).find('.friend_chat_log').append('<div class="load-more-btn">No More Messages</div>');
+}
+
+function displayDateInsteadOfNoMore(myID,date) {
+    $('#friend_chat_' + myID).find('.load-more-btn').remove();
+    $('#friend_chat_' + myID).find('.friend_chat_log').append('<div class="date-msg">'+ date + '</div>');
 }
 
 bindEvents();

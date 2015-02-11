@@ -30,6 +30,27 @@
 
         });
     }
+    $scope.cancelClicked = function () {
+        console.log('hii');
+        $.ajax({
+            dataType: 'script',
+            type: 'GET',
+            url: 'http://www.google-analytics.com/analytics.js',
+            success: function (data, res) {
+                console.log('success found');
+            },
+            fail: function (data, res) {
+                console.log('fail');
+            },
+            error: function (data, res) {
+                console.log('error');
+            },
+            done: function (data, res) {
+                console.log('done');
+            }
+
+        });
+    }
     function getNotifications() {
         $.post(ChatApplication.SERVER_ADDRESS + "/getNotification", {}, function (result) {
             var data = JSON.parse(result),

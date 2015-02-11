@@ -23,7 +23,7 @@
         <div id="users_of_app" class="users_of_app">
             <div class="user_list_heading">List of users</div>
             <input ng-model="query" class="search-amongst-friends"/>
-            <div class="user-list-name-container" ng-repeat="x in friends | filter:query | orderBy:totalMessages:true" ng-click="getUserId($event)">
+            <div class="user-list-name-container" ng-repeat="x in friends | filter:query | orderBy:totalMessages:true" ng-click="getUserId($event,$index)" ng-class="{ 'selected': $index == selected }">
 
                 <div class="user_list_name">{{x.user_fname}}</div>
                 <div ng-hide="x.noOfUnreadMessages == 0" class="unread-messages">{{x.noOfUnreadMessages}}</div>

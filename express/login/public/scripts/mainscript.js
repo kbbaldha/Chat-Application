@@ -83,13 +83,13 @@ function connectToServer() {
     });*/
     socketio.on("logout_client", function (data) {
         window.location = ChatApplication.SERVER_ADDRESS + "/signedOff";
-    });
+    });/*
     socketio.on("friend_request", function (data) {
         friendRequestReceived(data);
     });
     socketio.on("friend_request_accepted", function (data) {
         friendRequestAccepted(data);
-    });
+    });*/
 }
 function friendRequestAccepted(data) {
     generateFriendRequestAcceptedNotification(data.friend_name);

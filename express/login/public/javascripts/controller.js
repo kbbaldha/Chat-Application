@@ -1,4 +1,4 @@
-﻿app.controller("friendListCtrl", function ($scope, $http) {
+﻿app.controller("friendListCtrl", function ($scope,$rootScope, $http) {
     var site = ChatApplication.SERVER_ADDRESS;
     var page = "/getUsers";
     app.totalMessages = 0;
@@ -34,7 +34,7 @@
         }
     });
     getUserName();
-    $scope.getUserId = function ($event) {
+    $scope.getUserId = function ($event, $index) {
         $scope.query = '';
         var friendObj;
         friendObj = getFriendObject(this.x.user_id);
@@ -43,8 +43,7 @@
         }
         friendObj.noOfUnreadMessages = 0;
         $scope.currentFriendObj = friendObj;
-        //$('.selected').removeClass('selected');
-        //$($event.currentTarget).addClass('selected');
+        $scope.selected = $index;
     };
     $scope.enterOnMsgInput = function (keyEvent) {
         if (keyEvent.which === 13 || keyEvent.keyCode === 13) {
@@ -85,6 +84,7 @@
             //clientName = clientInfo[0].user_fname;
             connectToServer();
             bindSocketEvents();
+            $scope.$broadcast('socketObjCreated', {});
             setUser(app.clientInfo.user_fname);
             //getUsersOfApp();
             //getNotifications();

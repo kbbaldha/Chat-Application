@@ -1,4 +1,10 @@
 ﻿app.controller("notificationAndSearch", function ($scope, $http) {
+
+    $scope.$on('socketObjCreated', function (event) {
+        bindSocketEvents();
+    });
+
+
     var site = ChatApplication.SERVER_ADDRESS;
     var page = "/getUsers";
 
@@ -30,6 +36,14 @@
 
         });
     }
+    $scope.sendFriendRequest = function (friend) {
+
+        $.post(ChatApplication.SERVER_ADDRESS + "/sendFriendRequest", { clientId: app.clientInfo.user_id, friendId: friend.user_id }, function (result) {
+            if (result == 'friendReqSent') {
+                // $('.friend-found').find('.' + friendId).parent().html('Friend Request Sent').fadeOut(1000, function () { $(this).remove(); });
+            }
+        });
+    }
     $scope.cancelClicked = function () {
         console.log('hii');
         $.ajax({
@@ -51,6 +65,22 @@
 
         });
     }
+
+    function bindSocketEvents() {
+        console.log('bind socket');
+        socketio.on("friend_request", function (data) {
+            friendRequestReceived(data);
+        });
+        socketio.on("friend_request_accepted", function (data) {
+            friendRequestAccepted(data);
+        });
+    }
+    function friendRequestReceived(data) {
+        console.log('req rec');
+    }
+    function friendRequestAccepted(data) {
+        console.log('accepted');
+    }
     function getNotifications() {
         $.post(ChatApplication.SERVER_ADDRESS + "/getNotification", {}, function (result) {
             var data = JSON.parse(result),
@@ -59,14 +89,14 @@
             currentData;
             for (; i < noOfRequests; i++) {
                 currentData = data[i];
-               /* if (currentData.type == 0) {
-                    friendRequestReceived({ friend_name: currentData.user_fname, friend_id: currentData.user_id });
+                /* if (currentData.type == 0) {
+                friendRequestReceived({ friend_name: currentData.user_fname, friend_id: currentData.user_id });
                 }
                 else {
-                    generateFriendRequestAcceptedNotification(currentData.user_fname);
+                generateFriendRequestAcceptedNotification(currentData.user_fname);
                 }*/
             }
-            
+
         });
     }
 

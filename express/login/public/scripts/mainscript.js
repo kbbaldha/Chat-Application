@@ -74,12 +74,13 @@ function connectToServer() {
         //$('#friend_chat_' + data['clientId']).find('.friend_chat_log').append('<div class="friend_chat_msg">' + data["message"] + '</div>');
         displayFriendMessage(data['clientId'], data["message"]);
     });*/
+    /*
     socketio.on("user_offline", function (data) {
         $('#user_' + data.user_id + '-status').html('offline');
     });
     socketio.on("user_online", function (data) {
         $('#user_' + data.user_id + '-status').html('online');
-    });
+    });*/
     socketio.on("logout_client", function (data) {
         window.location = ChatApplication.SERVER_ADDRESS + "/signedOff";
     });

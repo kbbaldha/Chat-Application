@@ -5,8 +5,9 @@
     $scope.currentFriendName = '';
     $scope.currentFriendId = '';
     $scope.msgInputBoxValue = '';
-    
+
     $scope.currentFriendObj;
+    $scope.selected;
 
     $http.get(site + page)
     .success(function (response) {
@@ -37,13 +38,24 @@
         $scope.query = '';
         var friendObj;
         friendObj = getFriendObject(this.x.user_id);
+        if (friendObj.messages.length == 0) {
+            displayLastDayConversation(this.x.user_id, friendObj);
+        }
         friendObj.noOfUnreadMessages = 0;
         $scope.currentFriendObj = friendObj;
-        $('.selected').removeClass('selected');
-        $($event.currentTarget).addClass('selected');
+        //$('.selected').removeClass('selected');
+        //$($event.currentTarget).addClass('selected');
     };
-
+    $scope.enterOnMsgInput = function (keyEvent) {
+        if (keyEvent.which === 13 || keyEvent.keyCode === 13) {
+            $scope.sendMessage();
+        }
+    }
     $scope.sendMessage = function () {
+        if ($scope.msgInputBoxValue.trim() == "") {
+            return;
+        }
+
         if ($scope.currentFriendObj.type == "1") {
             $scope.currentFriendObj.messages.push({ "2": $scope.msgInputBoxValue });
         }
@@ -78,7 +90,14 @@
             //getNotifications();
         });
     }
-
+    function displayLastDayConversation(userId, friendObj) {
+        console.log('inside display last date in mainscript');
+        $.post(ChatApplication.SERVER_ADDRESS + "/getLastDayConversation", { friendId: userId }, function (result) {
+            console.log('result is :' + result);
+            Array.prototype.unshift.apply(friendObj.messages, JSON.parse(result));
+            $scope.$apply();
+        });
+    }
     function bindSocketEvents() {
         socketio.on("message_to_client", function (data) {
             console.log(data['clientName'] + "::::" + data["message"]);
@@ -88,7 +107,7 @@
                 app.totalMessages += 1;
                 friend.totalMessages = app.totalMessages;
             }
-            
+
             if (friend.type == "1") {
                 friend.messages.push({ "1": data.message });
             }
@@ -96,6 +115,22 @@
                 friend.messages.push({ "2": data.message });
             }
             $scope.$apply();
+        });
+
+        socketio.on("user_offline", function (data) {
+            var friend = getFriendObject(data.user_id);
+            if (friend) {
+                friend.online = 0;
+                $scope.$apply();
+            }
+        });
+        socketio.on("user_online", function (data) {
+            var friend = getFriendObject(data.user_id);
+            console.log('online : ' + data.user_id);
+            if (friend) {
+                friend.online = 1;
+                $scope.$apply();
+            }
         });
     }
 });

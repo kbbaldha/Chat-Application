@@ -15,54 +15,74 @@
         
     </head>
 <body  ng-app="myChatApp">
-    <div id="user"></div>
+    
+    <div id = "background-div" class="background-div"></div>
+    <div id="user" class="user"></div>
     <div id="logout" class="logout" onclick="logout()">Logout</div>
     <div id="chat-control" ng-controller="friendListCtrl">
         <div id="users_of_app" class="users_of_app">
             <div class="user_list_heading">List of users</div>
-            <input ng-model="query">
+            <input ng-model="query" class="search-amongst-friends"/>
             <div class="user-list-name-container" ng-repeat="x in friends | filter:query | orderBy:totalMessages:true" ng-click="getUserId($event)">
 
                 <div class="user_list_name">{{x.user_fname}}</div>
                 <div ng-hide="x.noOfUnreadMessages == 0" class="unread-messages">{{x.noOfUnreadMessages}}</div>
-                <div class="user-status">{{x.online}}</div>
+                <div ng-show="(x.online == 1)" class="user-status-online"></div>
+                <div ng-show="(x.online == 0)" class="user-status-offline"></div>
             </div>
 
         </div>
 
-        <div id="chatlog" class="chatlog">
+        <div id="chatlog" ng-show="(currentFriendObj != undefined && currentFriendObj != null)" class="chatlog">
             <div id="friend_chat_kbbaldha" class="friend_chat">
                 <div id="friend_name" class="friend_name" >{{currentFriendObj.user_fname}}</div>
-                <input type="text" id="message_input" ng-model="msgInputBoxValue" /><button id="kbbaldha"  ng-click ="sendMessage()">send</button>
+                
                 <div id="friend_chat_log" class="friend_chat_log" > 
                     <div class="msg-container" ng-repeat="msg in currentFriendObj.messages">
                         <div ng-if="(msg[currentFriendObj.type] != undefined && msg[currentFriendObj.type] != null)" class="friend_chat_msg"> {{msg[currentFriendObj.type]}} </div>
                         <div ng-if="(msg[currentFriendObj.clientType] != undefined && msg[currentFriendObj.clientType] != null)" class="me_chat"> {{msg[currentFriendObj.clientType]}} </div>
+                        <div ng-if="(msg.friendId != undefined && msg.friendId != null)" class="date-display"> date:{{msg.friendId}} </div>
                         
                     </div>
 
                 </div>
+                <input type="text" id="message_input" ng-model="msgInputBoxValue" ng-keypress="enterOnMsgInput($event)"/><button id="kbbaldha"  ng-click ="sendMessage()">send</button>
             </div>
 
         </div>
     </div>
+    <div id="notification-and-search" class="notification-and-search" ng-controller="notificationAndSearch">
     <div id="notifications-container" class="notifications-container">
         <div class="notifications-heading">Notification</div>
         <div id="notification-holder" class="notifications-holder">
+        <div class="notification">
+                    <div class="friend-req-sender">keyur wants to be your friend</div>
+                    <div class="add-button button-class ">Add</div>
+                    <div class="cancel-button button-class">Cancel</div>
+        </div>
 
         </div>
     </div>
 
     <div id="search-container" class="search-container">
-        <input type="text" id="search_input" />
-        <button id="search" onclick="searchUserByName(this)">search</button>
+       
+         <input type="text" id="Text1" ng-model="searchFriendInput" ng-keypress="enterOnQueryInput($event)"/>
+        <button id="search" ng-click="searchFriend()">search</button>
         <div id="search-result-container" class="search-result-container">
-
+            <div class="friend-found" ng-repeat = "friend in friendsFound">  
+              <div class="friend-found-name">{{friend.user_fname}}</div>   
+              <div class="friend-found-id ankurb">{{friend.user_id}}</div>   
+              <div class="send-request-button button-class" ng-click="sendFriendRequest(friend)">send friend request</div>       
+            </div>
         </div>
     </div>
+    </div>
+
     <script type="text/javascript" src="/scripts/mainscript.js"></script>
     <script type="text/javascript" src="/javascripts/myChatApp.js"></script>
     <script type="text/javascript" src="/javascripts/controller.js"></script>
+    <script type="text/javascript" src="/javascripts/notificationAndSearch.js"></script>
+    
 </body>
 
 </html>

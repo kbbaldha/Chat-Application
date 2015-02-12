@@ -84,7 +84,7 @@
             //clientName = clientInfo[0].user_fname;
             connectToServer();
             bindSocketEvents();
-            $scope.$broadcast('socketObjCreated', {});
+            $rootScope.$broadcast('socketObjCreated', {});
             setUser(app.clientInfo.user_fname);
             //getUsersOfApp();
             //getNotifications();

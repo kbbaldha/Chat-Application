@@ -53,13 +53,20 @@
     </div>
     <div id="notification-and-search" class="notification-and-search" ng-controller="notificationAndSearch">
     <div id="notifications-container" class="notifications-container">
-        <div class="notifications-heading">Notification</div>
+        <div class="notifications-heading">Notifications</div>
         <div id="notification-holder" class="notifications-holder">
-        <div class="notification">
-                    <div class="friend-req-sender">keyur wants to be your friend</div>
-                    <div class="add-button button-class ">Add</div>
-            <div class="cancel-button button-class" ng-click="cancelClicked()">Cancel</div>
-        </div>
+            <div class="notification" ng-repeat="notification in notifications | orderBy:'+':true">
+                <div ng-if="notification.type == 0">
+                    <div class="friend-req-sender">{{notification.user_fname}} wants to be your friend</div>
+                    <div class="add-button button-class" ng-click="acceptClicked(notification)">Accept</div>
+                    <div class="cancel-button button-class" ng-click="cancelClicked(notification)">Cancel</div>
+                </div>
+                <div ng-if="notification.type == 1">
+                    <div class="friend-request-accepted-notification">{{notification.user_fname}} accepted your friend request.</div>
+
+                </div>
+
+            </div>
 
         </div>
     </div>

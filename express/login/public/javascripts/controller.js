@@ -1,6 +1,9 @@
 ﻿app.controller("friendListCtrl", function ($scope,$rootScope, $http) {
     var site = ChatApplication.SERVER_ADDRESS;
     var page = "/getUsers";
+    $scope.$on('friendAdded', function (event,data) {
+        getNewFriend(data);
+    });
     app.totalMessages = 0;
     $scope.currentFriendName = '';
     $scope.currentFriendId = '';
@@ -33,6 +36,20 @@
             }
         }
     });
+    function initiateFriendObject(friendObj) {
+        friendObj.messages = [];
+        friendObj.noOfUnreadMessages = 0;
+        friendObj.totalMessages = 0;
+        conversationIdArray = friendObj.conversation_id.split("#");
+        if (conversationIdArray[0] == friendObj.user_id) {
+            friendObj.type = "1";
+            friendObj.clientType = "2";
+        }
+        else {
+            friendObj.type = "2";
+            friendObj.clientType = "1";
+        }
+    }
     getUserName();
     $scope.getUserId = function ($event, $index) {
         $scope.query = '';
@@ -64,6 +81,15 @@
         socketio.emit("message_to_server", { message: $scope.msgInputBoxValue, friend: $scope.currentFriendObj.user_id, clientName: app.clientInfo.user_fname, clientId: app.clientInfo.user_id });
         $scope.msgInputBoxValue = '';
     };
+    function getNewFriend(userObj) {
+        $.post(ChatApplication.SERVER_ADDRESS + "/getNewFriend", { friendId: userObj.user_id }, function (result) {
+            console.log(result);
+            result = JSON.parse(result);
+            initiateFriendObject(result[0]);
+            $scope.friends.push(result[0]);
+            $scope.$apply();
+        });
+    }
     function getFriendObject(id) {
         var i = 0,
             friends = $scope.friends,
@@ -80,14 +106,10 @@
         $http.get(ChatApplication.SERVER_ADDRESS + "/getUser")
         .success(function (response) {
             app.clientInfo = response[0];
-            // clientId = clientInfo[0].user_id;
-            //clientName = clientInfo[0].user_fname;
             connectToServer();
             bindSocketEvents();
             $rootScope.$broadcast('socketObjCreated', {});
-            setUser(app.clientInfo.user_fname);
-            //getUsersOfApp();
-            //getNotifications();
+            setUser(app.clientInfo.user_fname);            
         });
     }
     function displayLastDayConversation(userId, friendObj) {
@@ -100,9 +122,16 @@
     }
     function bindSocketEvents() {
         socketio.on("message_to_client", function (data) {
-            console.log(data['clientName'] + "::::" + data["message"]);
+            
             var friend = getFriendObject(data.clientId);
-            if (!(data.clientId == $scope.currentFriendObj.user_id)) {
+            if ($scope.currentFriendObj) {
+                if (!(data.clientId == $scope.currentFriendObj.user_id)) {
+                    friend.noOfUnreadMessages = friend.noOfUnreadMessages + 1;
+                    app.totalMessages += 1;
+                    friend.totalMessages = app.totalMessages;
+                }
+            }
+            else {
                 friend.noOfUnreadMessages = friend.noOfUnreadMessages + 1;
                 app.totalMessages += 1;
                 friend.totalMessages = app.totalMessages;

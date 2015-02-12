@@ -52,13 +52,19 @@ router.post('/login', function (req, res, next) {
                     res.sendfile(html_dir + 'invalid_login.html');
                 }
             });
-
+   
 });
 router.get('/signedOff', function (req, res, next) {
     var html_dir = './public/';
     res.sendfile(html_dir + 'signed_off.html');
 });
-
+router.post('/getNewFriend', function (req, res, next) {
+    
+    connection.query("SELECT user_id, user_fname, online,conversation_id FROM user_information ui NATURAL JOIN friend_list fl where user_id = '" + req.body.friendId + "' AND friend_id = '" + req.session.user_name + "';",
+            function (error, rows, fields) {
+                res.send(JSON.stringify(rows));
+            });
+});
 router.get('/getUsers', function (req, res, next) {
     var userid = req.session.user_name;
 
@@ -142,11 +148,11 @@ router.post('/friendRequestAccepted', function (req, res, next) {
                  // when friend is online send notification immidiately
             if (socket) {
 
-                connection.query("SELECT user_fname FROM user_information WHERE user_id = '" + clId + "';",
+                connection.query("SELECT user_fname,user_id FROM user_information WHERE user_id = '" + clId + "';",
                  function (error, rows, fields) {
                      if (rows.length > 0) {
 
-                         socket.emit("friend_request_accepted", { friend_name: rows[0]["user_fname"] });
+                         socket.emit("friend_request_accepted", { friend_name: rows[0]["user_fname"], friend_id: rows[0]["user_id"] });
                          res.send('accepted-friend-notification');
                      }
 

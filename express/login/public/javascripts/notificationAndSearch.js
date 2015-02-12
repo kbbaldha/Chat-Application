@@ -1,4 +1,4 @@
-﻿app.controller("notificationAndSearch", function ($scope, $http) {
+﻿app.controller("notificationAndSearch", function ($scope, $rootScope, $http) {
 
     $scope.$on('socketObjCreated', function (event) {
         bindSocketEvents();
@@ -38,7 +38,7 @@
         });
     }
     $scope.cancelClicked = function (notification) {
-        console.log('hii');
+        removeNotification(notification);
        
     }
     $scope.acceptClicked = function (notification) {
@@ -46,11 +46,13 @@
             console.log('result---------' + result);
             if (result == 'accepted-friend-notification') {
                 removeNotification(notification);
+                $rootScope.$broadcast('friendAdded', { user_id: notification.user_id});
                 //getUsersOfApp();
                 //$('.notification').find('.' + friendId).parent().html('Friend Added').fadeOut(1000, function () { $(this).remove(); });
             }
         });
     }
+        
     function removeFriend(friendToBeDeleted) {
         var friends = $scope.friendsFound,
             length = friends.length,
@@ -60,9 +62,11 @@
             current = friends[i];
 
             if (friendToBeDeleted.user_id == current.user_id) {
-                friends.splice(i, 1);
-                $scope.$apply();
-                return;
+               
+                    friends.splice(i, 1);
+                    $scope.$apply();
+                    return;
+                
             }
         }
 
@@ -76,9 +80,10 @@
             current = notifications[i];
 
             if (notification.user_id == current.user_id) {
-                notifications.splice(i, 1);
-                $scope.$apply();
-                return;
+                if (notification.type == current.type) {
+                    notifications.splice(i, 1);                   
+                    return;
+                }
             }
         }
     }
@@ -89,6 +94,7 @@
         });
         socketio.on("friend_request_accepted", function (data) {
             friendRequestAccepted(data);
+            $rootScope.$broadcast('friendAdded', { user_id: data.friend_id });
         });
     }
     function friendRequestReceived(data) {
@@ -96,7 +102,7 @@
         $scope.$apply();
     }
     function friendRequestAccepted(data) {
-        $scope.notifications.push({ type: 1, user_fname: data.friend_name });
+        $scope.notifications.push({ type: 1, user_fname: data.friend_name, user_id: data.friend_id });
         $scope.$apply();
     }
     function getNotifications() {

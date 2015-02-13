@@ -1,7 +1,7 @@
-﻿app.controller("friendListCtrl", function ($scope,$rootScope, $http) {
+﻿app.controller("friendListCtrl", function ($scope, $rootScope, $http) {
     var site = ChatApplication.SERVER_ADDRESS;
     var page = "/getUsers";
-    $scope.$on('friendAdded', function (event,data) {
+    $scope.$on('friendAdded', function (event, data) {
         getNewFriend(data);
     });
     app.totalMessages = 0;
@@ -78,6 +78,8 @@
         else {
             $scope.currentFriendObj.messages.push({ "1": $scope.msgInputBoxValue });
         }
+        manageScroll();
+
         socketio.emit("message_to_server", { message: $scope.msgInputBoxValue, friend: $scope.currentFriendObj.user_id, clientName: app.clientInfo.user_fname, clientId: app.clientInfo.user_id });
         $scope.msgInputBoxValue = '';
     };
@@ -109,7 +111,7 @@
             connectToServer();
             bindSocketEvents();
             $rootScope.$broadcast('socketObjCreated', {});
-            setUser(app.clientInfo.user_fname);            
+            setUser(app.clientInfo.user_fname);
         });
     }
     function displayLastDayConversation(userId, friendObj) {
@@ -120,9 +122,21 @@
             $scope.$apply();
         });
     }
+    function manageScroll() {
+        console.log('manage scroll');
+        var chatLog = document.getElementById('friend_chat_log'),
+                isScrolledToBottom = chatLog.scrollHeight - chatLog.clientHeight <= chatLog.scrollTop + 30;
+        if (isScrolledToBottom) {
+            console.log('tybfhbcbv');
+            setTimeout(function () {
+                chatLog.scrollTop = chatLog.scrollHeight - chatLog.clientHeight;
+            }, 10);
+
+        }
+    }
     function bindSocketEvents() {
         socketio.on("message_to_client", function (data) {
-            
+
             var friend = getFriendObject(data.clientId);
             if ($scope.currentFriendObj) {
                 if (!(data.clientId == $scope.currentFriendObj.user_id)) {
@@ -144,6 +158,9 @@
                 friend.messages.push({ "2": data.message });
             }
             $scope.$apply();
+            manageScroll();
+
+
         });
 
         socketio.on("user_offline", function (data) {

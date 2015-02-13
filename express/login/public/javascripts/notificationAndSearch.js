@@ -11,6 +11,7 @@
     $scope.searchFriendInput = '';
     $scope.friendsFound;
     $scope.notifications = [];
+    $scope.friendFoundSelected;
     $scope.enterOnQueryInput = function (keyEvent) {
         if (keyEvent.which === 13 || keyEvent.keyCode === 13) {
             $scope.searchFriend();
@@ -22,20 +23,33 @@
         var searchName = $('#search_input').val();
 
         $.post(ChatApplication.SERVER_ADDRESS + "/searchFriend", { searchName: $scope.searchFriendInput }, function (result) {
-            console.log(result);
+            var i = 0,
+                length,
+                currentFound;
             result = JSON.parse(result);
             $scope.friendsFound = result;
+            length = result.length;
+            for (; i < length; i++) {
+                currentFound = $scope.friendsFound[i];
+                currentFound.innerhtml = 'Send Friend Request';
+            }
             $scope.$apply();
 
         });
     }
-    $scope.sendFriendRequest = function (friend) {
-
+    $scope.sendFriendRequest = function (friend,$index) {
+        friend.innerhtml = 'sending.....';
+        $scope.friendFoundSelected = $index;
+       // $scope.$apply();
         $.post(ChatApplication.SERVER_ADDRESS + "/sendFriendRequest", { clientId: app.clientInfo.user_id, friendId: friend.user_id }, function (result) {
             if (result == 'friendReqSent') {
+                friend.innerhtml = 'Friend Request Sent';
+                $scope.$apply();
                 removeFriend(friend);
+                $scope.friendFoundSelected = '';
             }
         });
+
     }
     $scope.cancelClicked = function (notification) {
         removeNotification(notification);

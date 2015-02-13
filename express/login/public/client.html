@@ -10,6 +10,7 @@
         <script  src="/socket.io/socket.io.js"></script>
         <script src="/scripts/constants.js"></script>
         <script src="/scripts/angular.min.js"></script>
+        <script src="/scripts/angular-animate.js"></script>
         
             
         
@@ -79,9 +80,9 @@
             <div class="friend-found" ng-repeat = "friend in friendsFound">  
               <div class="friend-found-name">{{friend.user_fname}}</div>   
               <div class="friend-found-id ankurb">{{friend.user_id}}</div>   
-              <div class="send-request-button button-class" ng-click="sendFriendRequest(friend)">send friend request</div>       
+                <div class="send-request-button button-class" ng-click="sendFriendRequest(friend,$index)" ng-class="{'sel': $index == friendFoundSelected}">{{friend.innerhtml}}</div>       
             </div>
-        </div>
+        </div>                                                                                                                                  
     </div>
     </div>
 

@@ -1,1 +1,1 @@
-﻿var app = angular.module("myChatApp", []);
+﻿var app = angular.module("myChatApp", ['ngAnimate']);

@@ -83,6 +83,9 @@
         socketio.emit("message_to_server", { message: $scope.msgInputBoxValue, friend: $scope.currentFriendObj.user_id, clientName: app.clientInfo.user_fname, clientId: app.clientInfo.user_id });
         $scope.msgInputBoxValue = '';
     };
+    $scope.loadMoreMessages = function () {
+
+    }
     function getNewFriend(userObj) {
         $.post(ChatApplication.SERVER_ADDRESS + "/getNewFriend", { friendId: userObj.user_id }, function (result) {
             console.log(result);

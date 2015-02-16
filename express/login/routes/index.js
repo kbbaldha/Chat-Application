@@ -446,7 +446,7 @@ function getMonth(no) {
 function getClosestDate(folderStructure, curDate, res, userIdentity, friendId) {
     var splitDate = curDate.split('-'),
         date = splitDate[0],
-        month = splitDate[1], parsedDate, closestVal=0, diffDays,closestDiffDays,
+        month = splitDate[1], parsedDate, closestVal = 0, diffDays, closestDiffDays,
         year = splitDate[2], i = 0, j, k, curFile, splitFile;
 
     fs.readdir(folderStructure + '/', function (err, files) {
@@ -461,23 +461,31 @@ function getClosestDate(folderStructure, curDate, res, userIdentity, friendId) {
             console.log(' Current File is:' + curFile);
             splitFile = curFile.split('-');
             parsedDate = new Date(parseInt(splitFile[2]), parseInt(splitFile[1]) - 1, parseInt(splitFile[0]));
-            var timeDiff = Math.abs(parsedDate.getTime() - new Date().getTime());
-            diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            if (i === 0) {
-                closestDiffDays = diffDays;
-            }
-            if (diffDays < closestDiffDays) {
-                closestVal = i;
+            var timeDiff = new Date(parseInt(year), parseInt(month) - 1, parseInt(date)).getTime() - parsedDate.getTime();
+            if (timeDiff >= 0) {
+                diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                if (closestDiffDays === null || closestDiffDays === undefined) {
+                    closestDiffDays = diffDays;
+                    closestVal = i;
+                }
+                if (diffDays < closestDiffDays) {
+                    closestVal = i;
+                    closestDiffDays = diffDays;
+                }
             }
         }
-        returnLastFileData(folderStructure + '/' + files[closestVal], res, userIdentity, friendId);
+        if (closestDiffDays !== null && closestDiffDays !== undefined) {
+            returnLastFileData(folderStructure + '/' + files[closestVal], res, userIdentity, friendId, files[closestVal]);
+        } else {
+            res.send('{"last":"y","friendId":"' + friendId + '"}');
+        }
     });
 }
 
-function returnLastFileData(filename, res, userIdentity, friendId) {
+function returnLastFileData(filename, res, userIdentity, friendId, currentFile) {
     fs.readFile(filename, { encoding: 'utf-8' }, function (err, data) {
         if (!err) {
-            res.json('[{"userIdentity":' + userIdentity + ',"friendId":"' + friendId + '"},' + data + ']');
+            res.json('[{"userIdentity":' + userIdentity + ',"friendId":"' + friendId + '","currentFile":"' + currentFile + '"},' + data + ']');
         }
     });
 }
@@ -490,9 +498,9 @@ router.post('/getLastDayConversation', function (req, res, next) {
             if (rows.length > 0) {
                 var conId = rows[0]['conversation_id'],
                     users = conId.split('#'),
-                    date = getTodaysDate(), lastFileName,
-                    myData, folderStructure = './conversation-history/' + conId,
-                    filename = folderStructure + '/' + date + '.json',
+                    date = getTodaysDate(),
+                    folderStructure = './conversation-history/' + conId,
+
                     userIdentity;
 
                 // Checking if the user is 1 or 2
@@ -509,6 +517,46 @@ router.post('/getLastDayConversation', function (req, res, next) {
                         getClosestDate(folderStructure, date, res, userIdentity, req.body.friendId);
                     } else {
                         // There is no conversation history
+                        res.send(true);
+                    }
+                });
+            }
+        });
+});
+
+
+router.post('/getMore', function (req, res, next) {
+    var userid = req.session.user_name;
+    console.log('inside getMore in server');
+    connection.query("SELECT conversation_id FROM friend_list WHERE user_id='" + userid + "' AND friend_id = '" + req.body.friendId + "';",
+        function (error, rows, fields) {
+            if (rows.length > 0) {
+                var conId = rows[0]['conversation_id'],
+                    users = conId.split('#'),
+                    filename = req.body.currentFile,
+                    date = filename.replace('.json', ''),
+                    splitFile = date.split('-'),
+                    parsedDate = new Date(parseInt(splitFile[2]), parseInt(splitFile[1]) - 1, parseInt(splitFile[0])),
+                    folderStructure = './conversation-history/' + conId,
+                    userIdentity;
+
+                parsedDate.setDate(parsedDate.getDate() - 1);
+
+                // Checking if the user is 1 or 2
+                if (userid === users[0]) {
+                    userIdentity = "1";
+                } else {
+                    userIdentity = "2";
+                }
+
+
+                // Check if there is a conversation history for these users
+                fs.exists(folderStructure, function (exists) {
+                    if (exists) {
+                        getClosestDate(folderStructure, getDateInString(parsedDate), res, userIdentity, req.body.friendId);
+                    } else {
+                        // There is no conversation history
+                        res.send(true);
                     }
                 });
             }
@@ -532,6 +580,15 @@ function disconnectUser(data, io) {
     });
 }
 
+function getDateInString(date) {
+    var str = "";
+
+    str += date.getDate() + "-";
+    str += (date.getMonth() + 1) + "-";
+    str += date.getFullYear();
+
+    return str;
+}
 
 module.exports = router;
 router.addSocketInfoToDatabase = addSocketInfoToDatabase;

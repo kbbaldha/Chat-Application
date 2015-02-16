@@ -10,11 +10,12 @@
  
  }
 .friend-found.ng-enter {
-  opacity: 0;
+  /*opacity: 0;*/
+  top:200px;
 }
 .friend-found.ng-enter.ng-enter-active {
-  
-  opacity: 1;
+  top:0px;
+  /*opacity: 1;*/
 }
 .friend-found.ng-leave.ng-leave-active{
   
@@ -283,6 +284,8 @@ body
                background-color: antiquewhite;
                 margin: 3px;
                 padding: 5px 10px 10px 5px;
+                position:relative;
+                top:initial;
             }
             .friend-found-name{
                 font-weight:bold;

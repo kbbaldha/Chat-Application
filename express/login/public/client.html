@@ -39,11 +39,11 @@
                 <div id="friend_name" class="friend_name" >{{currentFriendObj.user_fname}}</div>
                 
                 <div id="friend_chat_log" class="friend_chat_log" >
-                    <input type="button" value="load more" ng-click="loadMoreMessages()"></input> 
+                    <input type="button" value="load more" ng-click="onLoadMoreBtnClicked()" ng-hide="currentFriendObj.hideLoadMore == true"></input> 
                     <div class="msg-container" ng-repeat="msg in currentFriendObj.messages">
                         <div ng-if="(msg[currentFriendObj.type] != undefined && msg[currentFriendObj.type] != null)" class="friend_chat_msg"> {{msg[currentFriendObj.type]}} </div>
                         <div ng-if="(msg[currentFriendObj.clientType] != undefined && msg[currentFriendObj.clientType] != null)" class="me_chat"> {{msg[currentFriendObj.clientType]}} </div>
-                        <div ng-if="(msg.friendId != undefined && msg.friendId != null)" class="date-display"> date:{{msg.friendId}} </div>
+                        <div ng-if="(msg.currentFile != undefined && msg.currentFile != null)" class="date-display"> {{msg.currentFile}} </div>
                         
                     </div>
 

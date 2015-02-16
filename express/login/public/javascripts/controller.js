@@ -25,6 +25,8 @@
             currentFriend.messages = [];
             currentFriend.noOfUnreadMessages = 0;
             currentFriend.totalMessages = 0;
+            currentFriend.currentFile = null;
+            currentFriend.hideLoadMore= null;
             conversationIdArray = currentFriend.conversation_id.split("#");
             if (conversationIdArray[0] == currentFriend.user_id) {
                 currentFriend.type = "1";
@@ -40,6 +42,8 @@
         friendObj.messages = [];
         friendObj.noOfUnreadMessages = 0;
         friendObj.totalMessages = 0;
+        friendObj.currentFile = null;
+        friendObj.hideLoadMore = null;
         conversationIdArray = friendObj.conversation_id.split("#");
         if (conversationIdArray[0] == friendObj.user_id) {
             friendObj.type = "1";
@@ -118,19 +122,35 @@
         });
     }
     function displayLastDayConversation(userId, friendObj) {
-        console.log('inside display last date in mainscript');
         $.post(ChatApplication.SERVER_ADDRESS + "/getLastDayConversation", { friendId: userId }, function (result) {
-            console.log('result is :' + result);
-            Array.prototype.unshift.apply(friendObj.messages, JSON.parse(result));
-            $scope.$apply();
+            displayMoreMessages(friendObj,result);            
         });
     }
+    $scope.onLoadMoreBtnClicked = function onLoadMoreBtnClicked() {
+        var curFriend = $scope.currentFriendObj;
+        $.post(ChatApplication.SERVER_ADDRESS + "/getMore", { friendId: curFriend.user_id, currentFile: curFriend.currentFile }, function (result) {
+            
+            displayMoreMessages(curFriend,result);
+        });
+    }
+
+    function displayMoreMessages(friendObj, result) {
+        result = JSON.parse(result);
+
+        if (result.last) {
+            friendObj.hideLoadMore = true;
+            $scope.$apply();
+            return;
+        }
+        friendObj.currentFile = result[0].currentFile;
+        result[0].currentFile = result[0].currentFile.replace('.json', '');        
+        Array.prototype.unshift.apply(friendObj.messages, result);
+        $scope.$apply();
+    }
     function manageScroll() {
-        console.log('manage scroll');
         var chatLog = document.getElementById('friend_chat_log'),
                 isScrolledToBottom = chatLog.scrollHeight - chatLog.clientHeight <= chatLog.scrollTop + 30;
         if (isScrolledToBottom) {
-            console.log('tybfhbcbv');
             setTimeout(function () {
                 chatLog.scrollTop = chatLog.scrollHeight - chatLog.clientHeight;
             }, 10);

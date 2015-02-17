@@ -59,10 +59,12 @@
         $scope.query = '';
         var friendObj;
         friendObj = getFriendObject(this.x.user_id);
+        setActiveObject(this.x.user_id);
         if (friendObj.messages.length == 0) {
             displayLastDayConversation(this.x.user_id, friendObj);
         }
         friendObj.noOfUnreadMessages = 0;
+        
         $scope.currentFriendObj = friendObj;
         $scope.selected = $index;
     };
@@ -110,6 +112,20 @@
         }
     }
 
+    function setActiveObject(id) {
+        var i = 0,
+            friends = $scope.friends,
+            noOfFriends = friends.length;
+        for (; i < noOfFriends; i++) {
+            if (friends[i].user_id == id) {
+                friends[i].active = true;
+            }
+            else {
+                friends[i].active = false;
+            }
+        }
+    }
+
     function getUserName() {
 
         $http.get(ChatApplication.SERVER_ADDRESS + "/getUser")
@@ -137,15 +153,17 @@
     function displayMoreMessages(friendObj, result) {
         result = JSON.parse(result);
 
-        if (result.last) {
             friendObj.hideLoadMore = true;
+        if (result.last) {
             $scope.$apply();
             return;
         }
-        friendObj.currentFile = result[0].currentFile;
-        result[0].currentFile = result[0].currentFile.replace('.json', '');        
-        Array.prototype.unshift.apply(friendObj.messages, result);
-        $scope.$apply();
+        if (result[0]) {
+            friendObj.currentFile = result[0].currentFile;
+            result[0].currentFile = result[0].currentFile.replace('.json', '');
+            Array.prototype.unshift.apply(friendObj.messages, result);
+            $scope.$apply();
+        }
     }
     function manageScroll() {
         var chatLog = document.getElementById('friend_chat_log'),

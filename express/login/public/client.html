@@ -1,97 +1,124 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" type="text/css" href="/stylesheets/clientStyle.css">
-        <style type="text/css">
-            
-           
-        </style>
-        <script src="/scripts/jquery-2.1.3.min.js"></script>
-        <script  src="/socket.io/socket.io.js"></script>
-        <script src="/scripts/constants.js"></script>
-        <script src="/scripts/angular.min.js"></script>
-        <script src="/scripts/angular-animate.js"></script>
-        
-            
-        
-    </head>
-<body  ng-app="myChatApp">
-    
-    <div id = "background-div" class="background-div"></div>
-    <div id="user" class="user"></div>
-    <div id="logout" class="logout button-class" onclick="logout()">Logout</div>
-    <div id="chat-control" ng-controller="friendListCtrl">
-        <div id="users_of_app" class="users_of_app">
-            <div class="user_list_heading">List of users</div>
-            <input ng-model="query" class="search-amongst-friends"/>
-            <div class="user-list-name-container" ng-repeat="x in friends | filter:query | orderBy:totalMessages:true" ng-click="getUserId($event,$index)" ng-class="{ 'selected': $index == selected }">
-
-                <div class="user_list_name">{{x.user_fname}}</div>
-                <div ng-hide="x.noOfUnreadMessages == 0" class="unread-messages">{{x.noOfUnreadMessages}}</div>
-                <div ng-show="(x.online == 1)" class="user-status-online"></div>
-                <div ng-show="(x.online == 0)" class="user-status-offline"></div>
-            </div>
-
-        </div>
-
-        <div id="chatlog" ng-show="(currentFriendObj != undefined && currentFriendObj != null)" class="chatlog">
-            <div id="friend_chat_kbbaldha" class="friend_chat">
-                <div id="friend_name" class="friend_name" >{{currentFriendObj.user_fname}}</div>
-                
-                <div id="friend_chat_log" class="friend_chat_log" >
-                    <input type="button" value="load more" ng-click="onLoadMoreBtnClicked()" ng-hide="currentFriendObj.hideLoadMore == true"></input> 
-                    <div class="msg-container" ng-repeat="msg in currentFriendObj.messages">
-                        <div ng-if="(msg[currentFriendObj.type] != undefined && msg[currentFriendObj.type] != null)" class="friend_chat_msg"> {{msg[currentFriendObj.type]}} </div>
-                        <div ng-if="(msg[currentFriendObj.clientType] != undefined && msg[currentFriendObj.clientType] != null)" class="me_chat"> {{msg[currentFriendObj.clientType]}} </div>
-                        <div ng-if="(msg.currentFile != undefined && msg.currentFile != null)" class="date-display"> {{msg.currentFile}} </div>
-                        
-                    </div>
-
-                </div>
-                <input type="text" id="message_input" ng-model="msgInputBoxValue" ng-keypress="enterOnMsgInput($event)"/><button id="kbbaldha"  ng-click ="sendMessage()">send</button>
-            </div>
-
-        </div>
-    </div>
-    <div id="notification-and-search" class="notification-and-search" ng-controller="notificationAndSearch">
-    <div id="notifications-container" class="notifications-container">
-        <div class="notifications-heading">Notifications</div>
-        <div id="notification-holder" class="notifications-holder">
-            <div class="notification" ng-repeat="notification in notifications | orderBy:'+':true">
-                <div ng-if="notification.type == 0">
-                    <div class="friend-req-sender">{{notification.user_fname}} wants to be your friend</div>
-                    <div class="add-button button-class" ng-click="acceptClicked(notification)">Accept</div>
-                    <div class="cancel-button button-class" ng-click="cancelClicked(notification)">Cancel</div>
-                </div>
-                <div ng-if="notification.type == 1">
-                    <div class="friend-request-accepted-notification">{{notification.user_fname}} accepted your friend request.</div>
-
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-
-    <div id="search-container" class="search-container">
-       
-         <input type="text" id="Text1" ng-model="searchFriendInput" ng-keypress="enterOnQueryInput($event)"/>
-        <button id="search" ng-click="searchFriend()">search</button>
-        <div id="search-result-container" class="search-result-container">
-            <div class="friend-found" ng-repeat = "friend in friendsFound">  
-              <div class="friend-found-name">{{friend.user_fname}}</div>   
-              <div class="friend-found-id ankurb">{{friend.user_id}}</div>   
-                <div class="send-request-button button-class" ng-click="sendFriendRequest(friend,$index)" ng-class="{'sel': $index == friendFoundSelected}">{{friend.innerhtml}}</div>       
-            </div>
-        </div>                                                                                                                                  
-    </div>
-    </div>
-
+<head>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/clientStyle.css" />
+    <link href="stylesheets/bootstrap.css" rel="stylesheet" />
+    <script src="/scripts/jquery-2.1.3.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/scripts/constants.js"></script>
+    <script src="/scripts/angular.min.js"></script>
+    <script src="/scripts/angular-animate.js"></script>
     <script type="text/javascript" src="/scripts/mainscript.js"></script>
     <script type="text/javascript" src="/javascripts/myChatApp.js"></script>
     <script type="text/javascript" src="/javascripts/controller.js"></script>
     <script type="text/javascript" src="/javascripts/notificationAndSearch.js"></script>
-    
+    <script src="scripts/bootstrap.js"></script>
+    <title>Chat Application</title>
+
+</head>
+<body ng-app="myChatApp">
+
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container">
+
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Chat Application</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <div class="navbar-form navbar-left " role="search">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search Friend">
+                    </div>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" class="btn btn-danger" onclick="logout()">Logout</a></li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div class="container">
+        <div class="page-header row">
+            <h1 id="user" class=""></h1>
+        </div>
+        <div id="chat-control" ng-controller="friendListCtrl" class="container">
+            <div class="col-md-3">
+                <div id="users_of_app" class="panel panel-info">
+                    <div class="panel-heading panel-primary">List of users</div>
+                    <ul class="user-list-name-container list-group">
+                        <li class="list-group-item" ng-class="{ 'active': x.active }" ng-repeat="x in friends | filter:query | orderBy:totalMessages:true" ng-click="getUserId($event,$index)" ng-class="{ 'selected': $index == selected }">
+                            <span>{{x.user_fname}}<span ng-hide="x.noOfUnreadMessages == 0" class="badge">{{x.noOfUnreadMessages}}</span></span>
+                            <i class="glyphicon glyphicon-user user-icon" ng-class="{ 'online': x.online}"></i>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="chatlog" ng-show="(currentFriendObj != undefined && currentFriendObj != null)">
+                <div id="friend_chat_kbbaldha" class="friend_chat panel" ng-class="{ 'panel-success': currentFriendObj.online, 'panel-danger': !currentFriendObj.online}">
+                    <div id="friend_name" class="friend_name panel-heading">{{currentFriendObj.user_fname}}</div>
+
+                    <div id="friend_chat_log" class="friend_chat_log">
+                        <input type="button" value="load more" ng-click="onLoadMoreBtnClicked()" ng-hide="currentFriendObj.hideLoadMore == true"></input>
+                        <div class="msg-container" ng-repeat="msg in currentFriendObj.messages">
+                            <div ng-if="(msg[currentFriendObj.type] != undefined && msg[currentFriendObj.type] != null)" class="friend_chat_msg"> {{msg[currentFriendObj.type]}} </div>
+                            <div ng-if="(msg[currentFriendObj.clientType] != undefined && msg[currentFriendObj.clientType] != null)" class="me_chat"> {{msg[currentFriendObj.clientType]}} </div>
+                            <div ng-if="(msg.currentFile != undefined && msg.currentFile != null)" class="date-display"> {{msg.currentFile}} </div>
+
+                        </div>
+
+                    </div>
+                    <input type="text" id="message_input" ng-model="msgInputBoxValue" ng-keypress="enterOnMsgInput($event)" /><button id="kbbaldha" ng-click="sendMessage()">send</button>
+                </div>
+
+            </div>
+        </div>
+        <div id="notification-and-search" class="notification-and-search" ng-controller="notificationAndSearch">
+            <div id="notifications-container" class="notifications-container">
+                <div class="notifications-heading">Notifications</div>
+                <div id="notification-holder" class="notifications-holder">
+                    <div class="notification" ng-repeat="notification in notifications | orderBy:'+':true">
+                        <div ng-if="notification.type == 0">
+                            <div class="friend-req-sender">{{notification.user_fname}} wants to be your friend</div>
+                            <div class="add-button button-class" ng-click="acceptClicked(notification)">Accept</div>
+                            <div class="cancel-button button-class" ng-click="cancelClicked(notification)">Cancel</div>
+                        </div>
+                        <div ng-if="notification.type == 1">
+                            <div class="friend-request-accepted-notification">{{notification.user_fname}} accepted your friend request.</div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="search-container" class="search-container">
+
+                <input type="text" id="Text1" ng-model="searchFriendInput" ng-keypress="enterOnQueryInput($event)" />
+                <button id="search" ng-click="searchFriend()">search</button>
+                <div id="search-result-container" class="search-result-container">
+                    <div class="friend-found" ng-repeat="friend in friendsFound">
+                        <div class="friend-found-name">{{friend.user_fname}}</div>
+                        <div class="friend-found-id ankurb">{{friend.user_id}}</div>
+                        <div class="send-request-button button-class" ng-click="sendFriendRequest(friend,$index)" ng-class="{'sel': $index == friendFoundSelected}">{{friend.innerhtml}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script type="text/javascript" src="/scripts/mainscript.js"></script>
+    <script type="text/javascript" src="/javascripts/myChatApp.js"></script>
+    <script type="text/javascript" src="/javascripts/controller.js"></script>
+    <script type="text/javascript" src="/javascripts/notificationAndSearch.js"></script>
+
 </body>
 
 </html>

@@ -118,9 +118,7 @@ body {
 
 .friend_chat {
     margin-right: 10px;
-    width: 500px;
     height: 428px;
-    float: left;
     margin-bottom: 10px;
     position: relative;
     display: inline-block;
@@ -243,12 +241,6 @@ body {
     float: right;
 }
 
-.notifications-container {
-    width: 240px;
-    height: 320px;
-    background-color: #ededed;
-    border: 2px solid #444455;
-}
 
 .notifications-heading {
     position: relative;

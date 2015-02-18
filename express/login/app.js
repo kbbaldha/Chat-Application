@@ -43,6 +43,10 @@ io.sockets.on('connection', function (socket) {
     socket.on('message_to_server', function (data) {
         routes.sendMessage(data, io);
     });
+    socket.on('typing_notification', function (data) {
+        console.log('typing');
+        routes.sendTypingNotification(data, io);
+    });
     socket.on('disconnect', function (data) {
         //console.log('somebody is disconnected' + this);
         routes.disconnectUser(this,io);

@@ -24,9 +24,10 @@
             currentFriend = friends[i];
             currentFriend.messages = [];
             currentFriend.noOfUnreadMessages = 0;
+            currentFriend.startTyping = false;
             currentFriend.totalMessages = 0;
             currentFriend.currentFile = null;
-            currentFriend.hideLoadMore= null;
+            currentFriend.hideLoadMore = null;
             conversationIdArray = currentFriend.conversation_id.split("#");
             if (conversationIdArray[0] == currentFriend.user_id) {
                 currentFriend.type = "1";
@@ -41,6 +42,7 @@
     function initiateFriendObject(friendObj) {
         friendObj.messages = [];
         friendObj.noOfUnreadMessages = 0;
+        friendObj.startTyping = false;
         friendObj.totalMessages = 0;
         friendObj.currentFile = null;
         friendObj.hideLoadMore = null;
@@ -64,13 +66,37 @@
             displayLastDayConversation(this.x.user_id, friendObj);
         }
         friendObj.noOfUnreadMessages = 0;
-        
+
         $scope.currentFriendObj = friendObj;
         $scope.selected = $index;
     };
     $scope.enterOnMsgInput = function (keyEvent) {
         if (keyEvent.which === 13 || keyEvent.keyCode === 13) {
             $scope.sendMessage();
+        }
+        else {
+            $scope.sendTypingNotification(event)
+        }
+    }
+    $scope.sendTypingNotification = function (event) {
+        if ($scope.typingTimer) {
+            clearTimeout($scope.typingTimer);
+            $scope.notifiedTyping = true;
+        }
+        $scope.typingTimer = setTimeout(function () {
+            socketio.emit("typing_notification", { message: 'end_typing', friend: $scope.currentFriendObj.user_id, clientName: app.clientInfo.user_fname, clientId: app.clientInfo.user_id });
+            clearTimeout($scope.typingTimer);
+            $scope.typingTimer = null;
+            $scope.notifiedTyping = false;
+        }, 2000);
+        if (!$scope.notifiedTyping) {
+            socketio.emit("typing_notification", { message: 'start_typing', friend: $scope.currentFriendObj.user_id, clientName: app.clientInfo.user_fname, clientId: app.clientInfo.user_id });
+            setTimeout(function () {
+                $scope.notifiedTyping = false;
+            }, 1500)
+        }
+        else {
+            return;
         }
     }
     $scope.sendMessage = function () {
@@ -85,7 +111,10 @@
             $scope.currentFriendObj.messages.push({ "1": $scope.msgInputBoxValue });
         }
         manageScroll();
-
+        socketio.emit("typing_notification", { message: 'end_typing', friend: $scope.currentFriendObj.user_id, clientName: app.clientInfo.user_fname, clientId: app.clientInfo.user_id });
+        clearTimeout($scope.typingTimer);
+        $scope.typingTimer = null;
+        $scope.notifiedTyping = false;
         socketio.emit("message_to_server", { message: $scope.msgInputBoxValue, friend: $scope.currentFriendObj.user_id, clientName: app.clientInfo.user_fname, clientId: app.clientInfo.user_id });
         $scope.msgInputBoxValue = '';
     };
@@ -139,21 +168,21 @@
     }
     function displayLastDayConversation(userId, friendObj) {
         $.post(ChatApplication.SERVER_ADDRESS + "/getLastDayConversation", { friendId: userId }, function (result) {
-            displayMoreMessages(friendObj,result);            
+            displayMoreMessages(friendObj, result);
         });
     }
     $scope.onLoadMoreBtnClicked = function onLoadMoreBtnClicked() {
         var curFriend = $scope.currentFriendObj;
         $.post(ChatApplication.SERVER_ADDRESS + "/getMore", { friendId: curFriend.user_id, currentFile: curFriend.currentFile }, function (result) {
-            
-            displayMoreMessages(curFriend,result);
+
+            displayMoreMessages(curFriend, result);
         });
     }
 
     function displayMoreMessages(friendObj, result) {
         result = JSON.parse(result);
 
-            friendObj.hideLoadMore = true;
+        friendObj.hideLoadMore = true;
         if (result.last) {
             $scope.$apply();
             return;
@@ -202,6 +231,18 @@
             manageScroll();
 
 
+        });
+
+        socketio.on('typing_notification_to_client', function (data) {
+            var friend = getFriendObject(data.clientId);
+            console.log(data.message);
+            if (data.message === 'start_typing') {
+                friend.startTyping = true;
+            }
+            else {
+                friend.startTyping = false;
+            }
+            $scope.$apply();
         });
 
         socketio.on("user_offline", function (data) {

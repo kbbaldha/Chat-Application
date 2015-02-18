@@ -287,7 +287,27 @@ function upload(response, postData) {
     response.end();
 }
 
+function sendTypingNotification(data, io) {
+    console.log(data.friend);
+    var callback = function (error, rows, fields) {
+        
+        console.log(data['message']);
+        if (rows.length > 0) {
+            var socketid = rows[0]['socket_id'],
+                clientId = rows[0]['user_id'];
+            if (io.sockets.connected[socketid]) {
+                io.sockets.connected[socketid].emit("typing_notification_to_client", { message: data["message"], clientName: data["clientName"], clientId: data["clientId"] });
+            } else {
 
+            }
+        }
+        else {
+            console.log('no socket');
+        }
+    };
+    // console.log('------------db query --------------');
+    connection.query("SELECT socket_id,user_id FROM user_information WHERE user_id = '" + data["friend"] + "';", callback);
+}
 
 
 function sendMessage(data, io) {
@@ -593,4 +613,5 @@ function getDateInString(date) {
 module.exports = router;
 router.addSocketInfoToDatabase = addSocketInfoToDatabase;
 router.sendMessage = sendMessage;
+router.sendTypingNotification = sendTypingNotification;
 router.disconnectUser = disconnectUser;

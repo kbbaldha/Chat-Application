@@ -142,6 +142,7 @@ function sendMessage(element) {
     socketio.emit("message_to_server", { message: msg, friend: friendname, clientName: clientName ,clientId :clientId});
 }
 
+
 function getUserName() {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", ChatApplication.SERVER_ADDRESS + "/getUser", true);
@@ -221,7 +222,8 @@ function getChatWindowHTML(username,userid) {
     '<input type="text" id="message_input"/>' +
     '<button id = "' + userid + '"onclick="sendMessage(this)">send</button>' +
     '<div id="friend_chat_log" class="friend_chat_log"></div>' +
-'</div>'
+    '</div>';   
+    
     return html;
 }
 /**

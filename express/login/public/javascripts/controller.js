@@ -100,6 +100,7 @@
         }
     }
     $scope.sendMessage = function () {
+        
         if ($scope.msgInputBoxValue.trim() == "") {
             return;
         }

@@ -8,7 +8,9 @@ function bindEvents() {
    // $('.add-button').on("click", friendRequestAccepted);
    
 }
-
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+});
 
 function sendFriendRequest(event) {
     console.log(' fsendFriendRequest  pted');

@@ -17,17 +17,18 @@
     }
 
 .friend-found.ng-leave.ng-leave-active {
-    opacity: 0;
+    display:none;
 }
 
 .friend-found.ng-leave {
-    opacity: 1;
+    display:none;
 }
+
 /*  Chat Bubbles */
 
 .friend_chat_log {
-    width: 543px;
-    overflow-y: scroll;
+    width: 100%;
+    overflow-y: auto;
     height:350px;
     overflow-x: hidden;
 }
@@ -338,14 +339,6 @@ body {
     position: relative;
     border: 2px solid #444455;
     background-color: #ededed;
-}
-
-.friend-found {
-    background-color: antiquewhite;
-    margin: 3px;
-    padding: 5px 10px 10px 5px;
-    position: relative;
-    top: initial;
 }
 
 .friend-found-name {

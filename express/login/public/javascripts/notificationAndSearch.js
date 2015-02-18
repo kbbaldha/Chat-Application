@@ -21,7 +21,7 @@
    
     $scope.searchFriend = function () {
         var searchName = $('#search_input').val();
-
+        $scope.friendsFound = [];
         $.post(ChatApplication.SERVER_ADDRESS + "/searchFriend", { searchName: $scope.searchFriendInput }, function (result) {
             var i = 0,
                 length,
@@ -34,7 +34,9 @@
                 currentFound.innerhtml = 'Send Friend Request';
             }
             $scope.$apply();
-
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            });
         });
     }
     $scope.sendFriendRequest = function (friend,$index) {

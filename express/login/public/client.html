@@ -13,6 +13,7 @@
     <script type="text/javascript" src="/javascripts/controller.js"></script>
     <script type="text/javascript" src="/javascripts/notificationAndSearch.js"></script>
     <script src="scripts/bootstrap.js"></script>
+    <script src="scripts/bootstrap-tooltip.js"></script>
     <title>Chat Application</title>
 
 </head>
@@ -85,13 +86,13 @@
                                             </div><!-- /input-group -->
                                             <!--<input type="text" id="Text1" ng-model="searchFriendInput" ng-keypress="enterOnQueryInput($event)" />
                                             <button id="search" ng-click="searchFriend()">search</button>-->
-                                            <div id="search-result-container" class="list-group">
-                                                <div class="friend-found list-group-item" ng-repeat="friend in friendsFound">
-                                                    <div class="friend-found-name">{{friend.user_fname}}</div>
-                                                    <div class="friend-found-id ankurb">{{friend.user_id}}</div>
-                                                    <div class="send-request-button button-class" ng-click="sendFriendRequest(friend,$index)" ng-class="{'sel': $index == friendFoundSelected}">{{friend.innerhtml}}</div>
-                                                </div>
-                                            </div>
+                                            <ul id="search-result-container" class="list-group">
+                                                <li class="friend-found list-group-item" ng-repeat="friend in friendsFound">
+                                                        <span class="friend-found-name">{{friend.user_fname}}</span>
+                                                        <span class="friend-found-id ankurb">{{friend.user_id}}</span>
+                                                        <div class="btn btn-default" data-toggle="tooltip" data-placement="right" title="Add Friend" ng-click="sendFriendRequest(friend,$index)" ng-class="{'sel': $index == friendFoundSelected}"><span sr-only="{{friend.innerhtml}}" class="glyphicon glyphicon-plus"></span></div>
+                                                </li>
+                                            </ul>
                                         </div>
 
                                     </div>
@@ -142,6 +143,7 @@
             </div>
         </div>
     </div>
+
 
     <script type="text/javascript" src="/scripts/mainscript.js"></script>
     <script type="text/javascript" src="/javascripts/myChatApp.js"></script>

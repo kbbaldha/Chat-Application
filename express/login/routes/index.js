@@ -9,9 +9,14 @@ var bodyParser = require('body-parser'),
 // http = require('http'),
    mysql = require("mysql"),
     connection = mysql.createConnection({
-        user: "root",
-        password: "",
-        database: "chat_db"
+        user: "root",               // For Offline Database
+        password: "",               // For Offline Database
+        database: "chat_db"         // For Offline Database
+
+        //host: 'db4free.net',      // For Online database
+        //user: "chattingapp",      // For Online database
+        //password: "zeusChatApp",  // For Online database
+        //database: "chatappzeus"   // For Online database
     });
 
 /* GET home page. */

@@ -1,3 +1,6 @@
+var PORT = process.env.OPENSHIFT_INTERNAL_PORT || process.env.OPENSHIFT_NODEJS_PORT || 3030;
+var IPADDRESS = process.env.OPENSHIFT_INTERNAL_IP || process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+
 var express = require('express');
 var session = require('express-session');
 var router = express.Router();
@@ -11,7 +14,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
-var server = app.listen(3030);
+var server = app.listen(PORT,IPADDRESS);
 var io = require('socket.io').listen(server);
 
 // view engine setup

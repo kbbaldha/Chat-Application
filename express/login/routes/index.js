@@ -1,3 +1,6 @@
+var PORT = process.env.OPENSHIFT_INTERNAL_PORT || process.env.OPENSHIFT_NODEJS_PORT || 3030;
+var IPADDRESS = process.env.OPENSHIFT_INTERNAL_IP || process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+
 var express = require('express');
 var router = express.Router();
 var session = require('express-session');
@@ -9,14 +12,14 @@ var bodyParser = require('body-parser'),
 // http = require('http'),
    mysql = require("mysql"),
     connection = mysql.createConnection({
-        user: "root",               // For Offline Database
-        password: "",               // For Offline Database
-        database: "chat_db"         // For Offline Database
+        //user: "root",               // For Offline Database
+        //password: "",               // For Offline Database
+        //database: "chat_db"         // For Offline Database
 
-        //host: 'db4free.net',      // For Online database
-        //user: "chattingapp",      // For Online database
-        //password: "zeusChatApp",  // For Online database
-        //database: "chatappzeus"   // For Online database
+        host: 'db4free.net',      // For Online database
+        user: "chattingapp",      // For Online database
+        password: "zeusChatApp",  // For Online database
+        database: "chatappzeus"   // For Online database
     });
 
 /* GET home page. */

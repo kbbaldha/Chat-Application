@@ -64,8 +64,14 @@
                                     <div role="tabpanel" class="tab-pane active" id="friends">
                                         <div id="users_of_app" class="panel panel-info">
                                             <div class="panel-heading panel-primary">List of users</div>
+                                            <div class="input-group panel-heading">
+                                                <input type="text" ng-model="query" class="form-control" ng-keypress="enterOnQueryInput($event)" placeholder="Search Friend">
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default" ng-click="searchFriend()" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                                                </span>
+                                            </div><!-- /input-group -->
                                             <ul class="user-list-name-container list-group">
-                                                <li class="list-group-item" ng-class="{ 'active': x.active }" ng-repeat="x in friends | filter:query | orderBy:totalMessages:true" ng-click="getUserId($event,$index)" ng-class="{ 'selected': $index == selected }">
+                                                <li class="list-group-item" ng-class="{ 'active': x.active }" ng-repeat="x in friends | filter:query | orderBy:totalMessages" ng-click="getUserId($event,x)">
                                                     <span>
                                                         {{x.user_fname}}
                                                         <span ng-hide="x.noOfUnreadMessages == 0" class="badge">{{x.noOfUnreadMessages}}</span>

@@ -28,6 +28,7 @@
             currentFriend.totalMessages = 0;
             currentFriend.currentFile = null;
             currentFriend.hideLoadMore = null;
+            currentFriend.active = false;
             conversationIdArray = currentFriend.conversation_id.split("#");
             if (conversationIdArray[0] == currentFriend.user_id) {
                 currentFriend.type = "1";
@@ -46,6 +47,7 @@
         friendObj.totalMessages = 0;
         friendObj.currentFile = null;
         friendObj.hideLoadMore = null;
+        friendObj.active = false;
         conversationIdArray = friendObj.conversation_id.split("#");
         if (conversationIdArray[0] == friendObj.user_id) {
             friendObj.type = "1";
@@ -57,18 +59,20 @@
         }
     }
     getUserName();
-    $scope.getUserId = function ($event, $index) {
+    $scope.getUserId = function ($event, friendObj) {
         $scope.query = '';
-        var friendObj;
-        friendObj = getFriendObject(this.x.user_id);
-        setActiveObject(this.x.user_id);
+        //var friendObj;
+        //friendObj = getFriendObject(this.x.user_id);
         if (friendObj.messages.length == 0) {
             displayLastDayConversation(this.x.user_id, friendObj);
         }
         friendObj.noOfUnreadMessages = 0;
-
+        if ($scope.currentFriendObj) {
+            $scope.currentFriendObj.active = false;
+        }
         $scope.currentFriendObj = friendObj;
-        $scope.selected = $index;
+        $scope.currentFriendObj.active = true;
+        //$scope.selected = $index;
     };
     $scope.enterOnMsgInput = function (keyEvent) {
         if (keyEvent.which === 13 || keyEvent.keyCode === 13) {
@@ -142,20 +146,7 @@
         }
     }
 
-    function setActiveObject(id) {
-        var i = 0,
-            friends = $scope.friends,
-            noOfFriends = friends.length;
-        for (; i < noOfFriends; i++) {
-            if (friends[i].user_id == id) {
-                friends[i].active = true;
-            }
-            else {
-                friends[i].active = false;
-            }
-        }
-    }
-
+    
     function getUserName() {
 
         $http.get(ChatApplication.SERVER_ADDRESS + "/getUser")

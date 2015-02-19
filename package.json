@@ -21,6 +21,9 @@
   "devDependencies": {},
   "bundleDependencies": [],
   "private": true,
-  "main": "app.js"
+  "main": "app.js",
+  "scripts": {
+  "start": "app.js"
+}
 }
 	

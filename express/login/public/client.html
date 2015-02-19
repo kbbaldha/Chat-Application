@@ -66,16 +66,16 @@
                                                     <button class="btn btn-default" ng-click="searchFriend()" type="button"><span class="glyphicon glyphicon-search"></span></button>
                                                 </span>
                                             </div><!-- /input-group -->
-                                            <ul class="user-list-name-container list-group">
-                                                <li class="list-group-item" ng-class="{ 'active': x.active }" ng-repeat="x in friends | filter:query | orderBy:totalMessages" ng-click="getUserId($event,x)">
+                                            <div class="user-list-name-container list-group">
+                                                <a class="list-group-item" ng-class="{ 'active': x.active }" ng-repeat="x in friends | filter:query | orderBy:totalMessages" ng-click="getUserId($event,x)">
                                                     <span>
                                                         {{x.user_fname}}
                                                         <span ng-hide="x.noOfUnreadMessages == 0" class="badge">{{x.noOfUnreadMessages}}</span>
                                                         <span ng-show="x.startTyping === true" class="badge"><span class="glyphicon glyphicon-option-horizontal"></span></span>
                                                     </span>
                                                     <i class="glyphicon glyphicon-user user-icon" ng-class="{ 'online': x.online}"></i>
-                                                </li>
-                                            </ul>
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                     <div role="tabpanel" class="tab-pane" id="findFriends" ng-controller="searchController">
@@ -92,7 +92,7 @@
                                                 <li class="friend-found list-group-item" ng-repeat="friend in friendsFound">
                                                         <span class="friend-found-name">{{friend.user_fname}}</span>
                                                         <span class="friend-found-id ankurb">{{friend.user_id}}</span>
-                                                        <div class="btn" data-toggle="tooltip" data-placement="right" title="Add Friend" ng-click="sendFriendRequest(friend,$index)" ng-class="{'btn-default': friend.sent, 'btn-success':friend.sent===false}" ><span sr-only="{{friend.innerhtml}}" class="glyphicon glyphicon-plus success"></span></div>
+                                                        <div class="btn" data-toggle="tooltip" data-placement="right" title="Add Friend" ng-click="sendFriendRequest(friend,$index)" ng-class="{'btn-default disabled': friend.sent, 'btn-success':friend.sent===false}" ><span sr-only="{{friend.innerhtml}}" class="glyphicon glyphicon-plus success"></span></div>
                                                 </li>
                                             </ul>
                                         </div>

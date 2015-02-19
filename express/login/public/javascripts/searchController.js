@@ -23,7 +23,7 @@
             length = result.length;
             for (; i < length; i++) {
                 currentFound = $scope.friendsFound[i];
-                currentFound.innerhtml = 'Send Friend Request';
+                currentFound.sent = false;
             }
             $scope.$apply();
             $(function () {
@@ -34,15 +34,22 @@
     $scope.sendFriendRequest = function (friend,$index) {
         friend.innerhtml = 'sending.....';
         $scope.friendFoundSelected = $index;
-       // $scope.$apply();
-        $.post(ChatApplication.SERVER_ADDRESS + "/sendFriendRequest", { clientId: app.clientInfo.user_id, friendId: friend.user_id }, function (result) {
-            if (result == 'friendReqSent') {
-                friend.innerhtml = 'Friend Request Sent';
-                $scope.$apply();
-                removeFriend(friend);
-                $scope.friendFoundSelected = '';
-            }
-        });
+        // $scope.$apply();
+        if (!friend.sent) {
+            friend.sent = true;
+            $.post(ChatApplication.SERVER_ADDRESS + "/sendFriendRequest", { clientId: app.clientInfo.user_id, friendId: friend.user_id }, function (result) {
+                if (result == 'friendReqSent') {
+                    friend.innerhtml = 'Friend Request Sent';
+                    $scope.$apply();
+                    removeFriend(friend);
+                    $scope.friendFoundSelected = '';
+                }
+                else {
+                    friend.sent = false;
+                    $scope.$apply();
+                }
+            });
+        }
 
     }
     function removeFriend(friendToBeDeleted) {

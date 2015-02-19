@@ -92,7 +92,7 @@
                                                 <li class="friend-found list-group-item" ng-repeat="friend in friendsFound">
                                                         <span class="friend-found-name">{{friend.user_fname}}</span>
                                                         <span class="friend-found-id ankurb">{{friend.user_id}}</span>
-                                                        <div class="btn btn-default" data-toggle="tooltip" data-placement="right" title="Add Friend" ng-click="sendFriendRequest(friend,$index)" ng-class="{'sel': $index == friendFoundSelected}"><span sr-only="{{friend.innerhtml}}" class="glyphicon glyphicon-plus"></span></div>
+                                                        <div class="btn" data-toggle="tooltip" data-placement="right" title="Add Friend" ng-click="sendFriendRequest(friend,$index)" ng-class="{'btn-default': friend.sent, 'btn-success':friend.sent===false}" ><span sr-only="{{friend.innerhtml}}" class="glyphicon glyphicon-plus success"></span></div>
                                                 </li>
                                             </ul>
                                         </div>

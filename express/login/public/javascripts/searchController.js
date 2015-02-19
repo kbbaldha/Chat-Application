@@ -1,10 +1,5 @@
 ﻿app.controller("searchController", function ($scope, $rootScope, $http) {
 
-    $scope.$on('socketObjCreated', function (event) {
-        bindSocketEvents();
-    });
-
-
     var site = ChatApplication.SERVER_ADDRESS;
     var page = "/getUsers";
 

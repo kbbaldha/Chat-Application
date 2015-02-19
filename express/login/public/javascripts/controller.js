@@ -236,7 +236,10 @@
             }
             $scope.$apply();
         });
-
+        socketio.on("friend_request_accepted", function (data) {
+            //$rootScope.$broadcast('friendAdded', { user_id: data.friend_id });
+            getNewFriend({ user_id: data.friend_id });
+        });
         socketio.on("user_offline", function (data) {
             var friend = getFriendObject(data.user_id);
             if (friend) {

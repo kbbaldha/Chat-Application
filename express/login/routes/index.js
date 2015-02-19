@@ -147,7 +147,7 @@ router.post('/friendRequestAccepted', function (req, res, next) {
                  socket = io.sockets.connected[socketid];
                  // when friend is online send notification immidiately
             if (socket) {
-
+                console.log('notification sent');
                 connection.query("SELECT user_fname,user_id FROM user_information WHERE user_id = '" + clId + "';",
                  function (error, rows, fields) {
                      if (rows.length > 0) {
@@ -161,7 +161,7 @@ router.post('/friendRequestAccepted', function (req, res, next) {
              }
             //store notifiction in db where type - 1 is notification of accepted friend request
             else {
-                console.log("INSERT INTO pending_friend_request (user_id,friend_id,type) VALUES ('" + clId + "','" + frId + "',1);");
+
                 connection.query("INSERT INTO pending_friend_request (user_id,friend_id,type) VALUES ('" + clId + "','" + frId + "',1);", function (err, rows, fields) {
                     if (err) {
                         console.log('-------------------------err-----------' + err);

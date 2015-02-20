@@ -75,11 +75,11 @@
         //$scope.selected = $index;
     };
     $scope.enterOnMsgInput = function (keyEvent) {
-        if (keyEvent.which === 13 || keyEvent.keyCode === 13) {
+        if (keyEvent.which === 13 || keyEvent.keyCode === 13 || keyEvent.charCode) {
             $scope.sendMessage();
         }
         else {
-            $scope.sendTypingNotification(event)
+            $scope.sendTypingNotification(keyEvent)
         }
     }
     $scope.sendTypingNotification = function (event) {

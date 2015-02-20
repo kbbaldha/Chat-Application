@@ -116,6 +116,7 @@
                                 </div>
                                 <div class="input-group">
                                     <input type="text" id="message_input" ng-model="msgInputBoxValue" ng-keypress="enterOnMsgInput($event)" class="form-control" />
+                                    <input type="text" id="message_input" ng-model="msgInputBoxValue" ng-keydown="enterOnMsgInput($event)" class="form-control" />
                                     <span class="input-group-btn">
                                         <button id="kbbaldha" ng-click="sendMessage()" class="btn btn-success"><span class="glyphicon glyphicon-send"></span></button>
                                     </span>

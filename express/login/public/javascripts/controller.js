@@ -27,7 +27,10 @@
             currentFriend.startTyping = false;
             currentFriend.totalMessages = 0;
             currentFriend.currentFile = null;
-            currentFriend.hideLoadMore = null;
+            currentFriend.loadMore = {
+                                        hideLoadMore:false,
+                                        html: "load more"
+                                        };
             currentFriend.active = false;
             conversationIdArray = currentFriend.conversation_id.split("#");
             if (conversationIdArray[0] == currentFriend.user_id) {
@@ -46,7 +49,10 @@
         friendObj.startTyping = false;
         friendObj.totalMessages = 0;
         friendObj.currentFile = null;
-        friendObj.hideLoadMore = null;
+        friendObj.loadMore = {
+                                        hideLoadMore:false,
+                                        html: "load more"
+                                        };
         friendObj.active = false;
         conversationIdArray = friendObj.conversation_id.split("#");
         if (conversationIdArray[0] == friendObj.user_id) {
@@ -165,6 +171,7 @@
     }
     $scope.onLoadMoreBtnClicked = function onLoadMoreBtnClicked() {
         var curFriend = $scope.currentFriendObj;
+        curFriend.loadMore.html = "loading......"
         $.post(ChatApplication.SERVER_ADDRESS + "/getMore", { friendId: curFriend.user_id, currentFile: curFriend.currentFile }, function (result) {
 
             displayMoreMessages(curFriend, result);
@@ -173,9 +180,10 @@
 
     function displayMoreMessages(friendObj, result) {
         result = JSON.parse(result);
-
-        friendObj.hideLoadMore = true;
+        friendObj.loadMore.html = "load more";
+        
         if (result.last) {
+            friendObj.loadMore.hideLoadMore = true;
             $scope.$apply();
             return;
         }

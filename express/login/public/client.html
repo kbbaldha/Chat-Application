@@ -99,7 +99,7 @@
                                 <div id="friend_name" class="friend_name panel-heading">{{currentFriendObj.user_fname}}</div>
 
                                 <div id="friend_chat_log" class="friend_chat_log">
-                                    <input type="button" value="load more" ng-click="onLoadMoreBtnClicked()" ng-hide="currentFriendObj.hideLoadMore == true" />
+                                    <button class="btn load-more btn-primary btn-sm btn-block"  ng-click="onLoadMoreBtnClicked()" ng-hide="currentFriendObj.loadMore.hideLoadMore == true" disabled >{{currentFriendObj.loadMore.html}}</button>
                                     <div class="msg-container" ng-repeat="msg in currentFriendObj.messages">
                                         <div ng-if="(msg[currentFriendObj.type] != undefined && msg[currentFriendObj.type] != null)" class="friend_chat_msg bubble me"> {{msg[currentFriendObj.type]}} </div>
                                         <div ng-if="(msg[currentFriendObj.clientType] != undefined && msg[currentFriendObj.clientType] != null)" class="me_chat bubble you"> {{msg[currentFriendObj.clientType]}} </div>

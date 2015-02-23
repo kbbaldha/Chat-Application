@@ -57,8 +57,26 @@ router.post('/login', function (req, res, next) {
                     res.sendfile(html_dir + 'invalid_login.html');
                 }
             });
-   
-});
+
+        });
+
+        router.post('/register', function (req, res, next) {
+            console.log("INSERT INTO user_information (user_id,user_fname,user_lname,user_pass,online) VALUES ('" + req.body.email + "','" + req.body.first_name + "','" + req.body.last_name + "','" + req.body.password + "',0);");
+            connection.query("INSERT INTO user_information (user_id,user_fname,user_lname,user_pass,online) VALUES ('" + req.body.email + "','" + req.body.first_name + "','" + req.body.last_name + "','" + req.body.password + "',0);",
+            function (error, rows, fields) {
+                if (error) {
+                    res.send('error.................................');
+                }
+                else {
+                    var html_dir = './public/';
+                    res.sendfile(html_dir + 'registration_successful.html');
+                }
+            });
+
+        });
+
+
+        
 router.get('/signedOff', function (req, res, next) {
     var html_dir = './public/';
     res.sendfile(html_dir + 'signed_off.html');

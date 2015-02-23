@@ -75,7 +75,7 @@
         //$scope.selected = $index;
     };
     $scope.enterOnMsgInput = function (keyEvent) {
-        if (keyEvent.which === 13 || keyEvent.keyCode === 13 || keyEvent.charCode) {
+        if (keyEvent.which === 13 || keyEvent.keyCode === 13 || keyEvent.charCode === 13) {
             $scope.sendMessage();
         }
         else {
@@ -104,7 +104,7 @@
         }
     }
     $scope.sendMessage = function () {
-        
+
         if ($scope.msgInputBoxValue.trim() == "") {
             return;
         }
@@ -146,7 +146,7 @@
         }
     }
 
-    
+
     function getUserName() {
 
         $http.get(ChatApplication.SERVER_ADDRESS + "/getUser")
@@ -200,6 +200,24 @@
         socketio.on("message_to_client", function (data) {
 
             var friend = getFriendObject(data.clientId);
+            if (!document.hasFocus()) {
+                if (!Notification) {
+                    alert('Notifications are supported in modern versions of Chrome, Firefox, Opera and Firefox.');
+                    return;
+                }
+
+                if (Notification.permission !== "granted")
+                    Notification.requestPermission();
+
+                var notification = new Notification('New Message From ' + friend.user_fname, {
+                    icon: '',
+                    body: data.message,
+                });
+
+                notification.onclick = function () {
+                    window.focus();
+                };
+            }
             if ($scope.currentFriendObj) {
                 if (!(data.clientId == $scope.currentFriendObj.user_id)) {
                     friend.noOfUnreadMessages = friend.noOfUnreadMessages + 1;

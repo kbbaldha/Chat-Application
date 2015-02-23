@@ -1,4 +1,9 @@
-﻿/**************************************/
+﻿.login-left-panel-image{
+    width:430px;
+    height:430px;
+}
+
+/**************************************/
 .friend-found.ng-enter,
 .friend-found.ng-leave {
     transition: all 1s ease;

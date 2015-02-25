@@ -58,31 +58,31 @@ router.post('/login', function (req, res, next) {
                 }
             });
 
-        });
+});
 
-        router.post('/register', function (req, res, next) {
-            console.log("INSERT INTO user_information (user_id,user_fname,user_lname,user_pass,online) VALUES ('" + req.body.email + "','" + req.body.first_name + "','" + req.body.last_name + "','" + req.body.password + "',0);");
-            connection.query("INSERT INTO user_information (user_id,user_fname,user_lname,user_pass,online) VALUES ('" + req.body.email + "','" + req.body.first_name + "','" + req.body.last_name + "','" + req.body.password + "',0);",
-            function (error, rows, fields) {
-                if (error) {
-                    res.send('error.................................');
-                }
-                else {
-                    var html_dir = './public/';
-                    res.sendfile(html_dir + 'registration_successful.html');
-                }
-            });
+router.post('/register', function (req, res, next) {
+    console.log("INSERT INTO user_information (user_id,user_fname,user_lname,user_pass,online) VALUES ('" + req.body.email + "','" + req.body.first_name + "','" + req.body.last_name + "','" + req.body.password + "',0);");
+    connection.query("INSERT INTO user_information (user_id,user_fname,user_lname,user_pass,online) VALUES ('" + req.body.email + "','" + req.body.first_name + "','" + req.body.last_name + "','" + req.body.password + "',0);",
+    function (error, rows, fields) {
+        if (error) {
+            res.send('error.................................');
+        }
+        else {
+            var html_dir = './public/';
+            res.sendfile(html_dir + 'registration_successful.html');
+        }
+    });
 
-        });
+});
 
 
-        
+
 router.get('/signedOff', function (req, res, next) {
     var html_dir = './public/';
     res.sendfile(html_dir + 'signed_off.html');
 });
 router.post('/getNewFriend', function (req, res, next) {
-    
+
     connection.query("SELECT user_id, user_fname, online,conversation_id FROM user_information ui NATURAL JOIN friend_list fl where user_id = '" + req.body.friendId + "' AND friend_id = '" + req.session.user_name + "';",
             function (error, rows, fields) {
                 res.send(JSON.stringify(rows));
@@ -100,7 +100,7 @@ router.get('/getUsers', function (req, res, next) {
                         FROM user_information U\
                         INNER JOIN friend_list F\
                         WHERE U.user_id = F.user_id\
-                        AND U.user_id =  '"+userid+"'\
+                        AND U.user_id =  '"+ userid + "'\
                         )\
                         AND U1.user_id = F1.friend_id AND F1.user_id = '" + userid + "';",
             function (error, rows, fields) {
@@ -130,7 +130,7 @@ router.get('/getUser', function (req, res, next) {
             res.send(JSON.stringify(rows));
         }
     });
-    
+
 });
 
 router.get('/logout', function (req, res, next) {
@@ -143,7 +143,7 @@ router.post('/searchFriend', function (req, res, next) {
 
     connection.query("SELECT user_id,user_fname FROM user_information WHERE user_fname LIKE '%" + req.body.searchName + "%' AND user_id NOT IN ( select friend_id from friend_list WHERE user_id='" + req.session.user_name + "');", function (error, rows, fields) {
         if (rows.length > 0) {
-          
+
             res.send(JSON.stringify(rows));
         }
         else {
@@ -160,7 +160,7 @@ router.post('/friendRequestAccepted', function (req, res, next) {
          io = req.io,
          conversationId = clId + '#' + frId;
 
-    connection.query("INSERT INTO friend_list (user_id,friend_id,conversation_id) VALUES ('" + clId + "','" + frId + "','" + conversationId  + "');");
+    connection.query("INSERT INTO friend_list (user_id,friend_id,conversation_id) VALUES ('" + clId + "','" + frId + "','" + conversationId + "');");
     connection.query("INSERT INTO friend_list (user_id,friend_id,conversation_id) VALUES ('" + frId + "','" + clId + "','" + conversationId + "');");
     connection.query("SELECT socket_id FROM user_information WHERE user_id = '" + frId + "';", function (error, rows, fields) {
         if (rows.length > 0) {
@@ -168,7 +168,7 @@ router.post('/friendRequestAccepted', function (req, res, next) {
             // res.send(JSON.stringify(rows));
             var socketid = rows[0]['socket_id'],
                  socket = io.sockets.connected[socketid];
-                 // when friend is online send notification immidiately
+            // when friend is online send notification immidiately
             if (socket) {
                 console.log('notification sent');
                 connection.query("SELECT user_fname,user_id FROM user_information WHERE user_id = '" + clId + "';",
@@ -181,8 +181,8 @@ router.post('/friendRequestAccepted', function (req, res, next) {
 
                  });
 
-             }
-            //store notifiction in db where type - 1 is notification of accepted friend request
+            }
+                //store notifiction in db where type - 1 is notification of accepted friend request
             else {
 
                 connection.query("INSERT INTO pending_friend_request (user_id,friend_id,type) VALUES ('" + clId + "','" + frId + "',1);", function (err, rows, fields) {
@@ -194,7 +194,7 @@ router.post('/friendRequestAccepted', function (req, res, next) {
                 res.send('accepted-friend-notification');
 
             }
-          
+
         }
         else {
             res.send('no friend  found');
@@ -227,10 +227,10 @@ router.post('/sendFriendRequest', function (req, res, next) {
 
             }
             else {
-                
-                  connection.query("INSERT INTO pending_friend_request (user_id,friend_id,type) VALUES ('" +  req.body.clientId  + "','" + req.body.friendId + "',0);");
-                    /* Request added to database*/
-                  res.send('friendReqSent');
+
+                connection.query("INSERT INTO pending_friend_request (user_id,friend_id,type) VALUES ('" + req.body.clientId + "','" + req.body.friendId + "',0);");
+                /* Request added to database*/
+                res.send('friendReqSent');
             }
         }
         else {
@@ -280,7 +280,7 @@ function addSocketInfoToDatabase(user, socketid, io) {
 * Updates the offline messages of the user
 */
 function updateOfflineMessages(user, socketid, io) {
-    
+
     connection.query("SELECT user_fname,message,friend_id FROM user_information INNER JOIN offline_messages ON user_information.user_id = offline_messages.friend_id WHERE offline_messages.user_id = '" + user + "';", function (error, rows, fields) {
         if (rows.length > 0) {
             for (var i = 0; i < rows.length; i++) {
@@ -294,7 +294,7 @@ function updateOfflineMessages(user, socketid, io) {
             deleteOfflineMessages(user);
         }
     });
-    
+
 }
 /**
 * Deletes the previously stored offline messages of the passed user
@@ -313,7 +313,7 @@ function upload(response, postData) {
 function sendTypingNotification(data, io) {
     console.log(data.friend);
     var callback = function (error, rows, fields) {
-        
+
         console.log(data['message']);
         if (rows.length > 0) {
             var socketid = rows[0]['socket_id'],
@@ -425,7 +425,7 @@ function getTodaysDate() {
     str += date.getDate() + "-";
     str += (date.getMonth() + 1) + "-";
     str += date.getFullYear();
-    
+
     return str;
 }
 
@@ -435,7 +435,7 @@ function getDateForSQL() {
     str += date.getFullYear() + "-";
     str += (date.getMonth() + 1) + "-";
     str += date.getDate();
-    
+
     console.log('INSERTING IN DB:' + str);
     return str;
 }
@@ -604,6 +604,10 @@ router.post('/getMore', function (req, res, next) {
                 });
             }
         });
+});
+
+router.post('/uploadFile', function (req, res, next) {
+    console.log('the file uploaded is ' + req.body.file.name);
 });
 
 /**

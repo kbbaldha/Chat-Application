@@ -97,7 +97,9 @@
                         <div id="chatlog" class="col-md-8">
                             <div id="friend_chat_kbbaldha" ng-show="(currentFriendObj != undefined && currentFriendObj != null)" class="friend_chat panel" ng-class="{ 'panel-success': currentFriendObj.online, 'panel-danger': !currentFriendObj.online}">
                                 <div id="friend_name" class="friend_name panel-heading">{{currentFriendObj.user_fname}}</div>
-
+                                <!-- The file upload button-->
+                                <input type="file" name="file-upload" onchange="angular.element(this).scope().fileNameChanged(this)" />
+                                    
                                 <div id="friend_chat_log" class="friend_chat_log">
                                     <button class="btn load-more btn-primary btn-sm btn-block"  ng-click="onLoadMoreBtnClicked()" ng-hide="currentFriendObj.loadMore.hideLoadMore == true" disabled >{{currentFriendObj.loadMore.html}}</button>
                                     <div class="msg-container" ng-repeat="msg in currentFriendObj.messages">

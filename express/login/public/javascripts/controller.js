@@ -28,9 +28,9 @@
             currentFriend.totalMessages = 0;
             currentFriend.currentFile = null;
             currentFriend.loadMore = {
-                                        hideLoadMore:false,
-                                        html: "load more"
-                                        };
+                hideLoadMore: false,
+                html: "load more"
+            };
             currentFriend.active = false;
             conversationIdArray = currentFriend.conversation_id.split("#");
             if (conversationIdArray[0] == currentFriend.user_id) {
@@ -50,9 +50,9 @@
         friendObj.totalMessages = 0;
         friendObj.currentFile = null;
         friendObj.loadMore = {
-                                        hideLoadMore:false,
-                                        html: "load more"
-                                        };
+            hideLoadMore: false,
+            html: "load more"
+        };
         friendObj.active = false;
         conversationIdArray = friendObj.conversation_id.split("#");
         if (conversationIdArray[0] == friendObj.user_id) {
@@ -181,7 +181,7 @@
     function displayMoreMessages(friendObj, result) {
         result = JSON.parse(result);
         friendObj.loadMore.html = "load more";
-        
+
         if (result.last) {
             friendObj.loadMore.hideLoadMore = true;
             $scope.$apply();
@@ -280,6 +280,23 @@
                 friend.online = 1;
                 $scope.$apply();
             }
+        });
+    }
+
+
+    $scope.fileNameChanged = function (element) {
+        console.log('file selected' + element.files);
+        /*
+        $.post(ChatApplication.SERVER_ADDRESS + "/uploadFile",[{processData: false}, { file: element.files[0] }], function (result) {
+
+            console.log('upload done');
+        });
+        */
+        $.ajax({
+            type: 'POST',
+            url: ChatApplication.SERVER_ADDRESS + "/uploadFile",
+            data: { file: element.files[0] },
+            processData: true
         });
     }
 });

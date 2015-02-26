@@ -160,6 +160,27 @@ router.post('/friendRequestAccepted', function (req, res, next) {
          io = req.io,
          conversationId = clId + '#' + frId;
 
+    // Check to see if the folder is there else create
+    fs.mkdir('./conversation-history/' + conversationId, function (err) {
+        if (err) {
+            if (err.code == 'EEXIST') {
+
+            } else {
+                console.log("Folder creation error");
+            }
+        } else {
+            fs.mkdir('./conversation-history/' + conversationId + '/uploaded/', function (err) {
+                if (err) {
+                    if (err.code == 'EEXIST') {
+
+                    } else {
+                        console.log("Folder creation error");
+                    }
+                }
+            });
+        }
+    });
+
     connection.query("INSERT INTO friend_list (user_id,friend_id,conversation_id) VALUES ('" + clId + "','" + frId + "','" + conversationId + "');");
     connection.query("INSERT INTO friend_list (user_id,friend_id,conversation_id) VALUES ('" + frId + "','" + clId + "','" + conversationId + "');");
     connection.query("SELECT socket_id FROM user_information WHERE user_id = '" + frId + "';", function (error, rows, fields) {
@@ -380,16 +401,7 @@ function addMessageToConversationHistor(sender, receiver, message) {
                 } else {
                     myData = { "2": message };
                 }
-                // Check to see if the folder is there else create
-                fs.mkdir('./conversation-history/' + conId, function (err) {
-                    if (err) {
-                        if (err.code == 'EEXIST') {
-
-                        } else {
-                            console.log("Folder creation error");
-                        }
-                    }
-                });
+                
                 // Check if there is a date with the current date
                 fs.exists(filename, function (exists) {
                     if (exists) {

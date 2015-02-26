@@ -609,25 +609,7 @@ router.post('/getMore', function (req, res, next) {
 router.post('/upload', function (req, res, next) {
     console.log('the file uploaded is ' + req.body.file);
     console.log(req.files);
-    if (req.busboy) {
-        var fstream;
-        
-        req.busboy.on("file", function (fieldName, fileStream, fileName, encoding, mimeType) {
-            //Handle file stream here
-            console.log("Uploading: " + fileName);
-
-            //Path where image will be uploaded
-            fstream = fs.createWriteStream('./uploaded-files/' + fileName);
-            file.pipe(fstream);
-            fstream.on('close', function () {
-                console.log("Upload Finished of " + fileName);
-                //res.redirect('back');           //where to go next
-            });
-        });
-    }
-    else {
-        //Something went wrong -- busboy was not loaded
-    }
+    res.send('file uploaded');
 });
 
 /**
@@ -657,8 +639,13 @@ function getDateInString(date) {
     return str;
 }
 
+function getConID(userId) {
+
+}
+
 module.exports = router;
 router.addSocketInfoToDatabase = addSocketInfoToDatabase;
 router.sendMessage = sendMessage;
 router.sendTypingNotification = sendTypingNotification;
 router.disconnectUser = disconnectUser;
+router.getConID = getConID;

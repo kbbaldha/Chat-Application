@@ -24,11 +24,26 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(multer({
-    dest: "./upload/",
+    dest: "./conversation-history/",
     changeDest: function (dest, req, res) {
-        fs.mkdir(dest + 'user1/');
-        return dest + 'user1/';
+        //var conId = routes.getConID(req.session.user_name);
+        var conId = req.url.replace('~', '#');
+        conId = conId.replace('/upload/', '');
+        req.url = '/upload/';
+        /*
+        fs.mkdir(dest + conId + '/', function (err) {
+            if (err) {
+                if (err.code == 'EEXIST') {
+
+                } else {
+                    console.log("Folder creation error");
+                }
+            }
+        });
+        */
+        return dest + conId;
     }
 }));
 app.use(cookieParser());

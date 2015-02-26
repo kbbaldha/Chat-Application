@@ -294,9 +294,23 @@
         */
         $.ajax({
             type: 'POST',
-            url: ChatApplication.SERVER_ADDRESS + "/uploadFile",
-            data: { file: element.files[0] },
-            processData: true
+            url: ChatApplication.SERVER_ADDRESS + "/upload",
+            data: new FormData($('#upload-form')[0]),
+            processData: false,
+            contentType: false
         });
+        /*
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+            $.ajax({
+                type: 'POST',
+                url: ChatApplication.SERVER_ADDRESS + "/uploadFile",
+                data: { file: evt.target.result },
+                processData: true
+            });
+            //xhr.sendAsBinary(evt.target.result);
+        };
+        reader.readAsBinaryString(element.files[0]);
+        */
     }
 });

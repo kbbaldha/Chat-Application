@@ -7,9 +7,10 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 
 var bodyParser = require('body-parser');
+var multer = require('multer');
 var routes = require('./routes/index');
 var users = require('./routes/users');
-
+var fs = require("fs");
 var app = express();
 var server = app.listen(3030);
 var io = require('socket.io').listen(server);
@@ -23,8 +24,18 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({
+    dest: "./upload/",
+    changeDest: function (dest, req, res) {
+        fs.mkdir(dest + 'user1/');
+        return dest + 'user1/';
+    }
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+var busboy = require("connect-busboy");
+app.use(busboy());
 
 app.use(['/sendFriendRequest','/friendRequestAccepted'], function (req, res, next) {
     req.io = io;

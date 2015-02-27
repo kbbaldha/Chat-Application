@@ -593,9 +593,16 @@ router.post('/getMore', function (req, res, next) {
                     splitFile = date.split('-'),
                     parsedDate = new Date(parseInt(splitFile[2]), parseInt(splitFile[1]) - 1, parseInt(splitFile[0])),
                     folderStructure = './conversation-history/' + conId,
-                    userIdentity;
+                    userIdentity, finalDate;
 
                 parsedDate.setDate(parsedDate.getDate() - 1);
+
+                // Check if it is the first request
+                if (req.body.currentFile === "" || req.body.currentFile === null || req.body.currentFile === undefined) {
+                    finalDate = getTodaysDate();
+                } else {
+                    finalDate = getDateInString(parsedDate);
+                }
 
                 // Checking if the user is 1 or 2
                 if (userid === users[0]) {
@@ -608,7 +615,7 @@ router.post('/getMore', function (req, res, next) {
                 // Check if there is a conversation history for these users
                 fs.exists(folderStructure, function (exists) {
                     if (exists) {
-                        getClosestDate(folderStructure, getDateInString(parsedDate), res, userIdentity, req.body.friendId);
+                        getClosestDate(folderStructure, finalDate, res, userIdentity, req.body.friendId);
                     } else {
                         // There is no conversation history
                         res.send(true);

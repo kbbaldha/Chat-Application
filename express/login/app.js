@@ -49,8 +49,7 @@ app.use(multer({
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-var busboy = require("connect-busboy");
-app.use(busboy());
+
 
 app.use(['/sendFriendRequest','/friendRequestAccepted'], function (req, res, next) {
     req.io = io;

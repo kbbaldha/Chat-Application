@@ -32,8 +32,8 @@ app.use(multer({
         var conId = req.url.replace('~', '#');
         conId = conId.replace('/upload/', '');
         req.url = '/upload/';
-        /*
-        fs.mkdir(dest + conId + '/', function (err) {
+        
+        fs.mkdir(dest + conId + 'uploaded/', function (err) {
             if (err) {
                 if (err.code == 'EEXIST') {
 
@@ -42,8 +42,8 @@ app.use(multer({
                 }
             }
         });
-        */
-        return dest + conId;
+        
+        return dest + conId + 'uploaded/';
     }
 }));
 app.use(cookieParser());

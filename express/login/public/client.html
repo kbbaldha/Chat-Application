@@ -98,12 +98,15 @@
                             <div id="friend_chat_kbbaldha" ng-show="(currentFriendObj != undefined && currentFriendObj != null)" class="friend_chat panel" ng-class="{ 'panel-success': currentFriendObj.online, 'panel-danger': !currentFriendObj.online}">
                                 <div id="friend_name" class="friend_name panel-heading">{{currentFriendObj.user_fname}}</div>
                                 <!-- The file upload button-->
-                                <input type="file" name="file-upload" onchange="angular.element(this).scope().fileNameChanged(this)" />
+                                <input type="file" name="file-upload" change="angular.element(this).scope().fileNameChanged(this)" />
                                     
                                 <div id="friend_chat_log" class="friend_chat_log">
                                     <button class="btn load-more btn-primary btn-sm btn-block"  ng-click="onLoadMoreBtnClicked()" ng-hide="currentFriendObj.loadMore.hideLoadMore == true" disabled >{{currentFriendObj.loadMore.html}}</button>
                                     <div class="msg-container" ng-repeat="msg in currentFriendObj.messages">
-                                        <div ng-if="(msg[currentFriendObj.type] != undefined && msg[currentFriendObj.type] != null)" class="friend_chat_msg bubble me"> {{msg[currentFriendObj.type]}} </div>
+                                        <div ng-if="(msg[currentFriendObj.type] != undefined && msg[currentFriendObj.type] != null)" >
+                                            <div ng-if="(msg.file == undefined || msg.file == null)" class="friend_chat_msg bubble me"> {{msg[currentFriendObj.type]}} </div>
+                                            <div ng-if="(msg.file != undefined && msg.file != null)" class="file"></div>
+                                        </div>
                                         <div ng-if="(msg[currentFriendObj.clientType] != undefined && msg[currentFriendObj.clientType] != null)" class="me_chat bubble you"> {{msg[currentFriendObj.clientType]}} </div>
                                         <div ng-if="(msg.currentFile != undefined && msg.currentFile != null)" class="date-display"> {{msg.currentFile}} </div>
                                     </div>

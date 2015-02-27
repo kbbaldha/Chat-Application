@@ -1,0 +1,854 @@
+﻿.de-mathematics-interactive.area-model .visualize-multiplication-container {
+    position: absolute;
+    width: 928px;
+    height: 599px;
+    background-position: 0 0;
+}
+
+.de-mathematics-interactive.area-model .visualize-multiplication-activity-area {
+    position: absolute;
+    width: 928px;
+    height: 599px;
+}
+
+.de-mathematics-interactive.area-model .visualize-multiplication-canvas-acc {
+    position: absolute;
+    width: 928px;
+    height: 300px;
+    top: 100px;
+}
+
+.de-mathematics-interactive.area-model .direction-text-containment {
+    top: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.23);
+}
+
+.de-mathematics-interactive.area-model .view-standard-algorithm-container {
+    position: absolute;
+    width: 928px;
+    height: 599px;
+    background-position: 0 0;
+}
+
+.de-mathematics-interactive.area-model .standard-algorithm-activity-area {
+    position: absolute;
+    width: 928px;
+    height: 599px;
+}
+
+.de-mathematics-interactive.area-model .standard-algorithm-canvas-acc {
+    position: absolute;
+    width: 928px;
+    height: 300px;
+    top: 100px;
+}
+
+/*-------------------------------------- Rectangle Draw -------------------------------------*/
+
+.de-mathematics-interactive.area-model .rectangle-canvas {
+    position: absolute;
+    top: 0px;
+}
+
+.de-mathematics-interactive.area-model .rectangle-done-button {
+    position: absolute;
+    bottom: 25px;
+    right: 11px;
+}
+
+.de-mathematics-interactive.area-model .rectangle-label {
+    font-size: 16px;
+    font-family: MontserratRegular, sans-serif;
+    color: #ffffff;
+    position: absolute;
+}
+
+.de-mathematics-interactive.area-model .rectangle-width-label {
+    top: 112px;
+}
+
+/*----------------------------------- Estimation sentences ----------------------------------*/
+
+.de-mathematics-interactive.area-model .sentence-container {
+    position: absolute;
+    top: 374px;
+    left: 0px;
+    width: 928px;
+    height: 225px;
+    display: none;
+}
+
+.de-mathematics-interactive.area-model .sentence-container .input-box-common-component {
+    border-radius: 3px;
+    font-family: MontserratRegular;
+    font-size: 18px;
+}
+
+.de-mathematics-interactive.area-model .sentence-2-text-cont {
+    top: 80px;
+    left: 113px;
+    width: 666px;
+}
+
+.de-mathematics-interactive.area-model .sentence-1-text-cont, 
+.de-mathematics-interactive.area-model .sentence-2-text-cont {
+    position: absolute;
+    padding-left: 15px;
+    padding-right: 16px;
+    height: 71px;
+    border-radius: 3px;
+    color: #ffffff;
+    font-size: 26px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    background-color: transparent;
+    font-family: MontserratRegular;
+    font-weight: bold;
+    z-index: 1;
+}
+
+.de-mathematics-interactive.area-model .sentence-1-text-cont {
+    left: 205px;
+    width: 482px;
+}
+
+.de-mathematics-interactive.area-model .sentence-1-text-1 {
+    position: relative;
+    margin-top: 20px;
+    float: left;
+}
+
+.de-mathematics-interactive.area-model .sentence-1-input {
+    margin-top: 17px;
+    margin-left: 13px;
+    position: relative;
+    float: left;
+}
+
+.de-mathematics-interactive.area-model .sentence-1-text-2 {
+    margin-left: 11px;
+    margin-top: 20px;
+    position: relative;
+    float: left;
+}
+
+.de-mathematics-interactive.area-model .sentence-2-text-1 {
+    position: relative;
+    float: left;
+    margin-top: 20px;
+}
+
+.de-mathematics-interactive.area-model .sentence-2-input-1 {
+    margin-top: 17px;
+    margin-left: 12px;
+    position: relative;
+    float: left;
+}
+
+.de-mathematics-interactive.area-model .sentence-2-text-2 {
+    left: 12px;
+    position: relative;
+    float: left;
+    margin-top: 20px;
+}
+
+.de-mathematics-interactive.area-model .sentence-2-input-2 {
+    margin-top: 17px;
+    margin-left: 24px;
+    position: relative;
+    float: left;
+}
+
+.de-mathematics-interactive.area-model .sentence-2-text-3 {
+    margin-left: 11px;
+    margin-top: 20px;
+    position: relative;
+    float: left;
+}
+
+.de-mathematics-interactive.area-model .yellow-button.active {
+    background-color: #ffc000;
+    box-shadow: 0px 3px 9px -3px #000;
+}
+
+.de-mathematics-interactive.area-model .yellow-button.hover {
+    background-color: #ffd248;
+    box-shadow: 0px 3px 9px -3px #000;
+}
+
+.de-mathematics-interactive.area-model .yellow-button.down {
+    background-color: #ffd248;
+    box-shadow: inset 0px 3px 9px -3px #000;
+}
+
+.de-mathematics-interactive.area-model .yellow-button.disabled {
+    background-color: #A2A2A2;
+}
+
+.de-mathematics-interactive.area-model .save-answer-button {
+    position: absolute;
+    bottom: 21px;
+    left: 403px;
+    display: none;
+    z-index: 1;
+}
+
+.de-mathematics-interactive.area-model .selected-sentence {
+    border: 3px solid #93751b;
+    opacity: 1;
+    background-color: #000000;
+    cursor: default;
+}
+
+.de-mathematics-interactive.area-model .unselected-sentence {
+    border: 3px solid transparent;
+    opacity: 0.2;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.de-mathematics-interactive.area-model .both-sentence-not-selected {
+    opacity: 1;
+}
+
+.de-mathematics-interactive.area-model .direction-text-text {
+    z-index: 1;
+}
+
+.de-mathematics-interactive.area-model .play-tts-container,
+.de-mathematics-interactive.area-model .sound-tts-container,
+.de-mathematics-interactive.area-model .pause-tts-container {
+    z-index: 1;
+}
+
+.de-mathematics-interactive.area-model .direction-text-buttonHolder {
+    z-index: 1;
+}
+/*----------------------------------------- Number Line -------------------------------------------*/
+
+.de-mathematics-interactive.area-model .number-line-container {
+    position: absolute;
+    height: 100px;
+    left: 46px;
+}
+
+.de-mathematics-interactive.area-model .number-line-right-arrow-upper-part {
+    position: relative;
+    width: 13px;
+    height: 12px;
+    border-right: 1px solid #ffffff; /* border-bottom: 1px solid #ffffff; */
+    margin-top: -12px;
+    top: 9px;
+    right: 1px;
+    -webkit-transform: rotate(300deg);
+    -ms-transform: rotate(300deg);
+    -moz-transform: rotate(300deg);
+    transform: rotate(300deg);
+}
+
+.de-mathematics-interactive.area-model .number-line-right-arrow-lower-part {
+    position: relative;
+    width: 13px;
+    height: 12px;
+    border-right: 1px solid #ffffff; /* border-bottom: 1px solid #ffffff; */
+    margin-top: -12px;
+    top: 4px;
+    right: 1px;
+    -webkit-transform: rotate(420deg);
+    -ms-transform: rotate(420deg);
+    -moz-transform: rotate(420deg);
+    transform: rotate(420deg);
+}
+
+.de-mathematics-interactive.area-model .number-line-left-arrow-upper-part {
+    position: relative;
+    width: 13px;
+    height: 12px;
+    border-left: 1px solid #ffffff; /* border-bottom: 1px solid #ffffff; */
+    left: 1px;
+    margin-top: -12px;
+    top: 9px;
+    -webkit-transform: rotate(60deg);
+    -ms-transform: rotate(60deg);
+    -moz-transform: rotate(60deg);
+    transform: rotate(60deg);
+}
+
+.de-mathematics-interactive.area-model .number-line-left-arrow-lower-part {
+    position: relative;
+    width: 13px;
+    height: 12px;
+    border-right: 1px solid #ffffff; /* border-bottom: 1px solid #ffffff; */
+    left: 1px;
+    margin-top: -12px;
+    top: 4px;
+    -webkit-transform: rotate(120deg);
+    -ms-transform: rotate(120deg);
+    -moz-transform: rotate(120deg);
+    transform: rotate(120deg);
+}
+
+.de-mathematics-interactive.area-model .number-container {
+    position: absolute;
+    height: 1px;
+    border-top: 1px solid #ffffff;
+}
+
+.de-mathematics-interactive.area-model .number-digits-container {
+    position: absolute;
+    font-family: MontserratRegular;
+    font-size: 18px;
+    color: #ffffff;
+}
+
+.de-mathematics-interactive.area-model .number-line-divisions {
+    position: relative;
+    width: 1px;
+    height: 19px;
+    border-left: 2px solid #ffffff;
+    float: left;
+    margin-left: 40px;
+}
+
+.de-mathematics-interactive.area-model .number-line-division-labels {
+    position: relative;
+    float: left;
+    width: 43px;
+    left: 0px;
+    text-align: center;
+    margin-top: 13px;
+}
+
+.de-mathematics-interactive.area-model .number-line-division-label-1 {
+    width: 52px;
+    left: 5px;
+}
+
+.de-mathematics-interactive.area-model .number-line-division-1 {
+    margin-left: 30px;
+}
+
+.de-mathematics-interactive.area-model .number-line-text-1 {
+    font-family: MontserratRegular;
+    font-weight: bold;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.de-mathematics-interactive.area-model .number-line-text-2 {
+    font-family: MontserratRegular;
+    font-weight: bold;
+    color: #ffc000;
+    font-size: 22px;
+}
+
+.de-mathematics-interactive.area-model .number-line-text-3 {
+    font-family: MontserratRegular;
+    font-weight: bold;
+    color: #ffffff;
+    font-size: 22px;
+}
+
+.de-mathematics-interactive.area-model .guessed-answer-text {
+    position: absolute;
+    top: -34px;
+}
+
+.de-mathematics-interactive.area-model .actual-answer-text {
+    position: absolute;
+    top: 57px;
+}
+
+.de-mathematics-interactive.area-model .guessed-answer-marker-2 {
+    position: relative;
+    width: 2px;
+    height: 33px;
+    border-left: 2px solid #ffffff;
+}
+
+.de-mathematics-interactive.area-model .guessed-answer-marker-1 {
+    position: relative;
+    width: 2px;
+    height: 19px;
+    border-left: 2px solid #ffffff;
+    display: none;
+}
+
+.de-mathematics-interactive.area-model .actual-answer-marker {
+    position: relative;
+    width: 2px;
+    height: 57px;
+    border-left: 2px solid #ffffff;
+}
+
+.de-mathematics-interactive.area-model .guessed-answer-range-line {
+    position: relative;
+    border-top: 5px solid #ff0000;
+    top: -3px;
+    display: none;
+}
+
+.de-mathematics-interactive.area-model .guessed-answer-icon-1 {
+    position: relative;
+    width: 22px;
+    height: 22px;
+    top: -9px;
+    background-position: -27px -599px;
+}
+
+.de-mathematics-interactive.area-model .guessed-answer-icon-2 {
+    position: relative;
+    width: 22px;
+    height: 22px;
+    background-position: -27px -599px;
+    top: -25px;
+    display: none;
+}
+
+.de-mathematics-interactive.area-model .actual-answer-icon {
+    position: relative;
+    width: 22px;
+    height: 22px;
+    top: -40px;
+    background-position: -49px -599px;
+    z-index: 1;
+}
+
+.de-mathematics-interactive.area-model .number-line-next-button {
+    position: absolute;
+    right: 11px;
+    bottom: 25px;
+}
+
+.de-mathematics-interactive.area-model .number-line-back-button {
+    position: absolute;
+    left: 11px;
+    bottom: 25px;
+}
+
+/*---------------------------- visualize multiplication area -------------------------*/
+.de-mathematics-interactive.area-model .visualize-multiplication-area {
+    height: 468px;
+    width: 865px;
+    display: none;
+    margin-left: 60px;
+    margin-top: 48px;
+}
+
+.de-mathematics-interactive.area-model .area-box-holder {
+    float: left;
+    height: 438px;
+    width: 438px;
+}
+
+.de-mathematics-interactive.area-model .visualize-multiplication-equations-holder {
+    float: left;
+    margin-left: 19px;
+    height: 438px;
+    width: 400px;
+}
+
+.de-mathematics-interactive.area-model .visualize-multiplication-next-button {
+    position: absolute;
+    right: 11px;
+    bottom: 25px;
+}
+
+/*---------------------------- standard algorithm multiplication area -------------------------*/
+.de-mathematics-interactive.area-model .standard-algorithm-multiplication-area {
+    height: 468px;
+    width: 850px;
+    margin-left: 60px;
+    margin-top: 48px;
+    display: none;
+}
+
+    .de-mathematics-interactive.area-model .standard-algorithm-multiplication-area .partial-product {
+        margin-top: 21px;
+    }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-multiplication-area .partial-product-1 {
+        margin-top: 19px;
+    }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-multiplication-area .partial-product-4 {
+        margin-bottom: 18px;
+    }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-multiplication-area .multiplier {
+        margin-bottom: 8px;
+    }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-multiplication-area .total-container {
+        margin-top: 13px;
+    }
+
+.de-mathematics-interactive.area-model .standard-algorithm-multiplication-view-holder {
+    height: 438px;
+    width: 108px;
+    right: 12px;
+    top: 114px;
+    position: absolute;
+}
+
+    .de-mathematics-interactive.area-model .standard-algorithm-multiplication-view-holder .separator-line {
+        border-top: 3px solid #ffffff;
+        position: relative;
+        left: 2px;
+        width: 106px;
+    }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-multiplication-view-holder .multiplication-area-text {
+        font-family: MontserratRegular, sans-serif;
+        font-size: 30px;
+        color: #ffffff;
+        text-align: right;
+    }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-multiplication-view-holder .arithmatic-operation-sign {
+        float: left;
+        color: #ffffff;
+    }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-multiplication-view-holder .text-color-0 {
+        color: #7ACCC8;
+    }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-multiplication-view-holder .text-color-1 {
+        color: #FF8024;
+    }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-multiplication-view-holder .text-color-2 {
+        color: #FFD093;
+    }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-multiplication-view-holder .text-color-3 {
+        color: #35DF08;
+    }
+
+.de-mathematics-interactive.area-model .view-standard-algorithm-container .replay-button,
+.de-mathematics-interactive.area-model .view-standard-algorithm-container .pause-button,
+.de-mathematics-interactive.area-model .view-standard-algorithm-container .play-button {
+    position: absolute;
+    right: 11px;
+    bottom: 25px;
+}
+/*------------------------------------- Area Box -------------------------------------*/
+.de-mathematics-interactive.area-model .area-box-container .area-grid-element {
+    float: left;
+    height: 72px;
+    width: 72px;
+    background-color: rgba(255, 255, 255, 0.23);
+    border-right: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+}
+
+.de-mathematics-interactive.area-model .area-box-container .unit-grid {
+    height: 72px;
+    width: 72px;
+}
+
+.de-mathematics-interactive.area-model .area-box-container .unit-area-div {
+    height: 72px;
+    width: 72px;
+    background-color: #35df08;
+    position: relative;
+}
+
+.de-mathematics-interactive.area-model .area-box-container .vertical-area-div {
+    float: left;
+    height: 72px;
+    width: 6.2px;
+    background-color: #ffd093;
+    border-right: 1px solid #000000;
+    position: relative;
+}
+
+.de-mathematics-interactive.area-model .area-box-container .horizontal-area-div {
+    height: 6.2px;
+    width: 72px;
+    background-color: #ff8024;
+    border-bottom: 1px solid #000000;
+    position: relative;
+}
+
+.de-mathematics-interactive.area-model .area-box-container .intersection-area-div {
+    float: left;
+    height: 6.2px;
+    width: 6.2px;
+    background-color: #7accc8;
+    border-right: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    position: relative;
+}
+
+.de-mathematics-interactive.area-model .area-box-container .reset-float {
+    clear: both;
+}
+
+.de-mathematics-interactive.area-model .area-box-container .dim-region {
+    opacity: 0.2;
+}
+
+.de-mathematics-interactive.area-model .area-box-container .dimension-label {
+    position: absolute;
+    height: 15px;
+    font-family: MontserratRegular;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.de-mathematics-interactive.area-model .area-box-container .height-label {
+    margin-left: -29px;
+}
+
+.de-mathematics-interactive.area-model .area-box-container .width-label {
+    margin-top: -17px;
+    min-width: 27px;
+    text-align: center;
+}
+
+.de-mathematics-interactive.area-model .area-box-container .focus-div {
+    position: absolute;
+    display: none;
+    border: 2px dashed rgba(255, 255, 255, 0);
+}
+
+    .de-mathematics-interactive.area-model .area-box-container .focus-div.visible {
+        border-color: rgba(255, 255, 255, 1);
+        background-color: rgba(255,255,255,0.01);
+        cursor: pointer;
+    }
+
+/*------------------------------ Visualize Multiplication Equations ------------------------*/
+.de-mathematics-interactive.area-model .visualize-multiplication-equations {
+    margin-top: -23px;
+}
+
+    .de-mathematics-interactive.area-model .visualize-multiplication-equations .equation-container {
+        margin-top: 45px;
+    }
+
+        .de-mathematics-interactive.area-model .visualize-multiplication-equations .equation-container div {
+            display: inline-block;
+            font-family: MontserratRegular;
+            font-size: 23px;
+        }
+
+        .de-mathematics-interactive.area-model .visualize-multiplication-equations .equation-container .feedback-symbol {
+            height: 22px;
+            width: 22px;
+            vertical-align: 5px;
+        }
+
+        .de-mathematics-interactive.area-model .visualize-multiplication-equations .equation-container .expression {
+            margin-left: 6px;
+            vertical-align: 5px;
+        }
+
+        .de-mathematics-interactive.area-model .visualize-multiplication-equations .equation-container .multiplicand {
+            width: 38px;
+        }
+
+        .de-mathematics-interactive.area-model .visualize-multiplication-equations .equation-container .multiplication-symbol {
+            margin-left: 3px;
+        }
+
+        .de-mathematics-interactive.area-model .visualize-multiplication-equations .equation-container .multiplier {
+            margin-left: 7px;
+            width: 38px;
+        }
+
+        .de-mathematics-interactive.area-model .visualize-multiplication-equations .equation-container .equal-to-symbol {
+            margin-left: 2px;
+            vertical-align: 4px;
+        }
+
+        .de-mathematics-interactive.area-model .visualize-multiplication-equations .equation-container .solution {
+            font-size: 16px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .de-mathematics-interactive.area-model .visualize-multiplication-equations .equation-container .solution-textbox {
+            width: 38px;
+            height: 31px;
+            margin-left: 2px;
+        }
+
+            .de-mathematics-interactive.area-model .visualize-multiplication-equations .equation-container .solution-textbox .input-box-common-component {
+                border-radius: 3px;
+                font-family: MontserratRegular;
+                font-size: 16px;
+            }
+
+        .de-mathematics-interactive.area-model .visualize-multiplication-equations .equation-container .decimal-point {
+            height: 37px;
+            margin-left: -1px;
+            font-size: 34px;
+            width: 4px;
+        }
+
+        .de-mathematics-interactive.area-model .visualize-multiplication-equations .equation-container .hint-button {
+            font-size: 10px;
+            font-weight: bold;
+            color: #FFC000;
+            position: absolute;
+            height: 11px;
+            width: 35px;
+            right: 0px;
+            margin-top: 12px;
+            opacity: 0.3;
+        }
+
+            .de-mathematics-interactive.area-model .visualize-multiplication-equations .equation-container .hint-button.click-enabled {
+                opacity: 1;
+                cursor: pointer;
+            }
+
+.de-mathematics-interactive.area-model .visualize-multiplication-total-line {
+    display: none;
+    position: absolute;
+    width: 398px;
+    height: 2px;
+    background-color: #FFFFFF;
+    opacity: 0.12;
+}
+
+.de-mathematics-interactive.area-model .visualize-multiplication-total {
+    display: none;
+    width: 398px;
+    margin-top: 15px;
+    font-family: MontserratRegular;
+    font-size: 23px;
+}
+
+    .de-mathematics-interactive.area-model .visualize-multiplication-total .visualize-multiplication-total-text {
+        display: inline-block;
+        height: 30px;
+        width: 140px;
+        text-align: right;
+    }
+
+    .de-mathematics-interactive.area-model .visualize-multiplication-total .visualize-multiplication-total-equal-to-symbol {
+        display: inline-block;
+        margin-left: 3px;
+    }
+
+    .de-mathematics-interactive.area-model .visualize-multiplication-total .visualize-multiplication-total-results {
+        display: inline-block;
+        margin-left: 5px;
+        text-align: center;
+    }
+
+        .de-mathematics-interactive.area-model .visualize-multiplication-total .visualize-multiplication-total-results div {
+            display: inline-block;
+            width: 39px;
+        }
+
+        .de-mathematics-interactive.area-model .visualize-multiplication-total .visualize-multiplication-total-results .decimal-point-result {
+            width: 6px;
+            margin-left: -2px;
+            font-size: 34px;
+        }
+
+/*------------------------------ View Standard algorithm Equations ------------------------*/
+.de-mathematics-interactive.area-model .standard-algorithm-equations-holder {
+    width: 270px;
+    position: absolute;
+    left: 511px;
+    top: 218px;
+}
+
+    .de-mathematics-interactive.area-model .standard-algorithm-equations-holder .equation-container div {
+        display: inline-block;
+    }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-equations-holder .equation-container {
+        margin-bottom: 20px;
+        position: relative;
+        font-size: 23px;
+        font-family: MontserratRegular;
+    }
+
+        .de-mathematics-interactive.area-model .standard-algorithm-equations-holder .equation-container .input-box-common-component {
+            border-radius: 3px;
+            font-family: MontserratRegular;
+            font-size: 18px;
+        }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-equations-holder .feedback-symbol {
+        height: 22px;
+        width: 22px;
+        vertical-align: -2px;
+    }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-equations-holder .expression {
+        vertical-align: -2px;
+    }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-equations-holder .equal-to-symbol {
+        /*margin-left: -1px;
+        vertical-align: -4px;*/
+        position: absolute;
+        top: 4px;
+        left: 131px;
+    }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-equations-holder .solution {
+        position: absolute;
+        right: 52px;
+        top: 0px;
+        margin-top: -4px;
+    }
+
+    .de-mathematics-interactive.area-model .standard-algorithm-equations-holder .go-button {
+        float: right;
+        margin-top: -2px;
+        margin-right: -4px;
+    }
+
+    /* Tooltip classes overridden*/
+.de-mathematics-interactive.area-model .theme2-tooltip.tooltip-general-container {
+    background: #FCFCFC;
+    color: #222;
+    box-shadow: 0px 2px 10px -4px #000000;
+    z-index: 2000;
+}
+
+.de-mathematics-interactive.area-model .theme2-tooltip.tooltip-general-container .arrow-div {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    position: absolute;
+    border-bottom: 10px solid #FCFCFC;
+    z-index: 1;
+}
+
+.de-mathematics-interactive.area-model .theme2-tooltip.help-tooltip.tooltip-general-container {
+    background: #2A2A2A;
+    color: White;
+    box-shadow: 0px 2px 10px -4px #000000;
+    z-index: 2000;
+}
+
+.de-mathematics-interactive.area-model .theme2-tooltip.help-tooltip.tooltip-general-container .arrow-div {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    position: absolute;
+    border-bottom: 10px solid #2A2A2A;
+    z-index: 1;
+}
+
+.de-mathematics-interactive.area-model .number-line-dummy-help {
+    position: absolute;
+    width: 432px;
+    left: 248px;
+    top: 130px;
+    height: 100px;
+    display: none;
+}
+

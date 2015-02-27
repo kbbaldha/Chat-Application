@@ -292,11 +292,30 @@
             console.log('upload done');
         });
         */
+        var data = new FormData($('#upload-form')[0]);
+       
         $.ajax({
             type: 'POST',
-            url: ChatApplication.SERVER_ADDRESS + "/uploadFile",
-            data: { file: element.files[0] },
-            processData: true
+            url: ChatApplication.SERVER_ADDRESS + "/upload/" + $scope.currentFriendObj.conversation_id.replace('#','~') +"/",
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                console.log(res);
+            }
         });
+        /*
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+            $.ajax({
+                type: 'POST',
+                url: ChatApplication.SERVER_ADDRESS + "/uploadFile",
+                data: { file: evt.target.result },
+                processData: true
+            });
+            //xhr.sendAsBinary(evt.target.result);
+        };
+        reader.readAsBinaryString(element.files[0]);
+        */
     }
 });

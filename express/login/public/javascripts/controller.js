@@ -31,6 +31,7 @@
                 hideLoadMore: false,
                 html: "load more"
             };
+            currentFriend.unreadMsgsValue = 0;
             currentFriend.active = false;
             conversationIdArray = currentFriend.conversation_id.split("#");
             if (conversationIdArray[0] == currentFriend.user_id) {
@@ -49,6 +50,7 @@
         friendObj.startTyping = false;
         friendObj.totalMessages = 0;
         friendObj.currentFile = null;
+        friendObj.unreadMsgsValue = 0;
         friendObj.loadMore = {
             hideLoadMore: false,
             html: "load more"
@@ -65,6 +67,17 @@
         }
     }
     getUserName();
+    function setFalseLastUnreadMsgs(friendObj) {
+        var messages = friendObj.messages,
+            length = messages.length,
+            i = length -1;
+        for (; i >= 0; i--) {
+            if (!(messages[i].unreadMsgs == undefined || messages[i].unreadMsgs == null)) {
+                messages[i].unreadMsgs = "false";
+                return;
+            }
+        }
+    }
     $scope.getUserId = function ($event, friendObj) {
         $scope.query = '';
         //var friendObj;
@@ -72,6 +85,15 @@
         if (friendObj.messages.length == 0) {
             displayLastDayConversation(this.x.user_id, friendObj);
         }
+        //to remove unread messages div
+        if ($scope.currentFriendObj) {
+            if ($scope.currentFriendObj.noOfUnreadMessages > 0) {
+                setFalseLastUnreadMsgs($scope.currentFriendObj);
+                $scope.currentFriendObj.unreadMsgsValue = 0;
+            }
+           
+        }
+        friendObj.unreadMsgsValue = friendObj.noOfUnreadMessages;
         friendObj.noOfUnreadMessages = 0;
         if ($scope.currentFriendObj) {
             $scope.currentFriendObj.active = false;
@@ -228,16 +250,18 @@
             }
             if ($scope.currentFriendObj) {
                 if (!(data.clientId == $scope.currentFriendObj.user_id)) {
-                    friend.noOfUnreadMessages = friend.noOfUnreadMessages + 1;
-                    app.totalMessages += 1;
-                    friend.totalMessages = app.totalMessages;
-                }
+                    friend.noOfUnreadMessages = friend.noOfUnreadMessages + 1;                   
+                }               
             }
             else {
-                friend.noOfUnreadMessages = friend.noOfUnreadMessages + 1;
-                app.totalMessages += 1;
-                friend.totalMessages = app.totalMessages;
+                friend.noOfUnreadMessages = friend.noOfUnreadMessages + 1;                
             }
+            //new messages
+            if (friend.noOfUnreadMessages == 1) {
+                friend.messages.push({ "unreadMsgs": "true" });
+            }
+            app.totalMessages += 1;
+            friend.totalMessages = app.totalMessages;
 
             if (friend.type == "1") {
                 friend.messages.push({ "1": data.message });
@@ -292,11 +316,30 @@
             console.log('upload done');
         });
         */
+        var data = new FormData($('#upload-form')[0]);
+       
         $.ajax({
             type: 'POST',
-            url: ChatApplication.SERVER_ADDRESS + "/uploadFile",
-            data: { file: element.files[0] },
-            processData: true
+            url: ChatApplication.SERVER_ADDRESS + "/upload/" + $scope.currentFriendObj.conversation_id.replace('#','~') +"/",
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                console.log(res);
+            }
         });
+        /*
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+            $.ajax({
+                type: 'POST',
+                url: ChatApplication.SERVER_ADDRESS + "/uploadFile",
+                data: { file: evt.target.result },
+                processData: true
+            });
+            //xhr.sendAsBinary(evt.target.result);
+        };
+        reader.readAsBinaryString(element.files[0]);
+        */
     }
 });

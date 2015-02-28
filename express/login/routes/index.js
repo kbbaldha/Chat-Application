@@ -70,7 +70,7 @@ router.post('/register', function (req, res, next) {
         else {
             var html_dir = './public/';
             res.sendfile(html_dir + 'registration_successful.html');
-        }
+        }c
     });
 
 });
@@ -159,6 +159,27 @@ router.post('/friendRequestAccepted', function (req, res, next) {
          frId = req.body.friendId,
          io = req.io,
          conversationId = clId + '#' + frId;
+
+    // Check to see if the folder is there else create
+    fs.mkdir('./conversation-history/' + conversationId, function (err) {
+        if (err) {
+            if (err.code == 'EEXIST') {
+
+            } else {
+                console.log("Folder creation error");
+            }
+        } else {
+            fs.mkdir('./conversation-history/' + conversationId + '/uploaded/', function (err) {
+                if (err) {
+                    if (err.code == 'EEXIST') {
+
+                    } else {
+                        console.log("Folder creation error");
+                    }
+                }
+            });
+        }
+    });
 
     connection.query("INSERT INTO friend_list (user_id,friend_id,conversation_id) VALUES ('" + clId + "','" + frId + "','" + conversationId + "');");
     connection.query("INSERT INTO friend_list (user_id,friend_id,conversation_id) VALUES ('" + frId + "','" + clId + "','" + conversationId + "');");
@@ -380,16 +401,7 @@ function addMessageToConversationHistor(sender, receiver, message) {
                 } else {
                     myData = { "2": message };
                 }
-                // Check to see if the folder is there else create
-                fs.mkdir('./conversation-history/' + conId, function (err) {
-                    if (err) {
-                        if (err.code == 'EEXIST') {
-
-                        } else {
-                            console.log("Folder creation error");
-                        }
-                    }
-                });
+                
                 // Check if there is a date with the current date
                 fs.exists(filename, function (exists) {
                     if (exists) {
@@ -581,9 +593,16 @@ router.post('/getMore', function (req, res, next) {
                     splitFile = date.split('-'),
                     parsedDate = new Date(parseInt(splitFile[2]), parseInt(splitFile[1]) - 1, parseInt(splitFile[0])),
                     folderStructure = './conversation-history/' + conId,
-                    userIdentity;
+                    userIdentity, finalDate;
 
                 parsedDate.setDate(parsedDate.getDate() - 1);
+
+                // Check if it is the first request
+                if (req.body.currentFile === "" || req.body.currentFile === null || req.body.currentFile === undefined) {
+                    finalDate = getTodaysDate();
+                } else {
+                    finalDate = getDateInString(parsedDate);
+                }
 
                 // Checking if the user is 1 or 2
                 if (userid === users[0]) {
@@ -596,7 +615,7 @@ router.post('/getMore', function (req, res, next) {
                 // Check if there is a conversation history for these users
                 fs.exists(folderStructure, function (exists) {
                     if (exists) {
-                        getClosestDate(folderStructure, getDateInString(parsedDate), res, userIdentity, req.body.friendId);
+                        getClosestDate(folderStructure, finalDate, res, userIdentity, req.body.friendId);
                     } else {
                         // There is no conversation history
                         res.send(true);
@@ -606,8 +625,10 @@ router.post('/getMore', function (req, res, next) {
         });
 });
 
-router.post('/uploadFile', function (req, res, next) {
-    console.log('the file uploaded is ' + req.body.file.name);
+router.post('/upload', function (req, res, next) {
+    console.log('the file uploaded is ' + req.body.file);
+    console.log(req.files);
+    res.send('file uploaded');
 });
 
 /**
@@ -637,8 +658,13 @@ function getDateInString(date) {
     return str;
 }
 
+function getConID(userId) {
+
+}
+
 module.exports = router;
 router.addSocketInfoToDatabase = addSocketInfoToDatabase;
 router.sendMessage = sendMessage;
 router.sendTypingNotification = sendTypingNotification;
 router.disconnectUser = disconnectUser;
+router.getConID = getConID;

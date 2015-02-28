@@ -7,9 +7,10 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 
 var bodyParser = require('body-parser');
+var multer = require('multer');
 var routes = require('./routes/index');
 var users = require('./routes/users');
-
+var fs = require("fs");
 var app = express();
 var server = app.listen(3030);
 var io = require('socket.io').listen(server);
@@ -23,8 +24,32 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(multer({
+    dest: "./conversation-history/",
+    changeDest: function (dest, req, res) {
+        //var conId = routes.getConID(req.session.user_name);
+        var conId = req.url.replace('~', '#');
+        conId = conId.replace('/upload/', '');
+        req.url = '/upload/';
+        
+        fs.mkdir(dest + conId + 'uploaded/', function (err) {
+            if (err) {
+                if (err.code == 'EEXIST') {
+
+                } else {
+                    console.log("Folder creation error");
+                }
+            }
+        });
+        
+        return dest + conId + 'uploaded/';
+    }
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
 
 app.use(['/sendFriendRequest','/friendRequestAccepted'], function (req, res, next) {
     req.io = io;

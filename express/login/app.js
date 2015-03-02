@@ -12,7 +12,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var fs = require("fs");
 var app = express();
-var server = app.listen(3030);
+var server = app.listen(3030,"192.168.2.10");
 var io = require('socket.io').listen(server);
 
 // view engine setup
@@ -32,6 +32,7 @@ app.use(multer({
         var conId = req.url.replace('~', '#');
         conId = conId.replace('/upload/', '');
         req.url = '/upload/';
+        req.conId = conId.replace('/','');
         
         fs.mkdir(dest + conId + 'uploaded/', function (err) {
             if (err) {
@@ -51,7 +52,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 
-app.use(['/sendFriendRequest','/friendRequestAccepted'], function (req, res, next) {
+app.use(['/sendFriendRequest', '/friendRequestAccepted', '/upload'], function (req, res, next) {
     req.io = io;
     next();
 });

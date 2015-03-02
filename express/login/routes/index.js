@@ -628,9 +628,50 @@ router.post('/getMore', function (req, res, next) {
 router.post('/upload', function (req, res, next) {
     console.log('the file uploaded is ' + req.body.file);
     console.log(req.files);
+    sendFileAcceptRequest(getFriendIdFromConId(req.conId,req.session.user_name), req.files['file-upload'], req.io, req.session.user_name);
     res.send('file uploaded');
 });
 
+function getFriendIdFromConId(conId, userId) {
+    var users = conId.split('#');
+    if (users[0] === userId) {
+        return users[1];
+    } else {
+        return users[0];
+    }
+}
+
+function sendFileAcceptRequest(userId, file,io,senderId) {
+    connection.query("SELECT socket_id,user_id FROM user_information WHERE user_id = '" + userId + "';", function (error, rows, fields) {
+        
+        if (rows.length > 0) {
+            var socketid = rows[0]['socket_id'],
+                clientId = rows[0]['user_id'];
+            if (io.sockets.connected[socketid]) {
+                io.sockets.connected[socketid].emit("file_transfer_request", { file: file,  senderId: senderId });
+            } else {
+
+            }
+        }
+        else {
+            console.log('no socket');
+        }
+    });
+}
+
+router.post('/getFileForDownload', function (req, res, next) {
+    console.log('the path is ::' + './conversation-history/' + req.body.conId + '/uploaded/' + req.body.fileName);
+    res.download('./conversation-history/' + req.body.conId + '/uploaded/' + req.body.fileName, req.body.fileDownloadName, function (err) {
+        if (err) {
+            console.log('errrrrrrrrrr'+err);
+            // Handle error, but keep in mind the response may be partially-sent
+            // so check res.headersSent
+        } else {
+            console.log('File sent');
+            // decrement a download credit, etc.
+        }
+    });
+});
 /**
 * Whenever the user is disconnected from the socket this function is called from app.js
 * Id is stored inside the passed object as obj.id

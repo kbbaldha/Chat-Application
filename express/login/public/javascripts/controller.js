@@ -31,6 +31,7 @@
                 hideLoadMore: false,
                 html: "load more"
             };
+            currentFriend.lastDate = null;
             currentFriend.unreadMsgsValue = 0;
             currentFriend.active = false;
             conversationIdArray = currentFriend.conversation_id.split("#");
@@ -55,6 +56,7 @@
             hideLoadMore: false,
             html: "load more"
         };
+        friendObj.lastDate = null;
         friendObj.active = false;
         conversationIdArray = friendObj.conversation_id.split("#");
         if (conversationIdArray[0] == friendObj.user_id) {
@@ -78,6 +80,18 @@
             }
         }
     }
+    function setLastDate(friendObj) {
+        var messages = friendObj.messages,
+            length = messages.length,
+            i = length -1;
+        for (; i >= 0; i--) {
+            if (!(messages[i].currentFile == undefined || messages[i].currentFile == null)) {
+                messages[i].lastDate = messages[i].currentFile;
+                return;
+            }
+        }
+    }
+
     $scope.getUserId = function ($event, friendObj) {
         $scope.query = '';
         //var friendObj;
@@ -87,7 +101,7 @@
         }
         //to remove unread messages div
         if ($scope.currentFriendObj) {
-            if ($scope.currentFriendObj.noOfUnreadMessages > 0) {
+            if ($scope.currentFriendObj.unreadMsgsValue > 0) {
                 setFalseLastUnreadMsgs($scope.currentFriendObj);
                 $scope.currentFriendObj.unreadMsgsValue = 0;
             }
@@ -136,14 +150,14 @@
         if ($scope.msgInputBoxValue.trim() == "") {
             return;
         }
-
+        checkAndAddLastDate($scope.currentFriendObj);
         if ($scope.currentFriendObj.type == "1") {
             $scope.currentFriendObj.messages.push({ "2": $scope.msgInputBoxValue });
         }
         else {
             $scope.currentFriendObj.messages.push({ "1": $scope.msgInputBoxValue });
         }
-        manageScroll();
+        scrollToBottom();
         socketio.emit("typing_notification", { message: 'end_typing', friend: $scope.currentFriendObj.user_id, clientName: app.clientInfo.user_fname, clientId: app.clientInfo.user_id });
         clearTimeout($scope.typingTimer);
         $scope.typingTimer = null;
@@ -151,8 +165,26 @@
         socketio.emit("message_to_server", { message: $scope.msgInputBoxValue, friend: $scope.currentFriendObj.user_id, clientName: app.clientInfo.user_fname, clientId: app.clientInfo.user_id });
         $scope.msgInputBoxValue = '';
     };
-    $scope.loadMoreMessages = function () {
+    function checkAndAddLastDate(friendObj){
+        var date = friendObj.lastDate,
+             dateObj;
+        if(date){
+            date = date.split('-');
+            dateObj = new Date();
+            dateObj.setFullYear(dateObj[2],dateObj[1],dateObj[0]);
+            
+            if(dateObj < new Date()){
+            
+            }
+            else{
 
+                return;
+            }
+        }
+        
+            date = new Date();
+            friendObj.lastDate = date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear(); 
+            friendObj.messages.push({currentFile: friendObj.lastDate});
     }
     function getNewFriend(userObj) {
         $.post(ChatApplication.SERVER_ADDRESS + "/getNewFriend", { friendId: userObj.user_id }, function (result) {
@@ -189,6 +221,7 @@
     function displayLastDayConversation(userId, friendObj) {
         $.post(ChatApplication.SERVER_ADDRESS + "/getLastDayConversation", { friendId: userId }, function (result) {
             displayMoreMessages(friendObj, result);
+            
         });
     }
     $scope.onLoadMoreBtnClicked = function onLoadMoreBtnClicked() {
@@ -225,6 +258,15 @@
             }, 10);
 
         }
+    }
+    function scrollToBottom(){
+        var chatLog = document.getElementById('friend_chat_log');
+                
+        
+            setTimeout(function () {
+                chatLog.scrollTop = chatLog.scrollHeight - chatLog.clientHeight;
+            }, 10);
+                    
     }
     function bindSocketEvents() {
         socketio.on("message_to_client", function (data) {

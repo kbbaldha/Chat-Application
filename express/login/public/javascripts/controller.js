@@ -333,6 +333,8 @@
             else {
                 friend.messages.push({ "2": "", file: data.file.originalname, fileUniqueName: data.file.name });
             }
+            friend.noOfUnreadMessages += 1;
+            $scope.$apply();
         });
     }
 

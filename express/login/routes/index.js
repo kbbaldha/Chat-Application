@@ -386,7 +386,7 @@ function sendMessage(data, io) {
 
 }
 
-function addMessageToConversationHistor(sender, receiver, message) {
+function addMessageToConversationHistor(sender, receiver, message,isFile) {
     connection.query("SELECT conversation_id FROM friend_list WHERE user_id='" + sender + "' AND friend_id = '" + receiver + "';",
         function (error, rows, fields) {
             if (rows.length > 0) {
@@ -397,9 +397,17 @@ function addMessageToConversationHistor(sender, receiver, message) {
 
                 console.log("filename is ::::::" + filename);
                 if (users[0] === sender) {
-                    myData = { "1": message };
+                    if (isFile) {
+                        myData = { "1": "", file: message.originalname, fileUniqueName: message.name };
+                    } else {
+                        myData = { "1": message };
+                    }
                 } else {
-                    myData = { "2": message };
+                    if (isFile) {
+                        myData = { "2": "", file: message.originalname, fileUniqueName: message.name };
+                    } else {
+                        myData = { "2": message };
+                    }
                 }
                 
                 // Check if there is a date with the current date
@@ -415,7 +423,14 @@ function addMessageToConversationHistor(sender, receiver, message) {
                         });
                     } else {
                         // Add row to table and and 
-                        connection.query("INSERT INTO conversation_history (conversation_id,date) VALUES ('" + conId + "','" + getDateForSQL() + "');");
+                        /*
+                        connection.query("INSERT INTO conversation_history (conversation_id,date) VALUES ('" + conId + "','" + getDateForSQL() + "');",
+                            function (error, rows, fields) {
+                                if (error) {
+                                    console.log('errror:' + error);
+                                }
+                            });
+                            */
                         // create a file & add the message
                         fs.writeFile(filename, JSON.stringify(myData, null, 4), function (err) {
                             if (err) {
@@ -628,7 +643,10 @@ router.post('/getMore', function (req, res, next) {
 router.post('/upload', function (req, res, next) {
     console.log('the file uploaded is ' + req.body.file);
     console.log(req.files);
-    sendFileAcceptRequest(getFriendIdFromConId(req.conId,req.session.user_name), req.files['file-upload'], req.io, req.session.user_name);
+    var friendId = getFriendIdFromConId(req.conId, req.session.user_name);
+    sendFileAcceptRequest(friendId, req.files['file-upload'], req.io, req.session.user_name);
+    // Adding file to the conversation history
+    addMessageToConversationHistor(req.session.user_name, friendId, req.files['file-upload'],true)
     res.send('file uploaded');
 });
 

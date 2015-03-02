@@ -224,6 +224,26 @@
             
         });
     }
+
+    $scope.acceptFileRequest = function (msg) {
+        var form = $('<form id="form-downloader" method="POST" action="' + ChatApplication.SERVER_ADDRESS + "/getFileForDownload" + '">');
+        
+        form.append($('<input type="hidden" name="fileName" value="' + msg.fileUniqueName + '">'));
+        form.append($('<input type="hidden" name="fileDownloadName" value="' + msg.file + '">'));
+        form.append($('<input type="hidden" name="conId" value="' + $scope.currentFriendObj.conversation_id + '">'));
+        
+        $('body').append(form);
+        form.submit();
+        $('#form-downloader').remove();
+        /*
+        $.post(ChatApplication.SERVER_ADDRESS + "/getFileForDownload", {
+            fileName: msg.fileUniqueName,
+            conId: $scope.currentFriendObj.conversation_id
+        }, function (result) {
+            //displayMoreMessages(friendObj, result);
+        });
+        */
+    }
     $scope.onLoadMoreBtnClicked = function onLoadMoreBtnClicked() {
         var curFriend = $scope.currentFriendObj;
         curFriend.loadMore.html = "loading......"
@@ -344,6 +364,25 @@
             console.log('online : ' + data.user_id);
             if (friend) {
                 friend.online = 1;
+                $scope.$apply();
+            }
+        });
+        socketio.on("file_transfer_request", function (data) {
+            var friend = getFriendObject(data.senderId);
+            if (friend.type == "1") {
+                friend.messages.push({ "1": "", file: data.file.originalname, fileUniqueName: data.file.name });
+            }
+            else {
+                friend.messages.push({ "2": "", file: data.file.originalname, fileUniqueName: data.file.name });
+            }
+            friend.noOfUnreadMessages += 1;
+            $scope.$apply();
+        });
+        socketio.on("number_of_offline_messages", function (data) {
+            var friend = getFriendObject(data.clientId);
+            console.log('no fof unread:::' + data.msgCount);
+            if (friend) {
+                friend.noOfUnreadMessages = data.msgCount;
                 $scope.$apply();
             }
         });

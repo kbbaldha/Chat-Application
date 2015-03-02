@@ -107,7 +107,15 @@
                                     <div class="msg-container" ng-repeat="msg in currentFriendObj.messages">
                                         <div ng-if="(msg[currentFriendObj.type] != undefined && msg[currentFriendObj.type] != null)" >
                                             <div ng-if="(msg.file == undefined || msg.file == null)" class="friend_chat_msg bubble me"> {{msg[currentFriendObj.type]}} </div>
-                                            <div ng-if="(msg.file != undefined && msg.file != null)" class="file"></div>
+                                            <div ng-if="(msg.file != undefined && msg.file != null)" class="file">
+                                                <div class="file-request-container">
+                                                    <div class="file-name">{{msg.file}}</div>
+                                                    <div class="file-accept-reject-buttons-container">
+                                                        <div class="accept add-button button-class btn btn-success" ng-click="acceptFileRequest(msg)">Accept</div>
+                                                        <div class="reject cancel-button button-class btn btn-default">Reject</div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div ng-if="(msg[currentFriendObj.clientType] != undefined && msg[currentFriendObj.clientType] != null)" class="me_chat bubble you"> {{msg[currentFriendObj.clientType]}} </div>
                                         <div ng-if="(msg.currentFile != undefined && msg.currentFile != null)" class="date-display"> {{msg.currentFile}} </div>

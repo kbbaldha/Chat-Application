@@ -302,12 +302,12 @@ function addSocketInfoToDatabase(user, socketid, io) {
 */
 function updateOfflineMessages(user, socketid, io) {
 
-    connection.query("SELECT user_fname,message,friend_id FROM user_information INNER JOIN offline_messages ON user_information.user_id = offline_messages.friend_id WHERE offline_messages.user_id = '" + user + "';", function (error, rows, fields) {
+    connection.query("SELECT user_fname,msgCount,friend_id FROM user_information INNER JOIN offline_messages ON user_information.user_id = offline_messages.friend_id WHERE offline_messages.user_id = '" + user + "';", function (error, rows, fields) {
         if (rows.length > 0) {
             for (var i = 0; i < rows.length; i++) {
                 if (io.sockets.connected[socketid]) {
-                    io.sockets.connected[socketid].emit("message_to_client", {
-                        message: rows[i]["message"], clientName: rows[i]["user_fname"],
+                    io.sockets.connected[socketid].emit("number_of_offline_messages", {
+                        msgCount: rows[i]["msgCount"], clientName: rows[i]["user_fname"],
                         clientId: rows[i]["friend_id"]
                     });
                 }
@@ -367,7 +367,13 @@ function sendMessage(data, io) {
             } else {
                 // The user if offline store his messages
                 console.log("client name is :" + data["clientName"]);
-                connection.query("INSERT INTO offline_messages  (user_id,friend_id,message) VALUES ('" + data["friend"] + "','" + data["clientId"] + "','" + data["message"] + "');");
+                connection.query(" INSERT INTO  offline_messages (user_id,friend_id,msgCount) VALUES ('" + data["friend"] + "','" + data["clientId"] + "',1)\
+                                                    ON DUPLICATE KEY UPDATE msgCount = msgCount + 1;", function (error, rows, fields) {
+                                                        if (error) {
+                                                            console.log('error' + error);
+                                                        }
+                                                    });
+                //connection.query("INSERT INTO offline_messages  (user_id,friend_id,count) VALUES ('" + data["friend"] + "','" + data["clientId"] + "','" + data["message"] + "');");
             }
 
             // Store the message in the conversation history
@@ -386,7 +392,7 @@ function sendMessage(data, io) {
 
 }
 
-function addMessageToConversationHistor(sender, receiver, message) {
+function addMessageToConversationHistor(sender, receiver, message,isFile) {
     connection.query("SELECT conversation_id FROM friend_list WHERE user_id='" + sender + "' AND friend_id = '" + receiver + "';",
         function (error, rows, fields) {
             if (rows.length > 0) {
@@ -397,9 +403,17 @@ function addMessageToConversationHistor(sender, receiver, message) {
 
                 console.log("filename is ::::::" + filename);
                 if (users[0] === sender) {
-                    myData = { "1": message };
+                    if (isFile) {
+                        myData = { "1": "", file: message.originalname, fileUniqueName: message.name };
+                    } else {
+                        myData = { "1": message };
+                    }
                 } else {
-                    myData = { "2": message };
+                    if (isFile) {
+                        myData = { "2": "", file: message.originalname, fileUniqueName: message.name };
+                    } else {
+                        myData = { "2": message };
+                    }
                 }
                 
                 // Check if there is a date with the current date
@@ -415,7 +429,14 @@ function addMessageToConversationHistor(sender, receiver, message) {
                         });
                     } else {
                         // Add row to table and and 
-                        connection.query("INSERT INTO conversation_history (conversation_id,date) VALUES ('" + conId + "','" + getDateForSQL() + "');");
+                        /*
+                        connection.query("INSERT INTO conversation_history (conversation_id,date) VALUES ('" + conId + "','" + getDateForSQL() + "');",
+                            function (error, rows, fields) {
+                                if (error) {
+                                    console.log('errror:' + error);
+                                }
+                            });
+                            */
                         // create a file & add the message
                         fs.writeFile(filename, JSON.stringify(myData, null, 4), function (err) {
                             if (err) {
@@ -628,9 +649,53 @@ router.post('/getMore', function (req, res, next) {
 router.post('/upload', function (req, res, next) {
     console.log('the file uploaded is ' + req.body.file);
     console.log(req.files);
+    var friendId = getFriendIdFromConId(req.conId, req.session.user_name);
+    sendFileAcceptRequest(friendId, req.files['file-upload'], req.io, req.session.user_name);
+    // Adding file to the conversation history
+    addMessageToConversationHistor(req.session.user_name, friendId, req.files['file-upload'],true)
     res.send('file uploaded');
 });
 
+function getFriendIdFromConId(conId, userId) {
+    var users = conId.split('#');
+    if (users[0] === userId) {
+        return users[1];
+    } else {
+        return users[0];
+    }
+}
+
+function sendFileAcceptRequest(userId, file,io,senderId) {
+    connection.query("SELECT socket_id,user_id FROM user_information WHERE user_id = '" + userId + "';", function (error, rows, fields) {
+        
+        if (rows.length > 0) {
+            var socketid = rows[0]['socket_id'],
+                clientId = rows[0]['user_id'];
+            if (io.sockets.connected[socketid]) {
+                io.sockets.connected[socketid].emit("file_transfer_request", { file: file,  senderId: senderId });
+            } else {
+
+            }
+        }
+        else {
+            console.log('no socket');
+        }
+    });
+}
+
+router.post('/getFileForDownload', function (req, res, next) {
+    console.log('the path is ::' + './conversation-history/' + req.body.conId + '/uploaded/' + req.body.fileName);
+    res.download('./conversation-history/' + req.body.conId + '/uploaded/' + req.body.fileName, req.body.fileDownloadName, function (err) {
+        if (err) {
+            console.log('errrrrrrrrrr'+err);
+            // Handle error, but keep in mind the response may be partially-sent
+            // so check res.headersSent
+        } else {
+            console.log('File sent');
+            // decrement a download credit, etc.
+        }
+    });
+});
 /**
 * Whenever the user is disconnected from the socket this function is called from app.js
 * Id is stored inside the passed object as obj.id

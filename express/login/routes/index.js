@@ -302,12 +302,12 @@ function addSocketInfoToDatabase(user, socketid, io) {
 */
 function updateOfflineMessages(user, socketid, io) {
 
-    connection.query("SELECT user_fname,message,friend_id FROM user_information INNER JOIN offline_messages ON user_information.user_id = offline_messages.friend_id WHERE offline_messages.user_id = '" + user + "';", function (error, rows, fields) {
+    connection.query("SELECT user_fname,msgCount,friend_id FROM user_information INNER JOIN offline_messages ON user_information.user_id = offline_messages.friend_id WHERE offline_messages.user_id = '" + user + "';", function (error, rows, fields) {
         if (rows.length > 0) {
             for (var i = 0; i < rows.length; i++) {
                 if (io.sockets.connected[socketid]) {
-                    io.sockets.connected[socketid].emit("message_to_client", {
-                        message: rows[i]["message"], clientName: rows[i]["user_fname"],
+                    io.sockets.connected[socketid].emit("number_of_offline_messages", {
+                        msgCount: rows[i]["msgCount"], clientName: rows[i]["user_fname"],
                         clientId: rows[i]["friend_id"]
                     });
                 }
@@ -367,7 +367,13 @@ function sendMessage(data, io) {
             } else {
                 // The user if offline store his messages
                 console.log("client name is :" + data["clientName"]);
-                connection.query("INSERT INTO offline_messages  (user_id,friend_id,message) VALUES ('" + data["friend"] + "','" + data["clientId"] + "','" + data["message"] + "');");
+                connection.query(" INSERT INTO  offline_messages (user_id,friend_id,msgCount) VALUES ('" + data["friend"] + "','" + data["clientId"] + "',1)\
+                                                    ON DUPLICATE KEY UPDATE msgCount = msgCount + 1;", function (error, rows, fields) {
+                                                        if (error) {
+                                                            console.log('error' + error);
+                                                        }
+                                                    });
+                //connection.query("INSERT INTO offline_messages  (user_id,friend_id,count) VALUES ('" + data["friend"] + "','" + data["clientId"] + "','" + data["message"] + "');");
             }
 
             // Store the message in the conversation history

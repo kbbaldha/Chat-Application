@@ -336,6 +336,14 @@
             friend.noOfUnreadMessages += 1;
             $scope.$apply();
         });
+        socketio.on("number_of_offline_messages", function (data) {
+            var friend = getFriendObject(data.clientId);
+            console.log('no fof unread:::' + data.msgCount);
+            if (friend) {
+                friend.noOfUnreadMessages = data.msgCount;
+                $scope.$apply();
+            }
+        });
     }
 
 

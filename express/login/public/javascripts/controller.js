@@ -221,6 +221,16 @@
     function displayLastDayConversation(userId, friendObj) {
         $.post(ChatApplication.SERVER_ADDRESS + "/getLastDayConversation", { friendId: userId }, function (result) {
             displayMoreMessages(friendObj, result);
+            var i=0,
+                length;
+            result = JSON.parse(result);
+            length = result.length;
+            for(;i<length;i++){
+                if(result[0].currentFile){
+                    friendObj.lastDate = result[0].currentFile.replace('.json','');
+                    return;
+                }
+            }
             
         });
     }
@@ -397,16 +407,28 @@
             console.log('upload done');
         });
         */
-        var data = new FormData($('#upload-form')[0]);
-       
+        var data = new FormData($('#upload-form')[0]),
+            msgObject;
+            if($scope.currentFriendObj.type == "1"){
+                msgObject = {"2":"", file: element.files[0].name, text:'sending...'};
+             }
+             else{
+                 msgObject = {"2":"", file: element.files[0].name, text:'sending...'};
+             }
+        $scope.$apply();
+       $scope.currentFriendObj.messages.push(msgObject);
         $.ajax({
             type: 'POST',
             url: ChatApplication.SERVER_ADDRESS + "/upload/" + $scope.currentFriendObj.conversation_id.replace('#','~') +"/",
             data: data,
             processData: false,
+            fileName: msgObject.file,
             contentType: false,
             success: function (res) {
-                console.log(res);
+                if(res == "file uploaded"){
+                    fileSent(this.url,this.fileName);
+                    $scope.$apply();
+                }
             }
         });
         /*
@@ -422,5 +444,28 @@
         };
         reader.readAsBinaryString(element.files[0]);
         */
+    }
+    function fileSent(url,fileName){
+        var arr = url.split('/'),
+            friendId = arr[arr.length - 2].split('~'),
+            friendObj;
+        if(friendId[0] == app.clientInfo.user_id){
+            friendId = friendId[1];
+        }
+        else{
+            friendId = friendId[0];
+        }
+        friendObj = getFriendObject(friendId);
+
+        var messages = friendObj.messages,
+            length = messages.length,
+            i = length -1;
+
+            for(;i>=0;i--){
+                if(messages[i].file == fileName){
+                    messages[i].text = 'sent';
+                    return;
+                }
+            }
     }
 });

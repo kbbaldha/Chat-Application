@@ -117,7 +117,14 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div ng-if="(msg[currentFriendObj.clientType] != undefined && msg[currentFriendObj.clientType] != null)" class="me_chat bubble you"> {{msg[currentFriendObj.clientType]}} </div>
+                                        <div ng-if="(msg[currentFriendObj.clientType] != undefined && msg[currentFriendObj.clientType] != null)" class="">
+                                         <div ng-if="(msg.file == undefined || msg.file == null)" class="friend_chat_msg bubble me"> {{msg[currentFriendObj.clientType]}} </div>
+                                            <div ng-if="(msg.file != undefined && msg.file != null)" class="file">
+                                                <div class="file-request-container">
+                                                    <div class="file-name">{{msg.file}} : {{msg.text}}</div>                                                    
+                                                </div>
+                                            </div>
+                                          </div>
                                         <div ng-if="(msg.currentFile != undefined && msg.currentFile != null)" class="date-display"> {{msg.currentFile}} </div>
                                         <div ng-if="(msg.unreadMsgs == 'true')" class="date-display">{{currentFriendObj.unreadMsgsValue}} unread messages </div>
                                     </div>

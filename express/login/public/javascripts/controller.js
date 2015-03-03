@@ -221,6 +221,11 @@
     function displayLastDayConversation(userId, friendObj) {
         $.post(ChatApplication.SERVER_ADDRESS + "/getLastDayConversation", { friendId: userId }, function (result) {
             displayMoreMessages(friendObj, result);
+
+            if(friendObj.noOfUnreadMessges > 0){
+                //push obj of unread messages
+                friendObj.messages.splice(friendObj.messages.length - 1 - friendObj.noOfUnreadMessges, 0, { "unreadMsgs": "true" });
+            }
             var i=0,
                 length;
             result = JSON.parse(result);
@@ -298,11 +303,8 @@
             }, 10);
                     
     }
-    function bindSocketEvents() {
-        socketio.on("message_to_client", function (data) {
-
-            var friend = getFriendObject(data.clientId);
-            if (!document.hasFocus()) {
+    function generateNotification(){
+         if (!document.hasFocus()) {
                 if (!Notification) {
                     alert('Notifications are supported in modern versions of Chrome, Firefox, Opera and Firefox.');
                     return;
@@ -320,6 +322,14 @@
                     window.focus();
                 };
             }
+            
+    }
+    function bindSocketEvents() {
+        socketio.on("message_to_client", function (data) {
+
+            var friend = getFriendObject(data.clientId);
+            generateNotification();
+           //do not increment no of unred messages if chat window is open
             if ($scope.currentFriendObj) {
                 if (!(data.clientId == $scope.currentFriendObj.user_id)) {
                     friend.noOfUnreadMessages = friend.noOfUnreadMessages + 1;                   
@@ -328,18 +338,24 @@
             else {
                 friend.noOfUnreadMessages = friend.noOfUnreadMessages + 1;                
             }
-            //new messages
-            if (friend.noOfUnreadMessages == 1) {
-                friend.messages.push({ "unreadMsgs": "true" });
-            }
-            app.totalMessages += 1;
-            friend.totalMessages = app.totalMessages;
 
-            if (friend.type == "1") {
-                friend.messages.push({ "1": data.message });
+            if(friend.messages.length == 0){
+                    displayLastDayConversation(data.clientId,friend);
             }
-            else {
-                friend.messages.push({ "2": data.message });
+            else{
+                        //new messages
+                        if (friend.noOfUnreadMessages == 1) {
+                            friend.messages.push({ "unreadMsgs": "true" });
+                        }
+                        app.totalMessages += 1;
+                        friend.totalMessages = app.totalMessages;
+
+                        if (friend.type == "1") {
+                            friend.messages.push({ "1": data.message });
+                        }
+                        else {
+                            friend.messages.push({ "2": data.message });
+                        }
             }
             $scope.$apply();
             manageScroll();
@@ -413,7 +429,7 @@
                 msgObject = {"2":"", file: element.files[0].name, text:'sending...'};
              }
              else{
-                 msgObject = {"2":"", file: element.files[0].name, text:'sending...'};
+                 msgObject = {"1":"", file: element.files[0].name, text:'sending...'};
              }
         $scope.$apply();
        $scope.currentFriendObj.messages.push(msgObject);

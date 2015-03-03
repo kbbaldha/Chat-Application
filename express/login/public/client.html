@@ -115,13 +115,14 @@
                                                         <div class="reject cancel-button button-class btn btn-default">Reject</div>
                                                     </div>
                                                 </div>
+                                                 
                                             </div>
                                         </div>
                                         <div ng-if="(msg[currentFriendObj.clientType] != undefined && msg[currentFriendObj.clientType] != null)" class="">
-                                         <div ng-if="(msg.file == undefined || msg.file == null)" class="friend_chat_msg bubble me"> {{msg[currentFriendObj.clientType]}} </div>
+                                         <div ng-if="(msg.file == undefined || msg.file == null)" class="me_chat bubble me"> {{msg[currentFriendObj.clientType]}} </div>
                                             <div ng-if="(msg.file != undefined && msg.file != null)" class="file">
-                                                <div class="file-request-container">
-                                                    <div class="file-name">{{msg.file}}:<span>{{msg.text}}</span></div>                                                    
+                                                <div class="file-sent-container">
+                                                    <div class="file-name">{{msg.file}}:<span>{{msg.text}}</span></div>
                                                 </div>
                                             </div>
                                           </div>

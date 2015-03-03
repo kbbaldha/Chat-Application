@@ -171,7 +171,7 @@
         if(date){
             date = date.split('-');
             dateObj = new Date();
-            dateObj.setFullYear(dateObj[2],dateObj[1],dateObj[0]);
+            dateObj.setFullYear(date[2], date[1] - 1, date[0]);
             
             if(dateObj < new Date()){
             
@@ -222,9 +222,9 @@
         $.post(ChatApplication.SERVER_ADDRESS + "/getLastDayConversation", { friendId: userId }, function (result) {
             displayMoreMessages(friendObj, result);
 
-            if(friendObj.noOfUnreadMessges > 0){
+            if(friendObj.noOfUnreadMessages > 0){
                 //push obj of unread messages
-                friendObj.messages.splice(friendObj.messages.length - 1 - friendObj.noOfUnreadMessges, 0, { "unreadMsgs": "true" });
+                friendObj.messages.splice(friendObj.messages.length - friendObj.noOfUnreadMessages, 0, { "unreadMsgs": "true" });
             }
             var i=0,
                 length;
@@ -303,7 +303,7 @@
             }, 10);
                     
     }
-    function generateNotification(){
+    function generateNotification(friend,data){
          if (!document.hasFocus()) {
                 if (!Notification) {
                     alert('Notifications are supported in modern versions of Chrome, Firefox, Opera and Firefox.');
@@ -328,7 +328,7 @@
         socketio.on("message_to_client", function (data) {
 
             var friend = getFriendObject(data.clientId);
-            generateNotification();
+            generateNotification(friend,data);
            //do not increment no of unred messages if chat window is open
             if ($scope.currentFriendObj) {
                 if (!(data.clientId == $scope.currentFriendObj.user_id)) {

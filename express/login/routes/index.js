@@ -42,19 +42,23 @@ router.post('/login', function (req, res, next) {
 
     connection.query("SELECT * FROM user_information WHERE user_id = '" + req.body.user_name + "' AND user_pass = '" + req.body.user_pass + "';",
             function (error, rows, fields) {
-
-
-                if (rows.length > 0) {
-                    console.log('allow to chat');
-                    sess = req.session;
-                    sess.user_name = req.body.user_name;
-                    res.redirect('/chat');
-
-                }
-
-                else {
+                if (error) {
                     var html_dir = './public/';
-                    res.sendfile(html_dir + 'invalid_login.html');
+                    res.sendfile(html_dir + 'login.htm');
+                }
+                else {
+                    if (rows.length > 0) {
+                        console.log('allow to chat');
+                        sess = req.session;
+                        sess.user_name = req.body.user_name;
+                        res.redirect('/chat');
+
+                    }
+
+                    else {
+                        var html_dir = './public/';
+                        res.sendfile(html_dir + 'invalid_login.html');
+                    }
                 }
             });
 
@@ -70,7 +74,7 @@ router.post('/register', function (req, res, next) {
         else {
             var html_dir = './public/';
             res.sendfile(html_dir + 'registration_successful.html');
-        }c
+        }
     });
 
 });

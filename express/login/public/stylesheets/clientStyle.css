@@ -34,7 +34,7 @@
 .friend_chat_log {
     width: 100%;
     overflow-y: auto;
-    height:350px;
+    height:300px;
     overflow-x: hidden;
 }
 .friend_chat_log::-webkit-scrollbar-track

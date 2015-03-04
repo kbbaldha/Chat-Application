@@ -8,7 +8,7 @@
     $scope.currentFriendName = '';
     $scope.currentFriendId = '';
     $scope.msgInputBoxValue = '';
-
+    $scope.uploadPercent = 0;
     $scope.currentFriendObj;
     $scope.selected;
 
@@ -31,6 +31,7 @@
                 hideLoadMore: false,
                 html: "load more"
             };
+            currentFriend.uploadPercent = 0;
             currentFriend.lastDate = null;
             currentFriend.unreadMsgsValue = 0;
             currentFriend.active = false;
@@ -56,6 +57,7 @@
             hideLoadMore: false,
             html: "load more"
         };
+        friendObj.uploadPercent = 0;
         friendObj.lastDate = null;
         friendObj.active = false;
         conversationIdArray = friendObj.conversation_id.split("#");
@@ -423,43 +425,51 @@
             console.log('upload done');
         });
         */
+        checkAndAddLastDate($scope.currentFriendObj);
         var data = new FormData($('#upload-form')[0]),
-            msgObject;
+            msgObject,
+            friend = $scope.currentFriendObj;
             if($scope.currentFriendObj.type == "1"){
                 msgObject = {"2":"", file: element.files[0].name, text:'sending...'};
              }
              else{
                  msgObject = {"1":"", file: element.files[0].name, text:'sending...'};
              }
-        $scope.$apply();
-       $scope.currentFriendObj.messages.push(msgObject);
+        
+            $scope.currentFriendObj.messages.push(msgObject);
+            $scope.$apply();
         $.ajax({
             type: 'POST',
             url: ChatApplication.SERVER_ADDRESS + "/upload/" + $scope.currentFriendObj.conversation_id.replace('#','~') +"/",
             data: data,
             processData: false,
             fileName: msgObject.file,
+            friend: friend,
             contentType: false,
+            xhr: function () {  // Custom XMLHttpRequest
+                var myXhr = $.ajaxSettings.xhr();
+                if (myXhr.upload) { // Check if upload property exists
+                    myXhr.upload.friendObj = getFriendObject(this.friend.user_id);
+                    myXhr.upload.addEventListener('progress', progressHandlingFunction, false); // For handling the progress of the upload
+                   
+                }
+                return myXhr;
+            },
             success: function (res) {
                 if(res == "file uploaded"){
-                    fileSent(this.url,this.fileName);
+                    fileSent(this.url, this.fileName);
+                    
                     $scope.$apply();
                 }
             }
         });
-        /*
-        var reader = new FileReader();
-        reader.onload = function (evt) {
-            $.ajax({
-                type: 'POST',
-                url: ChatApplication.SERVER_ADDRESS + "/uploadFile",
-                data: { file: evt.target.result },
-                processData: true
-            });
-            //xhr.sendAsBinary(evt.target.result);
-        };
-        reader.readAsBinaryString(element.files[0]);
-        */
+        
+    }
+    function progressHandlingFunction(e) {
+        if (e.lengthComputable) {                  
+            e.target.friendObj.uploadPercent = Math.round((e.loaded / e.total) * 100);
+            $scope.$apply();
+        }
     }
     function fileSent(url,fileName){
         var arr = url.split('/'),

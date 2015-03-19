@@ -107,42 +107,44 @@
                                         {{currentFriendObj.uploadPercent}}%
                                     </div>
                                 </div>
-                                <div id="friend_chat_log" class="friend_chat_log">
-                                    <button class="btn load-more btn-primary btn-sm btn-block"  ng-click="onLoadMoreBtnClicked()" ng-hide="currentFriendObj.loadMore.hideLoadMore == true"  >{{currentFriendObj.loadMore.html}}</button>
-                                    <div class="msg-container" ng-repeat="msg in currentFriendObj.messages">
+                                <!-- Seek Attention button-->
+                                <div id="seek-attention-btn" class="seek-attention-btn" ng-click="onSeekAttentionBtnClicked()">Seek Attention</div>
+                                    <div id="friend_chat_log" class="friend_chat_log">
+                                        <button class="btn load-more btn-primary btn-sm btn-block" ng-click="onLoadMoreBtnClicked()" ng-hide="currentFriendObj.loadMore.hideLoadMore == true">{{currentFriendObj.loadMore.html}}</button>
+                                        <div class="msg-container" ng-repeat="msg in currentFriendObj.messages">
 
-                                        <div ng-if="(msg[currentFriendObj.type] != undefined && msg[currentFriendObj.type] != null)" >
-                                            <div ng-if="(msg.file == undefined || msg.file == null)" class="friend_chat_msg bubble me"> {{msg[currentFriendObj.type]}} </div>
-                                            <div ng-if="(msg.file != undefined && msg.file != null)" class="file">
-                                                <div class="file-request-container">
-                                                    <div class="file-name">{{msg.file}}</div>
-                                                    <div class="file-accept-reject-buttons-container">
-                                                        <div class="accept add-button button-class btn btn-success" ng-click="acceptFileRequest(msg)">Accept</div>
-                                                        <div class="reject cancel-button button-class btn btn-default">Reject</div>
+                                            <div ng-if="(msg[currentFriendObj.type] != undefined && msg[currentFriendObj.type] != null)">
+                                                <div ng-if="(msg.file == undefined || msg.file == null)" class="friend_chat_msg bubble me"> {{msg[currentFriendObj.type]}} </div>
+                                                <div ng-if="(msg.file != undefined && msg.file != null)" class="file">
+                                                    <div class="file-request-container">
+                                                        <div class="file-name">{{msg.file}}</div>
+                                                        <div class="file-accept-reject-buttons-container">
+                                                            <div class="accept add-button button-class btn btn-success" ng-click="acceptFileRequest(msg)">Accept</div>
+                                                            <div class="reject cancel-button button-class btn btn-default">Reject</div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div ng-if="(msg[currentFriendObj.clientType] != undefined && msg[currentFriendObj.clientType] != null)" class="">
+                                                <div ng-if="(msg.file == undefined || msg.file == null)" class="me_chat bubble you"> {{msg[currentFriendObj.clientType]}} </div>
+                                                <div ng-if="(msg.file != undefined && msg.file != null)" class="file">
+                                                    <div class="file-sent-container">
+                                                        <div class="file-name">{{msg.file}}:<span>{{msg.text}}</span></div>
                                                     </div>
                                                 </div>
-                                                 
                                             </div>
+                                            <div ng-if="(msg.currentFile != undefined && msg.currentFile != null)" class="date-display"> {{msg.currentFile}} </div>
+                                            <div ng-if="(msg.unreadMsgs == 'true')" class="date-display">{{currentFriendObj.unreadMsgsValue}} unread messages </div>
                                         </div>
-                                        <div ng-if="(msg[currentFriendObj.clientType] != undefined && msg[currentFriendObj.clientType] != null)" class="">
-                                         <div ng-if="(msg.file == undefined || msg.file == null)" class="me_chat bubble you"> {{msg[currentFriendObj.clientType]}} </div>
-                                            <div ng-if="(msg.file != undefined && msg.file != null)" class="file">
-                                                <div class="file-sent-container">
-                                                    <div class="file-name">{{msg.file}}:<span>{{msg.text}}</span></div>
-                                                </div>
-                                            </div>
-                                          </div>
-                                        <div ng-if="(msg.currentFile != undefined && msg.currentFile != null)" class="date-display"> {{msg.currentFile}} </div>
-                                        <div ng-if="(msg.unreadMsgs == 'true')" class="date-display">{{currentFriendObj.unreadMsgsValue}} unread messages </div>
+                                    </div>
+                                    <div class="input-group">
+                                        <input type="text" id="message_input" ng-model="msgInputBoxValue" ng-keypress="enterOnMsgInput($event)" class="form-control" />
+                                        <span class="input-group-btn">
+                                            <button id="kbbaldha" ng-click="sendMessage()" class="btn btn-success"><span class="glyphicon glyphicon-send"></span></button>
+                                        </span>
                                     </div>
                                 </div>
-                                <div class="input-group">
-                                    <input type="text" id="message_input" ng-model="msgInputBoxValue" ng-keypress="enterOnMsgInput($event)" class="form-control" />
-                                    <span class="input-group-btn">
-                                        <button id="kbbaldha" ng-click="sendMessage()" class="btn btn-success"><span class="glyphicon glyphicon-send"></span></button>
-                                    </span>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

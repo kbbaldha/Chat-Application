@@ -731,6 +731,30 @@ function getConID(userId) {
 
 }
 
+router.post('/getAttention', function (req, res, next) {
+    var friendId = req.body.friendId,
+        io = req.io;
+
+    console.log('the user whose attention seeked is:' + friendId);
+    connection.query("SELECT socket_id,user_id FROM user_information WHERE user_id = '" + friendId + "';", function (error, rows, fields) {
+
+        if (rows.length > 0) {
+            var socketid = rows[0]['socket_id'],
+                clientId = rows[0]['user_id'];
+            if (io.sockets.connected[socketid]) {
+                io.sockets.connected[socketid].emit("seek_attention", { senderId: req.session.user_name });
+            } else {
+                console.log('user is offline');
+            }
+        }
+        else {
+            console.log('no socket');
+        }
+    });
+});
+
+
+
 module.exports = router;
 router.addSocketInfoToDatabase = addSocketInfoToDatabase;
 router.sendMessage = sendMessage;

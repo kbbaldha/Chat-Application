@@ -306,26 +306,30 @@
                     
     }
     function generateNotification(friend,data){
-         if (!document.hasFocus()) {
-                if (!Notification) {
-                    alert('Notifications are supported in modern versions of Chrome, Firefox, Opera and Firefox.');
-                    return;
-                }
-
-                if (Notification.permission !== "granted")
-                    Notification.requestPermission();
-
-                var notification = new Notification('New Message From ' + friend.user_fname, {
-                    icon: '',
-                    body: data.message,
-                });
-
-                notification.onclick = function () {
-                    window.focus();
-                };
-            }
-            
+        if (!document.hasFocus()) {
+            sendNotification(friend, data);
+        }
     }
+
+    function sendNotification(friend, data) {
+        if (!Notification) {
+            alert('Notifications are supported in modern versions of Chrome, Firefox, Opera and Firefox.');
+            return;
+        }
+
+        if (Notification.permission !== "granted")
+            Notification.requestPermission();
+
+        var notification = new Notification('New Message From ' + friend.user_fname, {
+            icon: '',
+            body: data.message,
+        });
+
+        notification.onclick = function () {
+            window.focus();
+        };
+    }
+    
     function bindSocketEvents() {
         socketio.on("message_to_client", function (data) {
 
@@ -414,6 +418,13 @@
                 $scope.$apply();
             }
         });
+        socketio.on("seek_attention", function (data) {
+            var friend = getFriendObject(data.senderId),
+                message = {};
+            console.log(data.senderId + 'seeks your attention');
+            message.message = data.senderId + ' seeks your attention';
+            sendNotification(friend, message);
+        });
     }
 
 
@@ -493,5 +504,12 @@
                     return;
                 }
             }
+    }
+
+    $scope.onSeekAttentionBtnClicked = function onSeekAttentionBtnClicked() {
+        var curFriend = $scope.currentFriendObj;
+        $.post(ChatApplication.SERVER_ADDRESS + "/getAttention", { friendId: curFriend.user_id }, function (result) {
+            console.log('Controller::User attention seeked');
+        });
     }
 });

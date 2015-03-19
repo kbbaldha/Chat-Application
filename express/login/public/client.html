@@ -60,7 +60,7 @@
                                                 </span>
                                             </div><!-- /input-group -->
                                             <div class="user-list-name-container list-group">
-                                                <a class="list-group-item" ng-class="{ 'active': x.active }" ng-repeat="x in friends | filter:query | orderBy:totalMessages" ng-click="getUserId($event,x)">
+                                                <a class="list-group-item" ng-class="{ 'active': x.active,'list-group-item-warning': x.blink}" ng-repeat="x in friends | filter:query | orderBy:totalMessages" ng-click="getUserId($event,x)">
                                                     <span>
                                                         {{x.user_fname}}
                                                         <span ng-hide="x.noOfUnreadMessages == 0" class="badge">{{x.noOfUnreadMessages}}</span>
@@ -108,7 +108,7 @@
                                     </div>
                                 </div>
                                 <!-- Seek Attention button-->
-                                <div id="seek-attention-btn" class="seek-attention-btn" ng-click="onSeekAttentionBtnClicked()">Seek Attention</div>
+                                <div id="seek-attention-btn" class="seek-attention-btn" ng-click="onSeekAttentionBtnClicked()"><span class="glyphicon glyphicon-flash"></span></div>
                                     <div id="friend_chat_log" class="friend_chat_log">
                                         <button class="btn load-more btn-primary btn-sm btn-block" ng-click="onLoadMoreBtnClicked()" ng-hide="currentFriendObj.loadMore.hideLoadMore == true">{{currentFriendObj.loadMore.html}}</button>
                                         <div class="msg-container" ng-repeat="msg in currentFriendObj.messages">

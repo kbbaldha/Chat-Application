@@ -31,6 +31,7 @@
                 hideLoadMore: false,
                 html: "load more"
             };
+            currentFriend.blink = false;
             currentFriend.uploadPercent = 0;
             currentFriend.lastDate = null;
             currentFriend.unreadMsgsValue = 0;
@@ -57,6 +58,7 @@
             hideLoadMore: false,
             html: "load more"
         };
+        friendObj.blink = false;
         friendObj.uploadPercent = 0;
         friendObj.lastDate = null;
         friendObj.active = false;
@@ -98,6 +100,9 @@
         $scope.query = '';
         //var friendObj;
         //friendObj = getFriendObject(this.x.user_id);
+        if (friendObj.interval) {
+            clearInterval(friendObj.interval);
+        }
         if (friendObj.messages.length == 0) {
             displayLastDayConversation(this.x.user_id, friendObj);
         }
@@ -424,6 +429,12 @@
             console.log(data.senderId + 'seeks your attention');
             message.message = data.senderId + ' seeks your attention';
             sendNotification(friend, message);
+            friend.blink = true;
+            friend.interval = setInterval(function () {
+                friend.blink = !friend.blink;
+                $scope.$apply();
+            }, 100);
+            
         });
     }
 

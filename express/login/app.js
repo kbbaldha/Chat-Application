@@ -12,7 +12,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var fs = require("fs");
 var app = express();
-var server = app.listen(3030);
+var server = app.listen(3030,'192.168.2.10');
 var io = require('socket.io').listen(server);
 
 // view engine setup

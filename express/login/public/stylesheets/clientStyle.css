@@ -389,3 +389,14 @@ body {
 .selected {
     background-color: antiquewhite;
 }
+
+.welcome-user,
+.user-panel {
+    float: left;
+}
+
+.user-panel {
+    padding-left: 20px;
+    position: relative;
+    top: 24px;
+}

@@ -34,8 +34,20 @@
         </div><!-- /.container-fluid -->
     </nav>
     <div class="container">
-        <div class="page-header row">
-            <h1 id="user" class=""></h1>
+        <div class="page-header row" ng-controller="stateController">
+            <h1 id="user" class="welcome-user"></h1>
+            <div class="user-panel">
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                        {{selectedState}}
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" >
+                        <li role="presentation" class="state-menu-item online-menu-item" ng-repeat="state in states" ng-click="onStateDropDownClicked(state)"><a role="menuitem" tabindex="-1" href="#">{{state}}</a></li>
+                        
+                    </ul>
+                </div>
+            </div>
         </div>
         <div id="chat-control" class="container">
             <div class="row">
@@ -176,7 +188,7 @@
     <script type="text/javascript" src="/javascripts/controller.js"></script>
     <script type="text/javascript" src="/javascripts/notificationController.js"></script>
     <script type="text/javascript" src="/javascripts/searchController.js"></script>
-
+    <script type="text/javascript" src="/javascripts/state-controller.js"></script>
 </body>
 
 </html>

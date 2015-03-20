@@ -31,6 +31,10 @@
                 hideLoadMore: false,
                 html: "load more"
             };
+            
+            currentFriend.state = currentFriend.online;
+            
+           
             currentFriend.blink = false;
             currentFriend.uploadPercent = 0;
             currentFriend.lastDate = null;
@@ -58,6 +62,7 @@
             hideLoadMore: false,
             html: "load more"
         };
+        friendObj.state = 0;
         friendObj.blink = false;
         friendObj.uploadPercent = 0;
         friendObj.lastDate = null;
@@ -393,6 +398,7 @@
             var friend = getFriendObject(data.user_id);
             if (friend) {
                 friend.online = 0;
+                friend.state = 0;
                 $scope.$apply();
             }
         });
@@ -400,6 +406,7 @@
             var friend = getFriendObject(data.user_id);
             console.log('online : ' + data.user_id);
             if (friend) {
+                friend.state = 1;
                 friend.online = 1;
                 $scope.$apply();
             }
@@ -435,6 +442,25 @@
                 $scope.$apply();
             }, 100);
             
+        });
+        socketio.on("state_changed_from_server", function (data) {
+            var friendId = data.user_id,
+                state = data.state,
+                friendObj = getFriendObject(friendId);
+            if (friendObj) {
+
+                if (state == "Online") {
+                    friendObj.state = 1;
+                }
+                else if (state == "Away") {
+                    friendObj.state = 2;
+                }
+                else if (state == "Do not disturb") {
+                    friendObj.state = 3;
+                }
+            }
+
+            $scope.$apply();
         });
     }
 
@@ -524,5 +550,18 @@
         });
     }
 
-    
+    $scope.getStateClass = function (friend) {
+        var state = friend.state,
+            className = '';
+        switch (state) {
+            case 1: className = 'online';
+                break;
+            case 2: className = 'away';
+                break;
+            case 3: className = 'dnd';
+                break;
+            
+        }
+        return className;
+    }
 });

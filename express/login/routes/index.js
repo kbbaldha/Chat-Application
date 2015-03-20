@@ -753,6 +753,10 @@ router.post('/getAttention', function (req, res, next) {
     });
 });
 
+function stateChanged(data, io) {
+    io.sockets.emit("state_changed_from_server", { user_id: data.clientId, state:data.state });
+}
+
 
 
 module.exports = router;
@@ -761,3 +765,4 @@ router.sendMessage = sendMessage;
 router.sendTypingNotification = sendTypingNotification;
 router.disconnectUser = disconnectUser;
 router.getConID = getConID;
+router.stateChanged = stateChanged;

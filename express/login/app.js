@@ -77,6 +77,9 @@ io.sockets.on('connection', function (socket) {
         //console.log('somebody is disconnected' + this);
         routes.disconnectUser(this,io);
     });
+    socket.on('state_changed', function (data) {
+        routes.stateChanged(data, io);
+    });
     
 });
 

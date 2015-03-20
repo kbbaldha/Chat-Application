@@ -222,7 +222,12 @@ body {
 .online {
     color: green;
 }
-
+.away {
+    color: yellow;
+}
+.dnd {
+    color: black;
+}
 .user_list_heading {
     position: relative;
     height: 65px;

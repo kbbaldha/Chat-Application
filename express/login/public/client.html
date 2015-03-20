@@ -78,7 +78,7 @@
                                                         <span ng-hide="x.noOfUnreadMessages == 0" class="badge">{{x.noOfUnreadMessages}}</span>
                                                         <span ng-show="x.startTyping === true" class="badge"><span class="glyphicon glyphicon-option-horizontal"></span></span>
                                                     </span>
-                                                    <i class="glyphicon glyphicon-user user-icon" ng-class="{ 'online': x.online}"></i>
+                                                    <i class="glyphicon glyphicon-user user-icon" ng-class="getStateClass(x)"></i>
                                                 </a>
                                             </div>
                                         </div>

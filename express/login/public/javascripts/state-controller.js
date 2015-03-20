@@ -3,6 +3,6 @@
     $scope.selectedState = $scope.states[0];
     $scope.onStateDropDownClicked = function onStateDropDownClicked(data) {
         $scope.selectedState = data;
-       // $scope.$apply();
+        socketio.emit("state_changed", { state: data, clientName: app.clientInfo.user_fname, clientId: app.clientInfo.user_id });
     }
 });

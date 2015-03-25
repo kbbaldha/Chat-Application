@@ -754,7 +754,28 @@ router.post('/getAttention', function (req, res, next) {
 });
 
 function stateChanged(data, io) {
-    io.sockets.emit("state_changed_from_server", { user_id: data.clientId, state:data.state });
+    io.sockets.emit("state_changed_from_server", { user_id: data.clientId, state: data.state });
+    connection.query("UPDATE user_information SET online = '" + getStateNumber(data.state) + "' WHERE user_id = '" + data.clientId + "';");
+}
+
+function getStateNumber(stateString) {
+    switch (stateString) {
+        case "Offline":
+            return 0;
+            break;
+        case "Online":
+            return 1;
+            break;
+        case "Away":
+            return 2;
+            break;
+        case "Do not disturb":
+            return 3;
+            break;
+        default:
+            return 0;
+            break;
+    }
 }
 
 

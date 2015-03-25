@@ -367,7 +367,7 @@ function sendMessage(data, io) {
             var socketid = rows[0]['socket_id'],
                 clientId = rows[0]['user_id'];
             if (io.sockets.connected[socketid]) {
-                io.sockets.connected[socketid].emit("message_to_client", { message: data["message"], clientName: data["clientName"], clientId: data["clientId"] });
+                io.sockets.connected[socketid].emit("message_to_client", { message: data["message"], clientName: data["clientName"], clientId: data["clientId"], time: getCurrentTimeAsString() });
             } else {
                 // The user if offline store his messages
                 console.log("client name is :" + data["clientName"]);
@@ -474,6 +474,16 @@ function getDateForSQL() {
     str += date.getDate();
 
     console.log('INSERTING IN DB:' + str);
+    return str;
+}
+
+function getCurrentTimeAsString() {
+    var str = "";
+    var date = new Date();
+    str += date.getHours() + ":";
+    str += date.getMinutes() + ":";
+    str += date.getSeconds();
+
     return str;
 }
 
